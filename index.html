@@ -17,6 +17,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,800;1,9..144,300;1,9..144,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+
 <style>
 :root{
   --bg:#0E0E0E;
@@ -92,15 +94,21 @@ section{padding:120px 0;position:relative;}
 .nav-links{display:flex;align-items:center;gap:32px;}
 .nav-links a{font-size:13px;color:var(--mute);transition:color .25s;}
 .nav-links a:hover{color:var(--text);}
+.nav-status{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);}
+.nav-status .ns-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2s ease-in-out infinite;}
+@media (max-width:1100px){.nav-status{display:none;}}
 .nav-cta{padding:10px 18px;border-radius:100px;border:1px solid var(--hairline);font-size:13px;transition:background .25s,border-color .25s,color .25s;}
 .nav-cta:hover{background:var(--accent);color:#0E0E0E;border-color:var(--accent);}
 @media (max-width:900px){.nav{padding:14px 20px;}.nav.scrolled{padding:10px 20px;}.nav-links a:not(.nav-cta){display:none;}}
 
 /* Noise overlay */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:200;transition:width .15s linear;box-shadow:0 0 12px var(--accent);}
 .noise{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.04;mix-blend-mode:screen;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");}
 
 /* Hero */
 .hero{min-height:100dvh;padding-top:140px;display:flex;align-items:center;position:relative;overflow:hidden;}
+#aiSphere{position:absolute;top:0;right:-8%;width:55%;height:100%;z-index:0;pointer-events:none;opacity:.92;mix-blend-mode:screen;}
+@media (max-width:900px){#aiSphere{right:-30%;width:90%;opacity:.45;}}
 .hero::before{content:"";position:absolute;inset:-20%;background:radial-gradient(60% 50% at 30% 30%,rgba(208,239,0,.06),transparent 60%),radial-gradient(50% 50% at 80% 70%,rgba(208,239,0,.04),transparent 60%);filter:blur(40px);pointer-events:none;z-index:-1;}
 .hero-grid{display:grid;grid-template-columns:1fr;gap:48px;width:100%;}
 .hero-kicker{display:inline-flex;align-items:center;gap:12px;margin-bottom:32px;}
@@ -171,12 +179,55 @@ section{padding:120px 0;position:relative;}
 .bc-6{grid-column:span 3;}
 @media (max-width:900px){.bento-grid{grid-template-columns:1fr;grid-auto-rows:auto;}.bc-1,.bc-2,.bc-3,.bc-4,.bc-5,.bc-6{grid-column:span 1;grid-row:auto;}}
 
+/* AI Workflow — terminal aesthetic */
+.aw-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:32px;align-items:start;}
+.aw-terminal{background:#080808;border:1px solid var(--hairline);border-radius:18px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 30px 80px -30px rgba(0,0,0,.7);}
+.aw-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--hairline);background:rgba(244,241,234,.02);}
+.aw-bar .aw-dot{width:10px;height:10px;border-radius:50%;}
+.aw-bar .aw-dot.r{background:#FF5F56;}
+.aw-bar .aw-dot.y{background:#FFBD2E;}
+.aw-bar .aw-dot.g{background:#27C93F;}
+.aw-bar .aw-title{margin-left:12px;font-size:11px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase;}
+.aw-body{padding:24px 28px;color:var(--text);white-space:pre-wrap;}
+.aw-line{display:block;}
+.aw-prompt{color:var(--accent);}
+.aw-cmd{color:#7FCFFF;font-weight:500;}
+.aw-arg{color:#F0E68C;}
+.aw-flag{color:#FFA07A;}
+.aw-mute{color:var(--mute);}
+.aw-acc{color:var(--accent);font-weight:500;margin-top:6px;}
+.aw-side{display:flex;flex-direction:column;gap:20px;}
+.aw-stat{padding:24px;border:1px solid var(--hairline);border-radius:18px;background:rgba(244,241,234,.02);transition:border-color .35s,background .35s;}
+.aw-stat:hover{border-color:rgba(244,241,234,.2);background:rgba(244,241,234,.04);}
+.aw-stat-v{font-size:42px;font-weight:300;letter-spacing:-.04em;line-height:1;color:var(--accent);}
+.aw-stat-l{margin-top:8px;font-size:13px;color:var(--mute);line-height:1.5;}
+.aw-note{font-size:11px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;line-height:1.6;padding:20px 24px;border:1px dashed var(--hairline);border-radius:18px;}
+@media (max-width:900px){.aw-grid{grid-template-columns:1fr;}.aw-body{font-size:11px;padding:16px;}}
+
 /* Manifesto */
 .manifesto{background:var(--bg-cream);color:var(--text-dark);padding:160px 0;text-align:center;}
 .manifesto .inner{max-width:900px;margin:0 auto;padding:0 32px;}
 .manifesto .lbl{display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute-dark);margin-bottom:48px;}
 .manifesto .lbl::before{content:"";width:24px;height:1px;background:#0E0E0E;}
 .manifesto p{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(36px,5vw,68px);letter-spacing:-.025em;line-height:1.18;}
+.manifesto-reveal span{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(8px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out),filter .8s var(--ease-out);}
+.manifesto-reveal.in span{opacity:1;transform:none;filter:blur(0);}
+.manifesto-reveal.in span:nth-child(1){transition-delay:0ms;}
+.manifesto-reveal.in span:nth-child(2){transition-delay:60ms;}
+.manifesto-reveal.in span:nth-child(3){transition-delay:120ms;}
+.manifesto-reveal.in span:nth-child(4){transition-delay:180ms;}
+.manifesto-reveal.in span:nth-child(5){transition-delay:240ms;}
+.manifesto-reveal.in span:nth-child(6){transition-delay:380ms;}
+.manifesto-reveal.in span:nth-child(7){transition-delay:440ms;}
+.manifesto-reveal.in span:nth-child(8){transition-delay:540ms;}
+.manifesto-reveal.in span:nth-child(9){transition-delay:600ms;}
+.manifesto-reveal.in span:nth-child(10){transition-delay:760ms;}
+.manifesto-reveal.in span:nth-child(11){transition-delay:820ms;}
+.manifesto-reveal.in span:nth-child(12){transition-delay:880ms;}
+.manifesto-reveal.in span:nth-child(13){transition-delay:940ms;}
+.manifesto-reveal.in span:nth-child(14){transition-delay:1000ms;}
+.manifesto-reveal.in span:nth-child(15){transition-delay:1080ms;}
+.manifesto-reveal.in span:nth-child(16){transition-delay:1140ms;}
 .manifesto .fade{color:rgba(14,14,14,.32);}
 .manifesto .hl{font-style:italic;color:#5C7A00;}
 .manifesto .star{display:block;margin-top:64px;color:#5C7A00;font-size:24px;}
@@ -245,9 +296,11 @@ section{padding:120px 0;position:relative;}
 </head>
 <body>
 <div class="noise"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
 
 <nav class="nav" id="nav">
   <a href="#" class="brand">Woetive <span class="star">✦</span></a>
+  <div class="nav-status"><span class="ns-dot"></span><span class="mono">AI Studio · Online</span></div>
   <div class="nav-links">
     <a href="#work">Work</a>
     <a href="#about">About</a>
@@ -257,10 +310,11 @@ section{padding:120px 0;position:relative;}
 </nav>
 
 <section class="hero">
+  <canvas id="aiSphere" aria-hidden="true"></canvas>
   <div class="container">
     <div class="hero-grid">
       <div class="reveal-stagger">
-        <div class="hero-kicker"><span class="dot"></span><span class="mono">AI-Driven Branding Studio · Slovakia · Est. 2022</span></div>
+        <div class="hero-kicker"><span class="dot"></span><span class="mono" id="heroType" data-cycle="AI-Driven Branding Studio · Slovakia · Est. 2022|Now booking · May 2026 · Bratislava + Košice|Two brothers. One AI stack. Zero outsourcing.">AI-Driven Branding Studio · Slovakia · Est. 2022</span></div>
         <h1>We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
         <p class="hero-sub">Two brothers. One internal AI stack. Brand identity, web, and campaigns shipped in weeks — not quarters.</p>
         <div class="hero-ctas">
@@ -385,10 +439,39 @@ section{padding:120px 0;position:relative;}
   </div>
 </section>
 
+<section class="ai-workflow">
+  <div class="container">
+    <div class="sec-head reveal"><div class="label"><span class="mono">AI Workflow · Internal stack</span></div><h2>How we ship <em>3× faster.</em></h2></div>
+    <div class="aw-grid">
+      <div class="aw-terminal reveal">
+        <div class="aw-bar"><span class="aw-dot r"></span><span class="aw-dot y"></span><span class="aw-dot g"></span><span class="aw-title">woetive-stack · brand pipeline</span></div>
+        <div class="aw-body">
+<span class="aw-line"><span class="aw-prompt">→</span> <span class="aw-cmd">brief</span> <span class="aw-arg">"premium retail brand · scaling to EU"</span></span>
+<span class="aw-line aw-mute">  parsing · extracting tone, audience, ambition</span>
+<span class="aw-line"><span class="aw-prompt">→</span> <span class="aw-cmd">moodboard</span> <span class="aw-flag">--variants 12</span> <span class="aw-flag">--time 4m</span></span>
+<span class="aw-line aw-mute">  generated 12 directions · curated 3</span>
+<span class="aw-line"><span class="aw-prompt">→</span> <span class="aw-cmd">naming</span> <span class="aw-flag">--candidates 40</span></span>
+<span class="aw-line aw-mute">  filtered · 40 → 7 finalists · checked TM availability</span>
+<span class="aw-line"><span class="aw-prompt">→</span> <span class="aw-cmd">logo</span> <span class="aw-flag">--variants 80</span> <span class="aw-flag">--style "modern editorial"</span></span>
+<span class="aw-line aw-mute">  generated · ranked by craft heuristic · top 6 to brothers</span>
+<span class="aw-line"><span class="aw-prompt">→</span> <span class="aw-cmd">human</span> <span class="aw-arg">final selection · refine · ship</span></span>
+<span class="aw-line aw-acc">  ▌ output: identity system + guidelines + web · 6 wks</span>
+        </div>
+      </div>
+      <div class="aw-side">
+        <div class="aw-stat reveal"><div class="aw-stat-v tabular">3×</div><div class="aw-stat-l">Iteration speed vs. legacy agency</div></div>
+        <div class="aw-stat reveal"><div class="aw-stat-v tabular">120+</div><div class="aw-stat-l">AI-curated variants per project</div></div>
+        <div class="aw-stat reveal"><div class="aw-stat-v tabular">100%</div><div class="aw-stat-l">Final craft decision: human</div></div>
+        <p class="aw-note reveal mono">AI generuje. My filtrujeme. Klient dostáva to najlepšie 1% — nie prvý nápad LLM-u.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="manifesto">
   <div class="inner">
     <div class="lbl">Manifesto</div>
-    <p class="reveal">Every brand tells a story.<br/>Most are <span class="fade">forgotten</span>.<br/>We build the ones people <span class="hl">remember</span>.</p>
+    <p class="manifesto-reveal"><span>Every</span> <span>brand</span> <span>tells</span> <span>a</span> <span>story.</span><br/><span>Most</span> <span>are</span> <span class="fade">forgotten</span><span>.</span><br/><span>We</span> <span>build</span> <span>the</span> <span>ones</span> <span>people</span> <span class="hl">remember</span><span>.</span></p>
     <span class="star">✦</span>
   </div>
 </section>
@@ -483,21 +566,181 @@ section{padding:120px 0;position:relative;}
 </script>
 
 <script>
-// Nav scroll state
+// Hero kicker typewriter cycle
+(function(){
+  const el=document.getElementById('heroType');
+  if(!el||!el.dataset.cycle)return;
+  const lines=el.dataset.cycle.split('|');
+  let i=0,j=0,deleting=false;
+  function step(){
+    const cur=lines[i];
+    if(!deleting){
+      el.textContent=cur.slice(0,j+1);
+      j++;
+      if(j===cur.length){deleting=true;setTimeout(step,2400);return;}
+      setTimeout(step,28);
+    }else{
+      el.textContent=cur.slice(0,j-1);
+      j--;
+      if(j===0){deleting=false;i=(i+1)%lines.length;setTimeout(step,200);return;}
+      setTimeout(step,18);
+    }
+  }
+  setTimeout(step,1800);
+})();
+
+// Card 3D tilt — desktop only, perf-bounded
+(function(){
+  if(matchMedia('(pointer:coarse)').matches)return;
+  const cards=document.querySelectorAll('.work-card,.bc,.tcard,.bro');
+  cards.forEach(c=>{
+    c.style.transformStyle='preserve-3d';
+    let raf=0;
+    c.addEventListener('mousemove',(e)=>{
+      const r=c.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-0.5;
+      const py=(e.clientY-r.top)/r.height-0.5;
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(()=>{
+        c.style.transform=`perspective(1000px) rotateY(${px*4}deg) rotateX(${-py*4}deg) translateY(-3px)`;
+      });
+    });
+    c.addEventListener('mouseleave',()=>{
+      cancelAnimationFrame(raf);
+      c.style.transition='transform .6s cubic-bezier(.34,1.56,.64,1)';
+      c.style.transform='';
+      setTimeout(()=>{c.style.transition='';},650);
+    });
+  });
+})();
+
+// Magnetic buttons — pull toward cursor within 100px
+(function(){
+  if(matchMedia('(pointer:coarse)').matches)return;
+  document.querySelectorAll('.btn').forEach(btn=>{
+    let raf=0;
+    btn.addEventListener('mousemove',(e)=>{
+      const r=btn.getBoundingClientRect();
+      const dx=e.clientX-(r.left+r.width/2);
+      const dy=e.clientY-(r.top+r.height/2);
+      const d=Math.hypot(dx,dy);
+      if(d<100){
+        cancelAnimationFrame(raf);
+        raf=requestAnimationFrame(()=>{
+          btn.style.transform=`translate(${dx*0.25}px,${dy*0.25}px)`;
+        });
+      }
+    });
+    btn.addEventListener('mouseleave',()=>{
+      cancelAnimationFrame(raf);
+      btn.style.transition='transform .6s cubic-bezier(.34,1.56,.64,1)';
+      btn.style.transform='';
+      setTimeout(()=>{btn.style.transition='';},650);
+    });
+  });
+})();
+
+// Nav scroll state + scroll progress
 (function(){
   const nav=document.getElementById('nav');
-  const onScroll=()=>{nav.classList.toggle('scrolled',scrollY>40);};
+  const bar=document.getElementById('scrollProgress');
+  const onScroll=()=>{
+    nav.classList.toggle('scrolled',scrollY>40);
+    if(bar){
+      const h=document.documentElement.scrollHeight-innerHeight;
+      bar.style.width=(h?(scrollY/h)*100:0)+'%';
+    }
+  };
   addEventListener('scroll',onScroll,{passive:true});onScroll();
 })();
 
 // Reveal on scroll (Intersection Observer)
 (function(){
-  const els=document.querySelectorAll('.reveal,.reveal-stagger');
+  const els=document.querySelectorAll('.reveal,.reveal-stagger,.manifesto-reveal');
   if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}
   const io=new IntersectionObserver((entries)=>{
     entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
   },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
   els.forEach(el=>io.observe(el));
+})();
+
+// AI Sphere — Three.js, mouse + scroll reactive
+(function(){
+  const canvas=document.getElementById('aiSphere');
+  if(!canvas||typeof THREE==='undefined')return;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,1,0.1,100);
+  camera.position.z=4;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:window.devicePixelRatio<2,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+  // Sphere — wireframe outer + solid inner
+  const geo=new THREE.IcosahedronGeometry(1.4,4);
+  const wireMat=new THREE.MeshBasicMaterial({color:0xD0EF00,wireframe:true,transparent:true,opacity:.45});
+  const solidMat=new THREE.MeshBasicMaterial({color:0x0E0E0E,transparent:true,opacity:.85});
+  const sphereWire=new THREE.Mesh(geo,wireMat);
+  const sphereSolid=new THREE.Mesh(new THREE.IcosahedronGeometry(1.36,3),solidMat);
+  const group=new THREE.Group();
+  group.add(sphereSolid);group.add(sphereWire);
+  scene.add(group);
+
+  // Particles around sphere
+  const pCount=400;
+  const pPos=new Float32Array(pCount*3);
+  for(let i=0;i<pCount;i++){
+    const r=2.2+Math.random()*1.5;
+    const theta=Math.random()*Math.PI*2;
+    const phi=Math.acos(2*Math.random()-1);
+    pPos[i*3]=r*Math.sin(phi)*Math.cos(theta);
+    pPos[i*3+1]=r*Math.sin(phi)*Math.sin(theta);
+    pPos[i*3+2]=r*Math.cos(phi);
+  }
+  const pGeo=new THREE.BufferGeometry();
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  const pMat=new THREE.PointsMaterial({color:0xF4F1EA,size:.018,transparent:true,opacity:.55,sizeAttenuation:true});
+  const points=new THREE.Points(pGeo,pMat);
+  scene.add(points);
+
+  // Sizing
+  function resize(){
+    const r=canvas.getBoundingClientRect();
+    renderer.setSize(r.width,r.height,false);
+    camera.aspect=r.width/r.height;
+    camera.updateProjectionMatrix();
+  }
+  resize();addEventListener('resize',resize);
+
+  // Mouse + scroll state
+  let mx=0,my=0,tx=0,ty=0,sy=0;
+  addEventListener('mousemove',(e)=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;});
+  addEventListener('scroll',()=>{sy=scrollY;},{passive:true});
+
+  // Visibility — pause render when hero off-screen
+  let visible=true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver((es)=>{visible=es[0].isIntersecting;},{threshold:0.01}).observe(canvas);
+  }
+
+  // Render loop
+  let t=0;
+  function tick(){
+    requestAnimationFrame(tick);
+    if(!visible)return;
+    t+=0.005;
+    // smooth lerp toward mouse target
+    tx+=(mx*0.4-tx)*0.05;
+    ty+=(my*0.3-ty)*0.05;
+    group.rotation.y=t*0.6+tx;
+    group.rotation.x=Math.sin(t*0.4)*0.15+ty;
+    // subtle scroll-driven scale/lift
+    const scrollK=Math.min(1,sy/innerHeight);
+    group.scale.setScalar(1-scrollK*0.15);
+    group.position.y=scrollK*0.3;
+    points.rotation.y=t*0.2;
+    points.rotation.x=t*0.1;
+    renderer.render(scene,camera);
+  }
+  tick();
 })();
 
 // Counter animation
