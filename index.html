@@ -8,10 +8,73 @@
 <meta property="og:title" content="Woetive — AI-driven branding studio"/>
 <meta property="og:description" content="Two brothers. One AI stack. Brands shipped in weeks, not quarters."/>
 <meta property="og:type" content="website"/>
+<meta property="og:url" content="https://woetive.com/"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:locale:alternate" content="sk_SK"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Woetive — AI-driven branding studio"/>
+<meta name="twitter:description" content="Two brothers. One AI stack. Brands shipped in weeks, not quarters."/>
+<meta name="theme-color" content="#0A0A0A"/>
+<meta name="color-scheme" content="dark light"/>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://woetive.com/#org",
+      "name": "Woetive",
+      "url": "https://woetive.com/",
+      "email": "house@woetive.com",
+      "description": "AI-driven boutique branding studio. Two brothers, one AI stack — brand identity, web, and campaigns shipped in weeks.",
+      "foundingDate": "2022",
+      "founders": [
+        { "@type": "Person", "name": "Joshua Samuel Paquete", "jobTitle": "CEO, Art Director" },
+        { "@type": "Person", "name": "Daniel Alexander Paquete", "jobTitle": "Creative Director" }
+      ],
+      "address": { "@type": "PostalAddress", "addressLocality": "Bratislava", "addressCountry": "SK" },
+      "areaServed": ["SK","CZ","AT","DE","HU","PL","EU"],
+      "knowsAbout": ["Brand identity","Web design","Art direction","AI workflow","Campaign design"],
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "18", "bestRating": "5" },
+      "sameAs": ["https://www.instagram.com/woetive","https://www.linkedin.com/company/woetive","https://www.behance.net/woetive"]
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://woetive.com/#service",
+      "name": "Woetive Branding Studio",
+      "image": "https://woetive.com/og.jpg",
+      "priceRange": "€€€",
+      "provider": { "@id": "https://woetive.com/#org" },
+      "areaServed": "EU",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Brand Identity" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Web Design & Development" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Art Direction & Campaign" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI-Driven Workflow" } }
+        ]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://woetive.com/#website",
+      "url": "https://woetive.com/",
+      "name": "Woetive",
+      "publisher": { "@id": "https://woetive.com/#org" },
+      "inLanguage": ["en-US","sk-SK"]
+    }
+  ]
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,900;1,300;1,900&family=Urbanist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,900;1,300;1,900&family=Urbanist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://woetive.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23D0EF00' font-family='monospace' font-size='20' font-weight='700'%3EW%3C/text%3E%3C/svg%3E">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -19,23 +82,45 @@
 
 <style>
 :root{
-  --bg-light:#F9F9F9;
-  --bg-dark:#080808;
-  --accent:#D0EF00;
+  --bg-light:#F7F5F0;        /* warmed off-white (was sterile #F9F9F9) */
+  --bg-dark:#0A0A0A;          /* tinted near-black */
+  --bg-dark-alt:#0E0E0E;      /* second-tier dark for layering */
+  --accent:#D0EF00;           /* signature green */
+  --accent-dim:rgba(208,239,0,.65);
   --text:#0A0A0A;
+  --text-mute-light:rgba(10,10,10,.55);
+  --text-mute-dark:rgba(255,255,255,.55);
+  --hairline-light:rgba(10,10,10,.08);
+  --hairline-dark:rgba(255,255,255,.08);
   --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-out-expo: cubic-bezier(.16,1,.3,1);
+  --ease-soft: cubic-bezier(.34,1.56,.64,1);
+  --shadow-tint-light: 0 30px 80px -30px rgba(10,10,10,.15), 0 1px 0 rgba(255,255,255,.4) inset;
+  --shadow-tint-dark: 0 30px 80px -30px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.06) inset;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--bg-light);color:var(--text);font-family:'Urbanist',-apple-system,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;}
+html{scroll-behavior:smooth;text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+html,body{background:var(--bg-light);color:var(--text);font-family:'Urbanist',-apple-system,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 body{overflow-x:hidden;cursor:none;position:relative;}
 img{display:block;max-width:100%;}
 a{color:inherit;text-decoration:none;}
 button{font-family:inherit;border:none;background:none;color:inherit;}
+::selection{background:var(--accent);color:#080808;}
+
+/* Global heading defaults — text-wrap balance prevents orphans, tabular nums for counters */
+h1,h2,h3,h4,h5,h6{text-wrap:balance;font-feature-settings:"ss01" 1, "ss02" 1;}
+[data-count],.fx-stats-num{font-variant-numeric:tabular-nums;}
+
+/* Reduced motion — strict per WCAG */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
+}
 
 /* ONE Fraunces moment on the entire site: the italic word 'build' in hero */
 .fx-build{font-family:'Fraunces',serif;font-style:italic;font-weight:300;}
-.mono{font-family:'JetBrains Mono',monospace;font-weight:400;letter-spacing:.08em;text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:400;letter-spacing:.08em;text-transform:uppercase;font-feature-settings:"ss01" 1;}
+.serif-emphasis{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;}
 
 /* ---------- NOISE OVERLAY ---------- */
 .noise{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;mix-blend-mode:multiply;
@@ -82,21 +167,25 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
 .reveal .word{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(30px);transition:opacity .9s var(--ease),filter .9s var(--ease),transform .9s var(--ease);white-space:pre;}
 .reveal.in .word{opacity:1;filter:blur(0);transform:translateY(0);}
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:100px;font-weight:500;font-size:14px;letter-spacing:.02em;border:1px solid rgba(10,10,10,.18);transition:all .3s var(--ease);position:relative;overflow:hidden;}
-.btn.primary{background:#0A0A0A;color:#fff;border-color:#0A0A0A;}
-.btn.primary:hover{background:var(--accent);color:#080808;border-color:var(--accent);}
-.btn.ghost{background:rgba(255,255,255,.4);backdrop-filter:blur(16px);}
+/* Buttons — premium nested-island architecture */
+.btn{display:inline-flex;align-items:center;gap:14px;padding:14px 14px 14px 28px;border-radius:100px;font-weight:500;font-size:14px;letter-spacing:.01em;border:1px solid rgba(10,10,10,.14);transition:transform .35s var(--ease-out-expo), background .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);position:relative;overflow:hidden;will-change:transform;}
+.btn.primary{background:#0A0A0A;color:#fff;border-color:#0A0A0A;box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 12px 32px -12px rgba(10,10,10,.4);}
+.btn.primary:hover{background:var(--accent);color:#080808;border-color:var(--accent);box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 16px 40px -10px rgba(208,239,0,.4);}
+.btn.ghost{background:rgba(255,255,255,.5);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);}
 .btn.ghost:hover{background:#0A0A0A;color:#fff;border-color:#0A0A0A;}
-.btn .arrow{transition:transform .3s var(--ease);}
-.btn:hover .arrow{transform:translateX(4px);}
-/* scanline on hover */
-.btn::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);opacity:0;transition:opacity .3s;pointer-events:none;}
-.btn:hover::after{opacity:1;}
-.dark .btn{border-color:rgba(255,255,255,.18);color:#fff;background:rgba(255,255,255,.04);backdrop-filter:blur(16px);}
+.btn:active{transform:scale(.97);}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+/* nested island arrow */
+.btn .arrow{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.14);font-size:12px;line-height:1;transition:transform .4s var(--ease-out-expo), background .25s var(--ease);}
+.btn.primary .arrow{background:rgba(255,255,255,.16);}
+.btn.primary:hover .arrow{background:rgba(8,8,8,.12);transform:translateX(3px) rotate(-8deg);}
+.btn.ghost .arrow{background:rgba(10,10,10,.08);}
+.btn.ghost:hover .arrow{background:rgba(255,255,255,.18);transform:translateX(3px);}
+.dark .btn{border-color:rgba(255,255,255,.14);color:#fff;background:rgba(255,255,255,.04);backdrop-filter:blur(16px);}
 .dark .btn.primary{background:#fff;color:#080808;border-color:#fff;}
 .dark .btn.primary:hover{background:var(--accent);color:#080808;border-color:var(--accent);}
-.dark .btn::after{background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.04) 2px,rgba(255,255,255,.04) 4px);}
+.dark .btn .arrow{background:rgba(255,255,255,.1);}
+.dark .btn.primary .arrow{background:rgba(8,8,8,.08);}
 
 /* ============================================
    HERO
@@ -116,7 +205,8 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
 
 .hero-inner{position:relative;max-width:1400px;margin:0 auto;min-height:calc(100vh - 160px);display:flex;align-items:center;justify-content:center;z-index:3;}
 
-.hero-glass{position:relative;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-radius:24px;padding:clamp(40px,6vw,80px) clamp(28px,5vw,72px);width:min(1040px,88vw);text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.4);z-index:3;will-change:transform,opacity;}
+.hero-glass{position:relative;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.45);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:28px;padding:clamp(40px,6vw,80px) clamp(28px,5vw,72px);width:min(1040px,88vw);text-align:center;box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 -1px 0 rgba(10,10,10,.05) inset, 0 30px 80px -30px rgba(10,10,10,.18), 0 80px 160px -60px rgba(10,10,10,.12);z-index:3;will-change:transform,opacity;}
+.hero-glass::before{content:"";position:absolute;inset:6px;border-radius:22px;border:1px solid rgba(255,255,255,.18);pointer-events:none;opacity:.6;}
 @keyframes heroGlassIn{to{opacity:1;transform:translateY(0) scale(1);}}
 
 .hero-kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(10,10,10,.55);display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;}
@@ -315,7 +405,14 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
 .s-dia .top2{top:-4px;transform:translateX(-50%) rotateY(90deg);border-bottom:32px solid #0A0A0A;}
 .s-dia .bot2{bottom:-4px;transform:translateX(-50%) rotateY(90deg);border-top:32px solid #0A0A0A;}
 .s-dia .mid{position:absolute;top:50%;left:50%;width:40px;height:40px;border:1.5px solid var(--accent);transform:translate(-50%,-50%) rotate(45deg);}
-@media (max-width:900px){.srv-row{grid-template-columns:60px 1fr 80px;gap:16px;padding:24px 8px;}.srv-row .desc,.srv-row .price{display:none;}}
+@media (max-width:900px){
+  .srv-row{grid-template-columns:1fr 64px;grid-template-areas:"idx shape" "head shape" "desc shape" "price shape";gap:8px 16px;padding:28px 8px;}
+  .srv-row .idx{grid-area:idx;}
+  .srv-row h3{grid-area:head;font-size:24px;}
+  .srv-row .desc{grid-area:desc;font-size:14px;line-height:1.55;color:rgba(10,10,10,.65);}
+  .srv-row .price{grid-area:price;margin-top:4px;}
+  .srv-row .shape3d{grid-area:shape;align-self:start;width:64px;height:64px;}
+}
 
 /* ============================================
    BENTO — 6 card asymmetric
@@ -328,8 +425,10 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
 .bento-head .right p{font-weight:300;font-size:16px;color:rgba(255,255,255,.5);max-width:320px;line-height:1.6;}
 
 .bento-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:200px;gap:16px;}
-.bc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:40px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:24px;transition:transform .6s var(--ease),border-color .6s,box-shadow .6s;will-change:transform,opacity;}
-.bc:hover{border-color:rgba(255,255,255,.15);box-shadow:inset 0 0 0 1px rgba(208,239,0,.15), 0 30px 60px -20px rgba(0,0,0,.6);}
+.bc{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border-radius:24px;padding:40px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:24px;transition:transform .55s var(--ease-out-expo), border-color .4s var(--ease), box-shadow .55s var(--ease), background .4s var(--ease);will-change:transform,opacity;}
+.bc::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(160% 100% at 50% 0%, rgba(208,239,0,.05), transparent 60%);opacity:0;transition:opacity .5s var(--ease);pointer-events:none;}
+.bc:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04);box-shadow:inset 0 1px 0 rgba(255,255,255,.06), inset 0 0 0 1px rgba(208,239,0,.12), 0 40px 80px -30px rgba(0,0,0,.7);}
+.bc:hover::after{opacity:1;}
 .bc .kicker{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.28em;color:rgba(255,255,255,.4);text-transform:uppercase;}
 .bc h3{font-weight:700;font-size:40px;letter-spacing:-.02em;line-height:1.0;color:#fff;}
 .bc h3 br{display:block;content:"";}
@@ -423,8 +522,8 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
 .testim-head .rating .of{font-weight:500;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(10,10,10,.5);margin-top:8px;text-align:right;}
 .testim-grid{max-width:1400px;margin:0 auto;columns:2;column-gap:24px;}
 @media (max-width:900px){.testim-grid{columns:1;}}
-.t{break-inside:avoid;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:36px;margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,.06);transition:box-shadow .4s,transform .4s var(--ease);will-change:transform;}
-.t:hover{box-shadow:0 16px 40px -8px rgba(0,0,0,.1);}
+.t{break-inside:avoid;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.85);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:24px;padding:36px;margin-bottom:24px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 8px 32px -8px rgba(10,10,10,.06);transition:box-shadow .45s var(--ease), transform .55s var(--ease-out-expo), background .35s var(--ease);will-change:transform;}
+.t:hover{background:rgba(255,255,255,.78);transform:translateY(-3px);box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 30px 60px -20px rgba(10,10,10,.18);}
 .t .top{display:flex;align-items:center;gap:14px;}
 .t .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a1a1a,#444);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#fff;flex-shrink:0;letter-spacing:-.02em;}
 .t .meta .n{font-weight:600;font-size:15px;}
@@ -567,17 +666,17 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
     <div class="stat">
       <div class="micro">01 / Clients</div>
       <div class="num"><span class="fx-stats-num" data-count="18">0</span><span class="fx-stats-num plus">+</span></div>
-      <div class="label">Happy clients across Slovakia and the EU.</div>
+      <div class="label">Founders we've shipped brand systems for — Slovakia and EU.</div>
     </div>
     <div class="stat">
       <div class="micro">02 / Projects</div>
       <div class="num"><span class="fx-stats-num" data-count="120">0</span><span class="fx-stats-num plus">+</span></div>
-      <div class="label">Projects shipped — identity, web, campaign.</div>
+      <div class="label">Identity systems, websites, campaigns — every one shipped by us, not subcontracted.</div>
     </div>
     <div class="stat">
       <div class="micro">03 / Years</div>
       <div class="num"><span class="fx-stats-num" data-count="3">0</span></div>
-      <div class="label">Years as Woetive — a lifetime in craft before that.</div>
+      <div class="label">As Woetive. A decade of craft before that — sharpened now by an internal AI stack.</div>
     </div>
   </div>
   <div class="logos"><div class="logos-track" id="logosTrack"></div></div>
@@ -681,7 +780,7 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
   </div>
   <div class="bento-grid">
     <div class="bc bc-a">
-      <div><div class="kicker">01 / Team</div><h3>Two people,<br/>one budget.</h3><p class="body">No middle management. A direct line to the people who actually design. The brief you write lands on the desk where the work happens.</p></div>
+      <div><div class="kicker">01 / Team</div><h3>Two people,<br/>one AI stack.</h3><p class="body">Žiadny middle management. Žiadni juniori. Brief, ktorý napíšete, číta jeden z nás — a od piatej minúty už máte k dispozícii AI-generované smerovanie.</p></div>
       <div class="portraits"><div class="portrait"><img src="assets/joshua.webp?v=2" alt=""/></div><div class="portrait"><img src="assets/daniel.webp?v=2" alt=""/></div></div>
     </div>
     <div class="bc bc-b">
@@ -702,7 +801,7 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
       <div class="reactions"><div class="react">👍</div><div class="react">❤️</div><div class="react">✦</div></div>
     </div>
     <div class="bc bc-e">
-      <div><div class="kicker">05 / Process</div><h3>Internal brainstorming,<br/>24 / 7.</h3><p class="body">Two brothers who live together think about your brand past the 6pm clock-out. Decisions compound faster when the walls between meetings disappear.</p></div>
+      <div><div class="kicker">05 / Process</div><h3>Brainstorm<br/>at the dinner table.</h3><p class="body">Bývame spolu. Vaša značka pokračuje v hlavách aj po šiestej. Rozhodnutia sa skladajú rýchlejšie, keď medzi meetingmi nie sú steny.</p></div>
       <div class="venn"><svg class="vdiag" viewBox="0 0 600 200"><g fill="none" stroke-width="1.5"><circle class="v-left" cx="220" cy="100" r="80" stroke="rgba(255,255,255,.35)"/><circle class="v-right" cx="380" cy="100" r="80" stroke="rgba(255,255,255,.35)"/></g><circle class="v-pulse" cx="300" cy="100" r="10" fill="#D0EF00"/><text x="170" y="105" fill="rgba(255,255,255,.7)" font-family="JetBrains Mono" font-size="11" letter-spacing="2" text-anchor="middle">STRATEGY</text><text x="430" y="105" fill="rgba(255,255,255,.7)" font-family="JetBrains Mono" font-size="11" letter-spacing="2" text-anchor="middle">CRAFT</text></svg></div>
     </div>
     <div class="bc bc-f">
@@ -740,10 +839,10 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
     <h2 class="reveal" style="margin-top:28px;"><span class="word">Four </span><span class="word">phases. </span><span class="word em" style="font-style:italic;font-weight:300;color:rgba(255,255,255,.5);">No </span><span class="word em" style="font-style:italic;font-weight:300;color:rgba(255,255,255,.5);">surprises.</span></h2>
   </div>
   <div class="phases">
-    <div class="phase"><div class="idx">Phase 01</div><h3>Discovery</h3><p class="desc">Pochopiť vašu značku, trh, konkurenciu a ciele.</p><div class="dur">1–2 weeks</div></div>
-    <div class="phase"><div class="idx">Phase 02</div><h3>Strategy</h3><p class="desc">Definovať pozicionovanie, tón, vizuálny smer.</p><div class="dur">1–2 weeks</div></div>
-    <div class="phase"><div class="idx">Phase 03</div><h3>Creation</h3><p class="desc">Navrhnúť, iterovať, doladiť každý detail.</p><div class="dur">3–6 weeks</div></div>
-    <div class="phase"><div class="idx">Phase 04</div><h3>Launch</h3><p class="desc">Dodať výstupy, merať výsledky, rásť spolu.</p><div class="dur">ongoing</div></div>
+    <div class="phase"><div class="idx">Phase 01</div><h3>Discovery</h3><p class="desc">Brand audit, kompetičný snapshot, AI-generované moodboards z vašich referencií. Skončíme s jasným smerom — nie 30-stranou prezentáciou.</p><div class="dur">1–2 weeks</div></div>
+    <div class="phase"><div class="idx">Phase 02</div><h3>Strategy</h3><p class="desc">Pozicionovanie, tone of voice, vizuálne princípy. AI generuje varianty, my vyberáme tie, ktoré držia identitu klienta — nie agentúrny vkus.</p><div class="dur">1–2 weeks</div></div>
+    <div class="phase"><div class="idx">Phase 03</div><h3>Creation</h3><p class="desc">Logo, systém, web alebo kampaň — iterujeme tempom AI, finalizujeme rukou. Každý výstup posiela jeden z bratov, nie junior.</p><div class="dur">3–6 weeks</div></div>
+    <div class="phase"><div class="idx">Phase 04</div><h3>Launch</h3><p class="desc">Dodávka, handover, post-launch metrics. Voliteľný retainer pre AI-augmentovaný brand maintenance.</p><div class="dur">ongoing</div></div>
   </div>
 </section>
 
@@ -760,7 +859,7 @@ body.on-dark .cursor-ring{border-color:rgba(255,255,255,.3);}
       </div>
       <div class="contact-block">
         <h4>Start a project</h4>
-        <p style="font-size:16px;line-height:1.6;color:rgba(255,255,255,.6);max-width:420px;">Ideálne briefy obsahujú: čo robíte, pre koho, aký je problém a kedy to potrebujete.</p>
+        <p style="font-size:16px;line-height:1.6;color:rgba(255,255,255,.6);max-width:420px;">Najrýchlejší brief: <span style="color:rgba(255,255,255,.85);">čo robíte · pre koho · čo treba zmeniť · kedy.</span> Ozveme sa do 24 hodín.</p>
         <div class="contact-cta"><a class="btn primary" href="mailto:house@woetive.com">Start a project <span class="arrow">→</span></a></div>
       </div>
     </div>
