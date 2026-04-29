@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,800;1,9..144,300;1,9..144,800&family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<!-- Three.js removed in v8: no 3D sphere needed -->
 
 <style>
 :root{
@@ -120,28 +120,77 @@ section{padding:140px 0;position:relative;}
 /* Subtle paper grain */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");}
 
-/* HERO — Swiss asymmetric, editorial restraint */
-.hero{min-height:100dvh;position:relative;overflow:hidden;display:flex;align-items:center;padding:120px 32px 100px;}
-.hero-aura{position:absolute;inset:-15%;z-index:0;pointer-events:none;background:radial-gradient(40% 50% at 78% 42%,rgba(208,239,0,.14),transparent 60%),radial-gradient(30% 35% at 70% 70%,rgba(180,210,255,.16),transparent 60%),radial-gradient(28% 32% at 82% 28%,rgba(255,200,150,.16),transparent 55%);filter:blur(70px);}
-#sphereCanvas{position:absolute;top:50%;right:-3%;transform:translateY(-50%);width:min(620px,52vw);height:min(620px,52vw);max-height:72vh;z-index:1;pointer-events:none;}
-.hero-inner{position:relative;z-index:2;max-width:1320px;width:100%;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;}
-.hero-text{display:flex;flex-direction:column;gap:32px;align-items:flex-start;}
-.hero-kicker{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);}
-.hero-kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px rgba(92,122,0,.5);animation:pulse 2.4s ease-in-out infinite;}
-.hero h1{font-size:clamp(48px,7.6vw,128px);font-weight:300;letter-spacing:-.045em;line-height:.96;max-width:11ch;color:var(--text);text-align:left;}
-.hero h1 .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:var(--accent-2);}
-.hero-sub{font-size:clamp(16px,1.35vw,19px);font-weight:400;color:var(--text-mute);max-width:46ch;line-height:1.55;}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;}
+/* HERO — Typographic editorial, no 3D, scroll-reactive layers */
+.hero{min-height:100dvh;position:relative;overflow:hidden;display:flex;align-items:center;padding:120px 0 100px;}
+
+/* Animated ambient gradient backdrop */
+.hero-bg{position:absolute;inset:-20%;z-index:0;pointer-events:none;background:
+  radial-gradient(40% 50% at 75% 30%,rgba(208,239,0,.10),transparent 60%),
+  radial-gradient(30% 35% at 30% 70%,rgba(180,210,255,.14),transparent 60%),
+  radial-gradient(28% 32% at 80% 70%,rgba(255,200,150,.12),transparent 55%);
+  filter:blur(80px);
+  animation:bgShift 24s ease-in-out infinite;
+}
+@keyframes bgShift{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(2vw,-1vh) scale(1.05);}
+  66%{transform:translate(-1.5vw,1.5vh) scale(.97);}
+}
+
+/* Decorative ✦ mark — large, faint, rotates */
+.hero-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(380px,48vw,680px);color:rgba(92,122,0,.05);font-family:'Geist',sans-serif;font-weight:300;line-height:1;z-index:0;pointer-events:none;will-change:transform;animation:markSpin 80s linear infinite;}
+@keyframes markSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+
+/* Swiss editorial frame hairlines */
+.hero-frame{position:absolute;inset:120px 32px 100px;pointer-events:none;z-index:1;}
+.hero-frame::before,.hero-frame::after{content:"";position:absolute;left:0;right:0;height:1px;background:var(--hairline);}
+.hero-frame::before{top:0;}
+.hero-frame::after{bottom:0;}
+
+.hero-inner{position:relative;z-index:2;max-width:1320px;width:100%;margin:0 auto;padding:0 32px;}
+
+.hero-meta-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:64px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);}
+.hero-meta-top .left{display:inline-flex;align-items:center;gap:10px;}
+.hero-meta-top .left .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 10px rgba(92,122,0,.5);animation:pulse 2.4s ease-in-out infinite;}
+.hero-meta-top .right{display:inline-flex;align-items:center;gap:10px;}
+.hero-meta-top .right .live{display:inline-flex;align-items:center;gap:6px;color:var(--accent-2);}
+.hero-meta-top .right .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-2);animation:pulse 2.4s ease-in-out infinite;}
+
+/* HEADLINE — massive, light weight, per-word blur reveal */
+.hero-headline{font-size:clamp(56px,9vw,168px);font-weight:300;letter-spacing:-.05em;line-height:.94;max-width:14ch;color:var(--text);margin-bottom:40px;}
+.hero-headline .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:var(--accent-2);}
+.hero-headline .word{display:inline-block;opacity:0;transform:translateY(28px);filter:blur(14px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out),filter 1s var(--ease-out);white-space:pre;}
+.hero-headline.in .word{opacity:1;transform:none;filter:blur(0);}
+
+/* SUB — letter-by-letter blur reveal */
+.hero-sub{font-size:clamp(16px,1.4vw,20px);font-weight:400;color:var(--text-mute);max-width:54ch;line-height:1.55;margin-bottom:40px;}
+.hero-sub .ltr{display:inline-block;opacity:0;filter:blur(6px);transform:translateY(8px);transition:opacity .5s var(--ease-out),filter .5s var(--ease-out),transform .5s var(--ease-out);white-space:pre;}
+.hero-sub.in .ltr{opacity:1;filter:blur(0);transform:none;}
+
+.hero-ctas{display:inline-flex;flex-wrap:wrap;gap:12px;}
+
+/* Bottom — stats + scroll, pinned */
 .hero-bottom{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);width:calc(100% - 64px);max-width:1320px;z-index:2;padding:24px 0 0;display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--hairline);gap:32px;flex-wrap:wrap;}
 .hero-stats{display:flex;gap:48px;}
-.hero-stats > div{display:flex;flex-direction:column;gap:4px;}
-.hero-stats .mono{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);}
-.hero-stats .v{font-size:20px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
-.hero-scroll{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);display:inline-flex;align-items:center;gap:10px;}
-.hero-scroll .scroll-line{width:24px;height:1px;background:linear-gradient(to right,var(--accent-2),transparent);}
+.hero-stats .item{display:flex;flex-direction:column;gap:4px;}
+.hero-stats .item .mono{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);}
+.hero-stats .item .v{font-size:22px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.hero-scroll{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);display:inline-flex;align-items:center;gap:14px;}
+.hero-scroll .scroll-line{width:32px;height:1px;background:linear-gradient(to right,var(--accent-2),transparent);}
 .hero-scroll .scroll-arrow{display:inline-block;animation:arrow 2.6s ease-in-out infinite;}
-@keyframes arrow{0%,100%{transform:translateY(0);opacity:.7;}50%{transform:translateY(4px);opacity:1;}}
-@media (max-width:900px){.hero-inner{grid-template-columns:1fr;}.hero-text{align-items:flex-start;}.hero h1{max-width:13ch;}#sphereCanvas{position:absolute;top:8%;right:-15%;width:min(420px,80vw);height:min(420px,80vw);opacity:.5;}.hero-bottom{flex-direction:column;align-items:flex-start;gap:20px;}.hero-stats{gap:24px;}}
+@keyframes arrow{0%,100%{transform:translateY(0);opacity:.6;}50%{transform:translateY(4px);opacity:1;}}
+
+/* Mobile */
+@media (max-width:900px){
+  .hero{padding:120px 0 80px;}
+  .hero-frame{inset:120px 20px 80px;}
+  .hero-inner{padding:0 20px;}
+  .hero-meta-top{flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:48px;}
+  .hero-headline{font-size:clamp(44px,12vw,88px);max-width:100%;}
+  .hero-bottom{flex-direction:column;align-items:flex-start;gap:20px;width:calc(100% - 40px);}
+  .hero-stats{gap:24px;}
+  .hero-mark{font-size:clamp(280px,80vw,400px);}
+}
 
 /* MARQUEE */
 .marquee{padding:24px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);overflow:hidden;background:rgba(10,10,10,.02);}
@@ -334,27 +383,34 @@ section{padding:140px 0;position:relative;}
   </div>
 </nav>
 
-<section class="hero">
-  <div class="hero-aura" aria-hidden="true"></div>
-  <canvas id="sphereCanvas" aria-hidden="true"></canvas>
+<section class="hero" id="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-mark" aria-hidden="true">✦</div>
+  <div class="hero-frame" aria-hidden="true"></div>
+
   <div class="hero-inner">
-    <div class="hero-text">
-      <div class="hero-kicker reveal"><span class="dot"></span><span id="heroType" data-cycle="AI-Driven Branding Studio · 2026|Now booking · May 2026|Two brothers. One AI stack.">AI-Driven Branding Studio · 2026</span></div>
-      <h1 class="reveal">We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
-      <p class="hero-sub reveal">A boutique branding studio run by two brothers. Human craft, paired with an internal AI stack — brand identity, web, and campaigns shipped in weeks, not quarters.</p>
-      <div class="hero-ctas reveal">
-        <a class="btn btn-primary" href="#contact">Start a project <span class="arr">→</span></a>
-        <a class="btn btn-ghost" href="#work">See selected work <span class="arr">→</span></a>
-      </div>
+    <div class="hero-meta-top">
+      <span class="left"><span class="dot"></span><span id="heroType" data-cycle="AI-Driven Branding Studio · Slovakia|Two brothers · One AI stack|Brand · Web · Campaigns">AI-Driven Branding Studio · Slovakia</span></span>
+      <span class="right"><span>Now booking</span><span class="live">May 2026</span></span>
+    </div>
+
+    <h1 class="hero-headline" data-blur-words>We don't follow trends. We <span class="em">build</span> them.</h1>
+
+    <p class="hero-sub" data-blur-letters>A boutique branding studio run by two brothers. Human craft paired with an internal AI stack — brand identity, web, and campaigns shipped in weeks, not quarters.</p>
+
+    <div class="hero-ctas reveal">
+      <a class="btn btn-primary" href="#contact">Start a project <span class="arr">→</span></a>
+      <a class="btn btn-ghost" href="#work">See selected work <span class="arr">→</span></a>
     </div>
   </div>
-  <div class="hero-bottom reveal">
+
+  <div class="hero-bottom">
     <div class="hero-stats">
-      <div><span class="mono">Clients</span><span class="v">18+</span></div>
-      <div><span class="mono">Projects</span><span class="v">120+</span></div>
-      <div><span class="mono">Rating</span><span class="v">4.8 / 5</span></div>
+      <div class="item"><span class="mono">Clients</span><span class="v"><span data-count="18">0</span>+</span></div>
+      <div class="item"><span class="mono">Projects</span><span class="v"><span data-count="120">0</span>+</span></div>
+      <div class="item"><span class="mono">Rating</span><span class="v">4.8 / 5</span></div>
     </div>
-    <div class="hero-scroll"><span class="scroll-line"></span><span>Scroll</span><span class="scroll-arrow">↓</span></div>
+    <div class="hero-scroll"><span class="scroll-line"></span><span>Scroll to explore</span><span class="scroll-arrow">↓</span></div>
   </div>
 </section>
 
@@ -650,7 +706,104 @@ section{padding:140px 0;position:relative;}
 {"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://woetive.com/#org","name":"Woetive","url":"https://woetive.com/","email":"house@woetive.com","description":"AI-driven boutique branding studio. Two brothers, one AI stack.","foundingDate":"2022","founders":[{"@type":"Person","name":"Joshua Samuel Paquete","jobTitle":"CEO, Art Director"},{"@type":"Person","name":"Daniel Alexander Paquete","jobTitle":"Creative Director"}],"address":{"@type":"PostalAddress","addressLocality":"Bratislava","addressCountry":"SK"},"areaServed":["SK","CZ","AT","DE","HU","PL","EU"],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"18","bestRating":"5"}},{"@type":"WebSite","@id":"https://woetive.com/#website","url":"https://woetive.com/","name":"Woetive","publisher":{"@id":"https://woetive.com/#org"},"inLanguage":["en-US","sk-SK"]}]}
 </script>
 <script>
-// IRIDESCENT LIVE SPHERE — Apple Intelligence-style organism
+// HERO blur reveals — words + letters
+(function(){
+  const head=document.querySelector('[data-blur-words]');
+  if(head){
+    // Wrap each word (preserving inline children like <span class="em">)
+    const wrap=(node)=>{
+      const out=document.createDocumentFragment();
+      node.childNodes.forEach(child=>{
+        if(child.nodeType===3){
+          const words=child.textContent.split(/(\s+)/);
+          words.forEach(w=>{
+            if(w.trim()===''){out.appendChild(document.createTextNode(w));return;}
+            const span=document.createElement('span');
+            span.className='word';span.textContent=w;
+            out.appendChild(span);
+          });
+        }else if(child.nodeType===1){
+          const span=document.createElement('span');
+          span.className='word';
+          // recurse children of element
+          const inner=document.createDocumentFragment();
+          child.childNodes.forEach(c=>{
+            if(c.nodeType===3){inner.appendChild(document.createTextNode(c.textContent));}
+            else inner.appendChild(c.cloneNode(true));
+          });
+          // copy classes from original element to inner content
+          const wrapper=document.createElement(child.tagName);
+          wrapper.className=child.className;
+          wrapper.appendChild(inner);
+          span.appendChild(wrapper);
+          out.appendChild(span);
+        }
+      });
+      node.innerHTML='';
+      node.appendChild(out);
+    };
+    wrap(head);
+    // Stagger reveal
+    const words=head.querySelectorAll('.word');
+    words.forEach((w,i)=>{w.style.transitionDelay=(80+i*70)+'ms';});
+    setTimeout(()=>head.classList.add('in'),100);
+  }
+
+  const sub=document.querySelector('[data-blur-letters]');
+  if(sub){
+    const text=sub.textContent;
+    sub.textContent='';
+    const frag=document.createDocumentFragment();
+    [...text].forEach((ch,i)=>{
+      const span=document.createElement('span');
+      span.className='ltr';
+      span.textContent=ch;
+      span.style.transitionDelay=(i*8)+'ms';
+      frag.appendChild(span);
+    });
+    sub.appendChild(frag);
+    // Reveal when in viewport
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.3});
+      io.observe(sub);
+    }else{sub.classList.add('in');}
+  }
+})();
+
+// HERO per-component scroll motion (different speeds per layer)
+(function(){
+  if(matchMedia('(pointer:coarse)').matches){
+    // mobile: lighter motion
+  }
+  const hero=document.getElementById('hero');
+  const headline=document.querySelector('.hero-headline');
+  const subEl=document.querySelector('.hero-sub');
+  const ctas=document.querySelector('.hero-ctas');
+  const mark=document.querySelector('.hero-mark');
+  const bottom=document.querySelector('.hero-bottom');
+  const bg=document.querySelector('.hero-bg');
+  if(!hero)return;
+  let raf=0,sy=0;
+  const update=()=>{
+    const h=hero.offsetHeight;
+    const k=Math.min(1,Math.max(0,sy/h));
+    if(headline)headline.style.transform=`translateY(${k*-50}px)`;
+    if(subEl)subEl.style.transform=`translateY(${k*-30}px)`;
+    if(subEl)subEl.style.opacity=String(1-k*0.7);
+    if(ctas)ctas.style.transform=`translateY(${k*-20}px) scale(${1-k*0.06})`;
+    if(ctas)ctas.style.opacity=String(1-k*0.5);
+    if(mark)mark.style.transform=`translate(-50%,calc(-50% + ${k*60}px)) scale(${1+k*0.2})`;
+    if(bottom)bottom.style.transform=`translateX(-50%) translateY(${k*30}px)`;
+    if(bottom)bottom.style.opacity=String(1-k*0.8);
+    if(bg)bg.style.transform=`scale(${1+k*0.15}) translateY(${k*40}px)`;
+  };
+  addEventListener('scroll',()=>{
+    sy=scrollY;
+    if(!raf)raf=requestAnimationFrame(()=>{update();raf=0;});
+  },{passive:true});
+  update();
+})();
+
 function initIridescentSphere(){
   const canvas=document.getElementById('sphereCanvas');
   if(!canvas||typeof THREE==='undefined')return;
@@ -866,24 +1019,7 @@ else{window.addEventListener('load',initIridescentSphere);}
   });
 })();
 
-// Hero parallax — subtle, raf-throttled
-(function(){
-  if(matchMedia('(pointer:coarse)').matches)return;
-  const inner=document.querySelector('.hero-inner');
-  const aura=document.querySelector('.hero-aura');
-  if(!inner)return;
-  let raf=0,sy=0;
-  const update=()=>{
-    const k=Math.min(1,sy/innerHeight);
-    inner.style.transform=`translateY(${k*-40}px)`;
-    inner.style.opacity=String(1-k*0.7);
-    if(aura)aura.style.transform=`translateY(${k*60}px) scale(${1+k*0.15})`;
-  };
-  addEventListener('scroll',()=>{
-    sy=scrollY;
-    if(!raf)raf=requestAnimationFrame(()=>{update();raf=0;});
-  },{passive:true});
-})();
+// (Old hero parallax removed in v8 — replaced by per-component scroll motion above)
 
 // Brothers video — freeze on last frame after natural end (no JS replay = no stutter)
 (function(){
