@@ -159,8 +159,9 @@ section{padding:140px 0;position:relative;}
 .hero-top .live{display:inline-flex;align-items:center;gap:8px;color:var(--accent);}
 .hero-top .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
 
-/* 3D scene canvas — full-hero background, behind everything */
-#stage{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+/* GLOBAL sphere canvas — fixed, follows scroll, behind content but visible */
+#stage{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9;pointer-events:none;mix-blend-mode:normal;}
+@media (max-width:900px){#stage{opacity:.55;}}
 
 /* Typography block — overlaid on 3D */
 .hero-content{position:relative;z-index:3;max-width:980px;width:100%;padding:0 32px;display:flex;flex-direction:column;align-items:center;gap:28px;}
@@ -384,6 +385,9 @@ section{padding:140px 0;position:relative;}
 <div class="grain"></div>
 <div class="scroll-progress" id="scrollProgress"></div>
 
+<!-- GLOBAL companion sphere — travels through whole site -->
+<canvas id="stage" aria-hidden="true"></canvas>
+
 <nav class="nav" id="nav">
   <a href="#" class="brand">Woetive <span class="star">✦</span></a>
   <div class="nav-status"><span class="ns-dot"></span><span>AI Studio · Online</span></div>
@@ -403,8 +407,6 @@ section{padding:140px 0;position:relative;}
     <span class="issue">Woetive ✦ Studio · 2026</span>
     <span class="live">Now booking · May</span>
   </div>
-
-  <canvas id="stage" aria-hidden="true"></canvas>
 
   <div class="hero-content">
     <h1 class="hero-headline" data-blur-words>We don't follow trends. We <span class="em">build</span> them.</h1>
@@ -781,6 +783,28 @@ section{padding:140px 0;position:relative;}
   }
 })();
 
+// SECTION 3D zoom — each section subtly scales + lifts as it enters/exits viewport
+(function(){
+  const sections=document.querySelectorAll('section');
+  if(!sections.length)return;
+  let raf=0;
+  const update=()=>{
+    const vh=innerHeight;
+    sections.forEach(s=>{
+      const r=s.getBoundingClientRect();
+      const center=(r.top+r.bottom)/2;
+      const dist=(center-vh/2)/vh;  // -1 (above) to 1 (below)
+      const absDist=Math.min(1,Math.abs(dist));
+      const scale=1-absDist*0.04;
+      const ty=dist*-12;
+      s.style.transform=`scale(${scale}) translateY(${ty}px)`;
+      s.style.opacity=String(1-absDist*0.3);
+    });
+  };
+  addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{update();raf=0;});},{passive:true});
+  update();
+})();
+
 // HERO per-component scroll motion (3D scene + typography stack)
 (function(){
   const hero=document.getElementById('hero');
@@ -1065,10 +1089,6 @@ else{window.addEventListener('load',initIridescentSphere);}
 <!-- THREE.JS HERO SCENE — iridescent blob + floating glass icons + bloom -->
 <script type="module">
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const canvas = document.getElementById('stage');
@@ -1086,45 +1106,38 @@ if (canvas) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-  // CENTRAL IRIDESCENT BLOB — single hero element, big and visible behind text
-  const blobGeo = new THREE.IcosahedronGeometry(1.7, 7);
+  // COMPANION SPHERE — Apple AI orb, clean fluid, no flashing
+  const blobGeo = new THREE.IcosahedronGeometry(1.0, 7);
   const blobOriginal = new Float32Array(blobGeo.attributes.position.array);
   const blobMat = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
-    metalness: 0.45,
-    roughness: 0.06,
+    metalness: 0.3,
+    roughness: 0.05,
     iridescence: 1.0,
-    iridescenceIOR: 1.45,
-    iridescenceThicknessRange: [140, 920],
-    transmission: 0.5,
-    thickness: 1.8,
+    iridescenceIOR: 1.5,
+    iridescenceThicknessRange: [100, 800],
+    transmission: 0.55,
+    thickness: 2.0,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.1,
-    envMapIntensity: 1.3,
+    clearcoatRoughness: 0.05,
+    envMapIntensity: 1.2,
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.94,
   });
   const blob = new THREE.Mesh(blobGeo, blobMat);
   scene.add(blob);
 
-  // LIGHTS — restrained, no flashing
-  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.5));
-  const accentLight = new THREE.PointLight(0xD0EF00, 4, 8, 1.4);
-  accentLight.position.set(0, 0, 2);
-  scene.add(accentLight);
-  const blueLight = new THREE.PointLight(0x5DA8FF, 2.5, 10, 1.6);
-  blueLight.position.set(-3, 1.5, 2);
-  scene.add(blueLight);
-  const pinkLight = new THREE.PointLight(0xFFB8E0, 2.2, 10, 1.6);
-  pinkLight.position.set(3, -1, 2);
-  scene.add(pinkLight);
+  // LIGHTS — STATIC, no orbiting → zero flashing
+  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.6));
+  const keyLight = new THREE.PointLight(0xFFFFFF, 3, 12, 1.2);
+  keyLight.position.set(2, 3, 4);
+  scene.add(keyLight);
+  const fillLight = new THREE.PointLight(0xC8B5FF, 1.5, 10, 1.4);
+  fillLight.position.set(-3, -1, 2);
+  scene.add(fillLight);
 
-  // POSTPROCESSING — gentle bloom (not flashy)
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.8, 0.85);
-  composer.addPass(bloom);
-  composer.addPass(new OutputPass());
+  // RENDERER — direct render, NO bloom (was flashing source)
+  const composer = null; // bloom removed
 
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -1137,7 +1150,7 @@ if (canvas) {
   resize();
   addEventListener('resize', resize);
 
-  // Mouse + scroll — STRONG response
+  // Mouse + scroll
   let mx = 0, my = 0, tx = 0, ty = 0, sy = 0;
   addEventListener('mousemove', (e) => {
     mx = (e.clientX / innerWidth - 0.5) * 2;
@@ -1145,54 +1158,79 @@ if (canvas) {
   });
   addEventListener('scroll', () => { sy = scrollY; }, { passive: true });
 
-  let visible = true;
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { threshold: 0.01 }).observe(canvas);
+  // SCROLL CHOREOGRAPHY — companion travels through page
+  // Each checkpoint: { p: progress, x: 3D pos, y, scale }
+  const easeInOut = (t) => t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function getSpherePose(progress) {
+    // 0.0–0.10: hero center, big
+    // 0.10–0.25: shrinks + moves to top-right corner (companion size)
+    // 0.25–0.45: corner, drifts subtly (left to right zigzag)
+    // 0.45–0.60: floats to top-left (variation)
+    // 0.60–0.85: back to right
+    // 0.85–1.00: returns to center, medium
+    if (progress < 0.10) {
+      return { x: 0, y: 0, scale: 1.6 };
+    } else if (progress < 0.25) {
+      const t = easeInOut((progress - 0.10) / 0.15);
+      return { x: lerp(0, 3.4, t), y: lerp(0, 1.6, t), scale: lerp(1.6, 0.42, t) };
+    } else if (progress < 0.45) {
+      const t = (progress - 0.25) / 0.20;
+      return { x: 3.4 + Math.sin(t * Math.PI) * 0.3, y: 1.6 + Math.cos(t * Math.PI * 1.5) * 0.25, scale: 0.42 };
+    } else if (progress < 0.60) {
+      const t = easeInOut((progress - 0.45) / 0.15);
+      return { x: lerp(3.4, -3.4, t), y: lerp(1.6, 1.4, t), scale: lerp(0.42, 0.45, t) };
+    } else if (progress < 0.85) {
+      const t = (progress - 0.60) / 0.25;
+      return { x: -3.4 + Math.sin(t * Math.PI * 0.6) * 6.8, y: 1.4 + Math.sin(t * Math.PI * 2) * 0.3, scale: 0.45 };
+    } else {
+      const t = easeInOut((progress - 0.85) / 0.15);
+      return { x: lerp(3.4, 0, t), y: lerp(1.4, 0.5, t), scale: lerp(0.45, 0.85, t) };
+    }
   }
 
-  // Pseudo-3D noise for blob morph (slower, calmer)
-  const noise3 = (x, y, z) => Math.sin(x * 1.5) * Math.cos(y * 1.2 + 0.4) * Math.sin(z * 1.3 + 0.7) + Math.sin(x * 2.1 + y) * 0.22 + Math.cos(z * 1.6 - x) * 0.18;
+  // Pseudo-3D noise for blob morph (slow, fluid)
+  const noise3 = (x, y, z) => Math.sin(x * 1.4) * Math.cos(y * 1.1 + 0.4) * Math.sin(z * 1.2 + 0.7) + Math.sin(x * 1.9 + y) * 0.2 + Math.cos(z * 1.5 - x) * 0.16;
 
   const positions = blobGeo.attributes.position;
   let t = 0;
+  let curPose = { x: 0, y: 0, scale: 1.6 };
   function tick() {
     requestAnimationFrame(tick);
-    if (!visible) return;
-    t += 0.0035;
+    t += 0.003;
 
-    // Strong, visible mouse follow (lerp toward target)
-    tx += (mx * 0.8 - tx) * 0.06;
-    ty += (my * 0.6 - ty) * 0.06;
+    // Smooth mouse follow (subtle)
+    tx += (mx * 0.4 - tx) * 0.05;
+    ty += (my * 0.3 - ty) * 0.05;
 
-    // Blob organic morph — calmer than before
+    // Blob organic morph — slow & fluid (Apple AI feel)
     for (let i = 0; i < positions.count; i++) {
       const ox = blobOriginal[i * 3], oy = blobOriginal[i * 3 + 1], oz = blobOriginal[i * 3 + 2];
       const len = Math.sqrt(ox * ox + oy * oy + oz * oz);
-      const n = noise3(ox * 1.2 + t * 0.5, oy * 1.2 + t * 0.4, oz * 1.2 + t * 0.3) * 0.11;
+      const n = noise3(ox * 1.1 + t * 0.45, oy * 1.1 + t * 0.35, oz * 1.1 + t * 0.25) * 0.09;
       positions.setXYZ(i, ox + (ox / len) * n, oy + (oy / len) * n, oz + (oz / len) * n);
     }
     positions.needsUpdate = true;
     blobGeo.computeVertexNormals();
 
-    // BLOB — strongly mouse-reactive
-    blob.rotation.y = t * 0.2 + tx * 0.6;
-    blob.rotation.x = Math.sin(t * 0.18) * 0.08 + ty * 0.5;
-    blob.position.x = tx * 0.4;  // visible drift toward cursor
-    blob.position.y = -ty * 0.3;
+    // Slow rotation
+    blob.rotation.y = t * 0.18 + tx * 0.4;
+    blob.rotation.x = Math.sin(t * 0.16) * 0.06 + ty * 0.3;
 
-    // Subtle light pulse (no flashing — slow sin)
-    accentLight.intensity = 4 + Math.sin(t * 0.6) * 0.6;
-    blueLight.position.x = -3 + Math.sin(t * 0.25) * 0.3;
-    pinkLight.position.x = 3 + Math.cos(t * 0.3) * 0.3;
+    // Scroll-driven choreography (companion travels)
+    const docH = document.documentElement.scrollHeight - innerHeight;
+    const progress = docH > 0 ? Math.min(1, Math.max(0, sy / docH)) : 0;
+    const target = getSpherePose(progress);
+    // Smooth lerp toward target pose
+    curPose.x += (target.x - curPose.x) * 0.07;
+    curPose.y += (target.y - curPose.y) * 0.07;
+    curPose.scale += (target.scale - curPose.scale) * 0.07;
+    blob.position.x = curPose.x + tx * 0.2;
+    blob.position.y = curPose.y - ty * 0.15;
+    blob.scale.setScalar(curPose.scale);
 
-    // Scroll-driven — clearly visible scale + lift + rotate
-    const k = Math.min(1, Math.max(0, sy / innerHeight));
-    const scrollScale = 1 + k * 0.5;  // grows as you scroll
-    blob.scale.setScalar(scrollScale);
-    blob.position.y -= k * 1.2;  // slides up out of view
-    blob.rotation.z = k * Math.PI * 0.4;  // rotates as you scroll
-
-    composer.render();
+    renderer.render(scene, camera);
   }
   tick();
 }
