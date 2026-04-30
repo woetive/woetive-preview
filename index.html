@@ -143,8 +143,8 @@ section{padding:140px 0;position:relative;}
 /* Subtle paper grain */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");}
 
-/* HERO v15 — Editorial dark + floating mesh blobs + massive overlapping typography */
-.hero{min-height:100dvh;position:relative;overflow:hidden;background:#0A0A0A;color:#F4F1EA;display:flex;flex-direction:column;justify-content:center;padding:140px 0 100px;}
+/* HERO v16 — Editorial dark + floating mesh blobs + massive type, NO overlap */
+.hero{min-height:100dvh;position:relative;overflow:hidden;background:#0A0A0A;color:#F4F1EA;display:flex;flex-direction:column;padding:140px 0 100px;}
 
 /* Floating mesh blob system — multi-color organic shapes, blurred */
 .blobs{position:absolute;inset:-20%;z-index:0;pointer-events:none;}
@@ -158,28 +158,28 @@ section{padding:140px 0;position:relative;}
 @keyframes blobFloat3{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(5vw,-4vh) scale(.95);}66%{transform:translate(-7vw,2vh) scale(1.1);}}
 @keyframes blobFloat4{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-8vw,6vh) scale(1.2);}}
 
-/* Subtle film grain over blobs — softens the look */
+/* Subtle film grain over blobs */
 .hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
 /* Top editorial strip */
-.hero-top{position:absolute;top:104px;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:0 40px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.55);}
+.hero-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:0 40px;margin-bottom:auto;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.55);}
 .hero-top .live{display:inline-flex;align-items:center;gap:8px;color:var(--accent);}
 .hero-top .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
 
-/* MASSIVE OVERLAPPING TYPOGRAPHY — fills viewport, overlaps blobs */
-.hero-massive{position:relative;z-index:2;padding:0 40px;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.hero-headline{font-size:clamp(80px,16vw,260px);font-weight:600;letter-spacing:-.06em;line-height:.85;color:#F4F1EA;max-width:100%;text-wrap:balance;}
+/* Center grid: massive type LEFT, side rail RIGHT — proper grid, no absolute overlap */
+.hero-center{position:relative;z-index:2;padding:48px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:64px;align-items:end;}
+.hero-massive{min-width:0;}
+.hero-headline{font-size:clamp(64px,11vw,180px);font-weight:600;letter-spacing:-.055em;line-height:.92;color:#F4F1EA;text-wrap:balance;}
 .hero-headline .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:#F4F1EA;}
 .hero-headline .word{display:inline-block;opacity:0;transform:translateY(40px);filter:blur(20px);transition:opacity 1.2s var(--ease-out),transform 1.2s var(--ease-out),filter 1.2s var(--ease-out);white-space:pre;}
 .hero-headline.in .word{opacity:1;transform:none;filter:blur(0);}
 
-/* Right side — sub paragraph + CTA pill */
-.hero-side{position:absolute;right:40px;top:46%;z-index:3;max-width:380px;display:flex;flex-direction:column;gap:24px;align-items:flex-start;}
-.hero-sub{font-size:14px;font-weight:400;color:rgba(244,241,234,.7);line-height:1.55;}
+.hero-side{display:flex;flex-direction:column;gap:24px;align-items:flex-start;padding-bottom:8px;}
+.hero-sub{font-size:14px;font-weight:400;color:rgba(244,241,234,.7);line-height:1.6;max-width:36ch;}
 .hero-cta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
-/* Bottom strip — stats + scroll indicator */
-.hero-bot{position:absolute;bottom:32px;left:0;right:0;z-index:3;padding:24px 40px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;border-top:1px solid var(--hairline);}
+/* Bottom strip */
+.hero-bot{position:relative;z-index:3;margin-top:auto;padding:32px 40px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;border-top:1px solid var(--hairline);}
 .hero-bot .stats{display:flex;gap:64px;font-family:'JetBrains Mono',monospace;}
 .hero-bot .stats .item{display:flex;flex-direction:column;gap:6px;}
 .hero-bot .stats .item .v{font-family:'Geist',sans-serif;font-size:32px;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#F4F1EA;line-height:1;}
@@ -189,25 +189,24 @@ section{padding:140px 0;position:relative;}
 .hero-bot .scroll .ar{display:inline-block;animation:arrow 2.6s ease-in-out infinite;}
 @keyframes arrow{0%,100%{transform:translateY(0);opacity:.6;}50%{transform:translateY(4px);opacity:1;}}
 
-/* Pill CTA — Apple-clean */
+/* Pill CTA */
 .pill-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 12px 12px 22px;border-radius:100px;background:#F4F1EA;color:#0A0A0A;font-weight:500;font-size:14px;letter-spacing:-.005em;border:1px solid rgba(244,241,234,.6);box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 16px 40px -12px rgba(0,0,0,.4);transition:transform .5s var(--ease-out-back),background .3s var(--ease),box-shadow .35s var(--ease);will-change:transform;}
 .pill-cta .arr{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(10,10,10,.1);font-size:13px;line-height:1;transition:transform .5s var(--ease-out-expo),background .25s var(--ease);}
 .pill-cta:hover{transform:translateY(-2px);background:var(--accent);box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 22px 48px -10px rgba(208,239,0,.5);}
 .pill-cta:hover .arr{transform:translateX(3px) rotate(-12deg);background:rgba(10,10,10,.2);}
 .pill-cta:active{transform:scale(.97);}
 .pill-cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-
 .pill-ghost{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:100px;background:transparent;color:#F4F1EA;font-weight:500;font-size:14px;border:1px solid rgba(244,241,234,.18);transition:transform .5s var(--ease-out-back),background .3s var(--ease),border-color .3s var(--ease);}
 .pill-ghost:hover{background:rgba(244,241,234,.08);border-color:rgba(244,241,234,.4);transform:translateY(-2px);}
 
 /* Mobile */
 @media (max-width:900px){
   .hero{padding:104px 0 80px;}
-  .hero-top{top:84px;padding:0 20px;font-size:10px;}
-  .hero-massive{padding:0 20px;}
-  .hero-headline{font-size:clamp(56px,17vw,108px);}
-  .hero-side{position:relative;right:auto;top:auto;margin-top:32px;padding:0 20px;max-width:100%;}
-  .hero-bot{padding:24px 20px 0;flex-direction:column;align-items:flex-start;gap:24px;bottom:24px;}
+  .hero-top{padding:0 20px;font-size:10px;flex-wrap:wrap;gap:8px;}
+  .hero-center{padding:32px 20px;grid-template-columns:1fr;gap:32px;align-items:start;}
+  .hero-headline{font-size:clamp(52px,13vw,108px);}
+  .hero-side{padding-bottom:0;}
+  .hero-bot{padding:24px 20px 0;flex-direction:column;align-items:flex-start;gap:24px;}
   .hero-bot .stats{gap:32px;}
   .hero-bot .stats .item .v{font-size:24px;}
 }
@@ -439,7 +438,7 @@ section{padding:140px 0;position:relative;}
 </nav>
 
 <section class="hero" id="hero">
-  <!-- Floating mesh blob system (CSS-only, GPU-accelerated) -->
+  <!-- Floating mesh blob system (CSS-only) -->
   <div class="blobs" aria-hidden="true">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -454,21 +453,21 @@ section{padding:140px 0;position:relative;}
     <span class="live">Now booking · May 2026</span>
   </div>
 
-  <!-- MASSIVE OVERLAPPING TYPOGRAPHY -->
-  <div class="hero-massive">
-    <h1 class="hero-headline" data-blur-words>We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
-  </div>
-
-  <!-- Right side: sub + CTA -->
-  <div class="hero-side">
-    <p class="hero-sub" data-blur-letters>AI-driven boutique branding studio. Two brothers. One AI stack. Brand identity, web, and campaigns — shipped in weeks, not quarters.</p>
-    <div class="hero-cta-row">
-      <a class="pill-cta" href="#contact">Start a project <span class="arr">→</span></a>
-      <a class="pill-ghost" href="#work">See work</a>
+  <!-- Center: massive type LEFT, side rail RIGHT (proper grid, no overlap) -->
+  <div class="hero-center">
+    <div class="hero-massive">
+      <h1 class="hero-headline" data-blur-words>We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
     </div>
+    <aside class="hero-side">
+      <p class="hero-sub" data-blur-letters>AI-driven boutique branding studio. Two brothers. One AI stack. Brand identity, web, and campaigns — shipped in weeks, not quarters.</p>
+      <div class="hero-cta-row">
+        <a class="pill-cta" href="#contact">Start a project <span class="arr">→</span></a>
+        <a class="pill-ghost" href="#work">See work</a>
+      </div>
+    </aside>
   </div>
 
-  <!-- Bottom strip: stats + scroll -->
+  <!-- Bottom strip -->
   <div class="hero-bot">
     <div class="stats">
       <div class="item"><span class="v"><span data-count="18">0</span>+</span><span class="l">Clients</span></div>
