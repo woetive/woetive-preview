@@ -18,35 +18,32 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,800;1,9..144,300;1,9..144,800&family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- Three.js v10: ES modules + postprocessing for bloom + iridescence -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+<!-- v15: Three.js fully removed; CSS-only blobs in hero -->
 
 <style>
 :root{
-  --bg:#FAFAF7;
-  --bg-warm:#F4F1EA;
-  --bg-elev:#F0EDE6;
-  --surface:rgba(10,10,10,.025);
+  --bg:#0A0A0A;
+  --bg-warm:#FAFAF7;
+  --bg-elev:#141414;
+  --surface:rgba(244,241,234,.04);
   --accent:#D0EF00;
-  --accent-2:#5C7A00;
-  --text:#0A0A0A;
-  --text-mute:rgba(10,10,10,.55);
-  --text-faint:rgba(10,10,10,.32);
-  --hairline:rgba(10,10,10,.1);
-  --hairline-soft:rgba(10,10,10,.05);
-  --shadow-soft:0 1px 0 rgba(255,255,255,.6) inset, 0 24px 48px -24px rgba(10,10,10,.1);
-  --shadow-lift:0 1px 0 rgba(255,255,255,.7) inset, 0 40px 80px -30px rgba(10,10,10,.18), 0 0 0 1px rgba(10,10,10,.04);
+  --accent-2:#A5BF00;
+  --text:#F4F1EA;
+  --text-mute:rgba(244,241,234,.55);
+  --text-faint:rgba(244,241,234,.32);
+  --hairline:rgba(244,241,234,.1);
+  --hairline-soft:rgba(244,241,234,.05);
+  --shadow-soft:0 1px 0 rgba(255,255,255,.04) inset, 0 24px 48px -24px rgba(0,0,0,.5);
+  --shadow-lift:0 1px 0 rgba(255,255,255,.06) inset, 0 40px 80px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(244,241,234,.06);
   --ease:cubic-bezier(.65,0,.35,1);
   --ease-out:cubic-bezier(.16,1,.3,1);
   --ease-out-back:cubic-bezier(.34,1.56,.64,1);
   --ease-out-expo:cubic-bezier(.19,1,.22,1);
+  /* Blob palette — multi-color organic mesh */
+  --blob-warm:#FF6A35;
+  --blob-cool:#5DB8FF;
+  --blob-accent:#D0EF00;
+  --blob-deep:#7B2DFF;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
@@ -146,70 +143,73 @@ section{padding:140px 0;position:relative;}
 /* Subtle paper grain */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");}
 
-/* HERO v10 — 3D scene + typography stack, dark Framer-grade */
-.hero{min-height:100dvh;position:relative;overflow:hidden;background:#0A0A0A;color:#F4F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 0 80px;text-align:center;}
+/* HERO v15 — Editorial dark + floating mesh blobs + massive overlapping typography */
+.hero{min-height:100dvh;position:relative;overflow:hidden;background:#0A0A0A;color:#F4F1EA;display:flex;flex-direction:column;justify-content:center;padding:140px 0 100px;}
 
-/* Ambient radial backdrop */
-.hero-ambient{position:absolute;inset:0;z-index:0;pointer-events:none;background:
-  radial-gradient(50% 60% at 50% 50%,rgba(208,239,0,.10),transparent 55%),
-  radial-gradient(40% 40% at 25% 35%,rgba(93,168,255,.08),transparent 60%),
-  radial-gradient(40% 40% at 75% 65%,rgba(255,157,208,.07),transparent 60%);
-  filter:blur(50px);
-}
+/* Floating mesh blob system — multi-color organic shapes, blurred */
+.blobs{position:absolute;inset:-20%;z-index:0;pointer-events:none;}
+.blob{position:absolute;border-radius:50%;filter:blur(120px);mix-blend-mode:screen;opacity:.85;will-change:transform;}
+.blob-1{width:54vw;height:54vw;background:radial-gradient(circle,#FF6A35 0%,#FF3870 60%,transparent 80%);top:-8%;left:-6%;animation:blobFloat1 32s ease-in-out infinite;}
+.blob-2{width:48vw;height:48vw;background:radial-gradient(circle,#5DB8FF 0%,#2D5FE0 60%,transparent 80%);top:18%;right:-8%;animation:blobFloat2 38s ease-in-out infinite;}
+.blob-3{width:60vw;height:60vw;background:radial-gradient(circle,#D0EF00 0%,#88AC00 50%,transparent 75%);bottom:-15%;left:18%;animation:blobFloat3 42s ease-in-out infinite;opacity:.55;}
+.blob-4{width:36vw;height:36vw;background:radial-gradient(circle,#7B2DFF 0%,#4A0FB8 60%,transparent 80%);top:35%;left:42%;animation:blobFloat4 28s ease-in-out infinite;opacity:.45;}
+@keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(8vw,4vh) scale(1.1);}66%{transform:translate(-3vw,8vh) scale(.9);}}
+@keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(-6vw,5vh) scale(1.05);}66%{transform:translate(4vw,-3vh) scale(1.15);}}
+@keyframes blobFloat3{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(5vw,-4vh) scale(.95);}66%{transform:translate(-7vw,2vh) scale(1.1);}}
+@keyframes blobFloat4{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-8vw,6vh) scale(1.2);}}
 
-/* Subtle grain */
-.hero-grain{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+/* Subtle film grain over blobs — softens the look */
+.hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-/* Top editorial bar */
-.hero-top{position:absolute;top:96px;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:0 32px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.45);}
-.hero-top .issue{font-weight:500;color:rgba(244,241,234,.65);}
+/* Top editorial strip */
+.hero-top{position:absolute;top:104px;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:0 40px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.55);}
 .hero-top .live{display:inline-flex;align-items:center;gap:8px;color:var(--accent);}
 .hero-top .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
 
-/* GLOBAL companion sphere — fixed full-viewport, ABOVE content (sphere in corner doesn't block reading) */
-#stage{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:45;pointer-events:none;}
-@media (max-width:900px){#stage{opacity:.65;}}
-
-/* Typography block — overlaid on 3D */
-.hero-content{position:relative;z-index:3;max-width:980px;width:100%;padding:0 32px;display:flex;flex-direction:column;align-items:center;gap:28px;}
-.hero-headline{font-size:clamp(48px,7.6vw,128px);font-weight:600;letter-spacing:-.045em;line-height:.96;max-width:18ch;color:#F4F1EA;}
-.hero-headline .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:var(--accent);text-shadow:0 0 24px rgba(208,239,0,.4);}
-.hero-headline .word{display:inline-block;opacity:0;transform:translateY(36px);filter:blur(16px);transition:opacity 1.1s var(--ease-out),transform 1.1s var(--ease-out),filter 1.1s var(--ease-out);white-space:pre;}
+/* MASSIVE OVERLAPPING TYPOGRAPHY — fills viewport, overlaps blobs */
+.hero-massive{position:relative;z-index:2;padding:0 40px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.hero-headline{font-size:clamp(80px,16vw,260px);font-weight:600;letter-spacing:-.06em;line-height:.85;color:#F4F1EA;max-width:100%;text-wrap:balance;}
+.hero-headline .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:#F4F1EA;}
+.hero-headline .word{display:inline-block;opacity:0;transform:translateY(40px);filter:blur(20px);transition:opacity 1.2s var(--ease-out),transform 1.2s var(--ease-out),filter 1.2s var(--ease-out);white-space:pre;}
 .hero-headline.in .word{opacity:1;transform:none;filter:blur(0);}
 
-.hero-sub{font-size:clamp(15px,1.3vw,18px);font-weight:400;color:rgba(244,241,234,.62);max-width:54ch;line-height:1.55;}
-.hero-sub .ltr{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(8px);transition:opacity .55s var(--ease-out),filter .55s var(--ease-out),transform .55s var(--ease-out);white-space:pre;}
-.hero-sub.in .ltr{opacity:1;filter:blur(0);transform:none;}
+/* Right side — sub paragraph + CTA pill */
+.hero-side{position:absolute;right:40px;top:46%;z-index:3;max-width:380px;display:flex;flex-direction:column;gap:24px;align-items:flex-start;}
+.hero-sub{font-size:14px;font-weight:400;color:rgba(244,241,234,.7);line-height:1.55;}
+.hero-cta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
-.hero-ctas{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:8px;}
-.hero-ctas .btn-primary{background:linear-gradient(180deg,#FFFFFF 0%,#EAEAEE 35%,#B8B8C2 65%,#9A9AA6 100%);color:#0A0A0A;border-color:rgba(255,255,255,.6);box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 -1px 0 rgba(0,0,0,.18) inset, 0 14px 36px -14px rgba(10,10,10,.5);}
-.hero-ctas .btn-primary .arr{background:rgba(10,10,10,.1);}
-.hero-ctas .btn-primary:hover{background:linear-gradient(180deg,#E8FFA0 0%,#D0EF00 40%,#88AC00 70%,#A8D000 100%);border-color:rgba(255,255,255,.6);color:#0A0A0A;box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 18px 42px -10px rgba(208,239,0,.6);}
-.hero-ctas .btn-ghost{background:transparent;color:#F4F1EA;border-color:rgba(244,241,234,.18);}
-.hero-ctas .btn-ghost:hover{background:rgba(244,241,234,.06);border-color:rgba(244,241,234,.32);}
-.hero-ctas .btn-ghost .arr{background:rgba(244,241,234,.1);}
-
-/* Bottom strip */
-.hero-bot{position:absolute;bottom:32px;left:0;right:0;z-index:3;padding:0 32px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;}
-.hero-bot .stats{display:flex;gap:48px;font-family:'JetBrains Mono',monospace;}
-.hero-bot .stats .item{display:flex;flex-direction:column;gap:4px;}
-.hero-bot .stats .item .v{font-family:'Geist',sans-serif;font-size:24px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#FFFFFF 0%,#E8E8EE 30%,#9A9AA8 55%,#C8C8D0 75%,#F4F1EA 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
-.hero-bot .stats .item .l{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(244,241,234,.45);}
-.hero-bot .scroll{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.45);display:inline-flex;align-items:center;gap:12px;}
-.hero-bot .scroll .ln{width:28px;height:1px;background:linear-gradient(to right,var(--accent),transparent);}
+/* Bottom strip — stats + scroll indicator */
+.hero-bot{position:absolute;bottom:32px;left:0;right:0;z-index:3;padding:24px 40px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;border-top:1px solid var(--hairline);}
+.hero-bot .stats{display:flex;gap:64px;font-family:'JetBrains Mono',monospace;}
+.hero-bot .stats .item{display:flex;flex-direction:column;gap:6px;}
+.hero-bot .stats .item .v{font-family:'Geist',sans-serif;font-size:32px;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#F4F1EA;line-height:1;}
+.hero-bot .stats .item .l{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,241,234,.45);}
+.hero-bot .scroll{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,241,234,.45);display:inline-flex;align-items:center;gap:12px;}
+.hero-bot .scroll .ln{width:32px;height:1px;background:linear-gradient(to right,var(--accent),transparent);}
 .hero-bot .scroll .ar{display:inline-block;animation:arrow 2.6s ease-in-out infinite;}
 @keyframes arrow{0%,100%{transform:translateY(0);opacity:.6;}50%{transform:translateY(4px);opacity:1;}}
 
+/* Pill CTA — Apple-clean */
+.pill-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 12px 12px 22px;border-radius:100px;background:#F4F1EA;color:#0A0A0A;font-weight:500;font-size:14px;letter-spacing:-.005em;border:1px solid rgba(244,241,234,.6);box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 16px 40px -12px rgba(0,0,0,.4);transition:transform .5s var(--ease-out-back),background .3s var(--ease),box-shadow .35s var(--ease);will-change:transform;}
+.pill-cta .arr{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(10,10,10,.1);font-size:13px;line-height:1;transition:transform .5s var(--ease-out-expo),background .25s var(--ease);}
+.pill-cta:hover{transform:translateY(-2px);background:var(--accent);box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 22px 48px -10px rgba(208,239,0,.5);}
+.pill-cta:hover .arr{transform:translateX(3px) rotate(-12deg);background:rgba(10,10,10,.2);}
+.pill-cta:active{transform:scale(.97);}
+.pill-cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+.pill-ghost{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:100px;background:transparent;color:#F4F1EA;font-weight:500;font-size:14px;border:1px solid rgba(244,241,234,.18);transition:transform .5s var(--ease-out-back),background .3s var(--ease),border-color .3s var(--ease);}
+.pill-ghost:hover{background:rgba(244,241,234,.08);border-color:rgba(244,241,234,.4);transform:translateY(-2px);}
+
 /* Mobile */
 @media (max-width:900px){
-  .hero{padding:104px 0 64px;}
-  .hero-top{top:80px;padding:0 20px;font-size:9px;}
-  .hero-content{padding:0 20px;gap:20px;}
-  .hero-headline{font-size:clamp(40px,11vw,72px);max-width:14ch;}
-  .hero-sub{font-size:14px;}
-  #stage{width:90vw;height:54vh;max-height:380px;}
-  .hero-bot{padding:0 20px;flex-direction:column;align-items:flex-start;gap:16px;bottom:24px;}
-  .hero-bot .stats{gap:20px;}
+  .hero{padding:104px 0 80px;}
+  .hero-top{top:84px;padding:0 20px;font-size:10px;}
+  .hero-massive{padding:0 20px;}
+  .hero-headline{font-size:clamp(56px,17vw,108px);}
+  .hero-side{position:relative;right:auto;top:auto;margin-top:32px;padding:0 20px;max-width:100%;}
+  .hero-bot{padding:24px 20px 0;flex-direction:column;align-items:flex-start;gap:24px;bottom:24px;}
+  .hero-bot .stats{gap:32px;}
+  .hero-bot .stats .item .v{font-size:24px;}
 }
 
 /* MARQUEE */
@@ -425,8 +425,7 @@ section{padding:140px 0;position:relative;}
 <div class="grain"></div>
 <div class="scroll-progress" id="scrollProgress"></div>
 
-<!-- GLOBAL companion sphere — travels through whole site -->
-<canvas id="stage" aria-hidden="true"></canvas>
+<!-- v15: Sphere/canvas removed; using CSS-only floating mesh blobs in hero -->
 
 <nav class="nav" id="nav">
   <a href="#" class="brand">Woetive <span class="star">✦</span></a>
@@ -440,30 +439,43 @@ section{padding:140px 0;position:relative;}
 </nav>
 
 <section class="hero" id="hero">
-  <div class="hero-ambient" aria-hidden="true"></div>
+  <!-- Floating mesh blob system (CSS-only, GPU-accelerated) -->
+  <div class="blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
   <div class="hero-grain" aria-hidden="true"></div>
 
+  <!-- Top editorial strip -->
   <div class="hero-top">
-    <span class="issue">Woetive ✦ Studio · 2026</span>
-    <span class="live">Now booking · May</span>
+    <span>Woetive ✦ Studio · Issue 01 / 2026</span>
+    <span class="live">Now booking · May 2026</span>
   </div>
 
-  <div class="hero-content">
-    <h1 class="hero-headline" data-blur-words>We don't follow trends. We <span class="em">build</span> them.</h1>
-    <p class="hero-sub" data-blur-letters>An AI-driven boutique branding studio in Slovakia. Two brothers, one AI stack — brand identity, web, and campaigns shipped in weeks, not quarters.</p>
-    <div class="hero-ctas reveal">
-      <a class="btn btn-primary" href="#contact">Start a project <span class="arr">→</span></a>
-      <a class="btn btn-ghost" href="#work">See selected work <span class="arr">→</span></a>
+  <!-- MASSIVE OVERLAPPING TYPOGRAPHY -->
+  <div class="hero-massive">
+    <h1 class="hero-headline" data-blur-words>We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
+  </div>
+
+  <!-- Right side: sub + CTA -->
+  <div class="hero-side">
+    <p class="hero-sub" data-blur-letters>AI-driven boutique branding studio. Two brothers. One AI stack. Brand identity, web, and campaigns — shipped in weeks, not quarters.</p>
+    <div class="hero-cta-row">
+      <a class="pill-cta" href="#contact">Start a project <span class="arr">→</span></a>
+      <a class="pill-ghost" href="#work">See work</a>
     </div>
   </div>
 
+  <!-- Bottom strip: stats + scroll -->
   <div class="hero-bot">
     <div class="stats">
       <div class="item"><span class="v"><span data-count="18">0</span>+</span><span class="l">Clients</span></div>
       <div class="item"><span class="v"><span data-count="120">0</span>+</span><span class="l">Projects shipped</span></div>
       <div class="item"><span class="v">4.8</span><span class="l">Rating · 18 reviews</span></div>
     </div>
-    <div class="scroll"><span class="ln"></span><span>Scroll to explore</span><span class="ar">↓</span></div>
+    <div class="scroll"><span class="ln"></span><span>Scroll to read</span><span class="ar">↓</span></div>
   </div>
 </section>
 
@@ -1137,144 +1149,5 @@ else{window.addEventListener('load',initIridescentSphere);}
 })();
 </script>
 
-<!-- THREE.JS HERO SCENE — iridescent blob + floating glass icons + bloom -->
-<script type="module">
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-const canvas = document.getElementById('stage');
-if (canvas) {
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-  camera.position.set(0, 0, 7);
-
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
-
-  // Environment for iridescence — procedural room
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-  // COMPANION CHROME ORB — polished metal, clean reflective
-  const blobGeo = new THREE.IcosahedronGeometry(1.0, 7);
-  const blobOriginal = new Float32Array(blobGeo.attributes.position.array);
-  const blobMat = new THREE.MeshPhysicalMaterial({
-    color: 0xC8C8D0,
-    metalness: 1.0,
-    roughness: 0.08,
-    iridescence: 0.35,
-    iridescenceIOR: 1.6,
-    iridescenceThicknessRange: [200, 600],
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.04,
-    envMapIntensity: 2.4,
-    transparent: false,
-    opacity: 1.0,
-  });
-  const blob = new THREE.Mesh(blobGeo, blobMat);
-  scene.add(blob);
-
-  // LIGHTS — STATIC, no orbiting → zero flashing
-  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.6));
-  const keyLight = new THREE.PointLight(0xFFFFFF, 3, 12, 1.2);
-  keyLight.position.set(2, 3, 4);
-  scene.add(keyLight);
-  const fillLight = new THREE.PointLight(0xC8B5FF, 1.5, 10, 1.4);
-  fillLight.position.set(-3, -1, 2);
-  scene.add(fillLight);
-
-  // RENDERER — direct render, NO bloom (was flashing source)
-  const composer = null; // bloom removed
-
-  function resize() {
-    const r = canvas.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0) return;
-    renderer.setSize(r.width, r.height, false);
-    composer.setSize(r.width, r.height);
-    camera.aspect = r.width / r.height;
-    camera.updateProjectionMatrix();
-  }
-  resize();
-  addEventListener('resize', resize);
-
-  // Mouse + scroll
-  let mx = 0, my = 0, tx = 0, ty = 0, sy = 0;
-  addEventListener('mousemove', (e) => {
-    mx = (e.clientX / innerWidth - 0.5) * 2;
-    my = (e.clientY / innerHeight - 0.5) * 2;
-  });
-  addEventListener('scroll', () => { sy = scrollY; }, { passive: true });
-
-  // SCROLL CHOREOGRAPHY — companion travels through page
-  // Each checkpoint: { p: progress, x: 3D pos, y, scale }
-  const easeInOut = (t) => t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
-  const lerp = (a, b, t) => a + (b - a) * t;
-
-  function getSpherePose(progress) {
-    // Hero: center, big | After hero: visible companion in TOP-RIGHT, drifts slightly
-    if (progress < 0.08) {
-      return { x: 0, y: 0, scale: 1.7 };
-    } else if (progress < 0.20) {
-      const t = easeInOut((progress - 0.08) / 0.12);
-      return { x: lerp(0, 3.6, t), y: lerp(0, 1.7, t), scale: lerp(1.7, 0.55, t) };
-    } else if (progress < 0.85) {
-      // Companion mode — stays in upper-right, gentle drift left/right
-      const t = (progress - 0.20) / 0.65;
-      const xDrift = Math.sin(t * Math.PI * 1.8) * 0.8;
-      return { x: 3.6 + xDrift, y: 1.7 + Math.cos(t * Math.PI * 2) * 0.25, scale: 0.55 };
-    } else {
-      // Final: returns to center for reveal
-      const t = easeInOut((progress - 0.85) / 0.15);
-      return { x: lerp(3.6, 0, t), y: lerp(1.7, 0.4, t), scale: lerp(0.55, 1.0, t) };
-    }
-  }
-
-  // Pseudo-3D noise for blob morph (slow, fluid)
-  const noise3 = (x, y, z) => Math.sin(x * 1.4) * Math.cos(y * 1.1 + 0.4) * Math.sin(z * 1.2 + 0.7) + Math.sin(x * 1.9 + y) * 0.2 + Math.cos(z * 1.5 - x) * 0.16;
-
-  const positions = blobGeo.attributes.position;
-  let t = 0;
-  let curPose = { x: 0, y: 0, scale: 1.6 };
-  function tick() {
-    requestAnimationFrame(tick);
-    t += 0.003;
-
-    // Smooth mouse follow (subtle)
-    tx += (mx * 0.4 - tx) * 0.05;
-    ty += (my * 0.3 - ty) * 0.05;
-
-    // Blob organic morph — slow & fluid (Apple AI feel)
-    for (let i = 0; i < positions.count; i++) {
-      const ox = blobOriginal[i * 3], oy = blobOriginal[i * 3 + 1], oz = blobOriginal[i * 3 + 2];
-      const len = Math.sqrt(ox * ox + oy * oy + oz * oz);
-      const n = noise3(ox * 1.1 + t * 0.45, oy * 1.1 + t * 0.35, oz * 1.1 + t * 0.25) * 0.09;
-      positions.setXYZ(i, ox + (ox / len) * n, oy + (oy / len) * n, oz + (oz / len) * n);
-    }
-    positions.needsUpdate = true;
-    blobGeo.computeVertexNormals();
-
-    // Slow rotation
-    blob.rotation.y = t * 0.18 + tx * 0.4;
-    blob.rotation.x = Math.sin(t * 0.16) * 0.06 + ty * 0.3;
-
-    // Scroll-driven choreography (companion travels)
-    const docH = document.documentElement.scrollHeight - innerHeight;
-    const progress = docH > 0 ? Math.min(1, Math.max(0, sy / docH)) : 0;
-    const target = getSpherePose(progress);
-    // Smooth lerp toward target pose
-    curPose.x += (target.x - curPose.x) * 0.07;
-    curPose.y += (target.y - curPose.y) * 0.07;
-    curPose.scale += (target.scale - curPose.scale) * 0.07;
-    blob.position.x = curPose.x + tx * 0.2;
-    blob.position.y = curPose.y - ty * 0.15;
-    blob.scale.setScalar(curPose.scale);
-
-    renderer.render(scene, camera);
-  }
-  tick();
-}
-</script>
 </body>
 </html>
