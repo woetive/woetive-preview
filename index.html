@@ -1,1260 +1,379 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Woetive — AI-driven branding studio. Two brothers, one craft.</title>
-<meta name="description" content="An AI-driven branding studio from Slovakia. Two brothers ship brand identity, web, and campaigns in weeks — for founders who refuse to look like everyone else."/>
-<meta property="og:title" content="Woetive — AI-driven branding studio"/>
-<meta property="og:description" content="Two brothers. One AI stack. Brands shipped in weeks, not quarters."/>
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://woetive.com/"/>
-<meta name="theme-color" content="#FAFAF7"/>
-<meta name="color-scheme" content="light"/>
-<link rel="canonical" href="https://woetive.com/"/>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FAFAF7'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%230A0A0A' font-family='monospace' font-size='20' font-weight='800'%3EW%3C/text%3E%3C/svg%3E"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#FFFFFF" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,800;1,9..144,300;1,9..144,800&family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>Woetive — Brands for companies that outgrew their first one.</title>
+  <meta name="description" content="Outsourced creative direction for companies past their first chapter. Two brothers. AI in the studio. Six weeks per brand." />
 
-<!-- Three.js v17: ES modules for AI sphere -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Woetive — Brands for companies that outgrew their first one." />
+  <meta property="og:description" content="Outsourced creative direction. Two brothers. Six weeks per brand." />
+  <meta property="og:url" content="https://woetive-preview-cmvq.vercel.app/" />
+  <meta property="og:image" content="/frames/01_act1_reveal/frame_0001.webp" />
 
-<style>
-:root{
-  --bg:#0A0A0A;
-  --bg-warm:#FAFAF7;
-  --bg-elev:#141414;
-  --surface:rgba(244,241,234,.04);
-  --accent:#D0EF00;
-  --accent-2:#A5BF00;
-  --text:#F4F1EA;
-  --text-mute:rgba(244,241,234,.55);
-  --text-faint:rgba(244,241,234,.32);
-  --hairline:rgba(244,241,234,.1);
-  --hairline-soft:rgba(244,241,234,.05);
-  --shadow-soft:0 1px 0 rgba(255,255,255,.04) inset, 0 24px 48px -24px rgba(0,0,0,.5);
-  --shadow-lift:0 1px 0 rgba(255,255,255,.06) inset, 0 40px 80px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(244,241,234,.06);
-  --ease:cubic-bezier(.65,0,.35,1);
-  --ease-out:cubic-bezier(.16,1,.3,1);
-  --ease-out-back:cubic-bezier(.34,1.56,.64,1);
-  --ease-out-expo:cubic-bezier(.19,1,.22,1);
-  /* Blob palette — multi-color organic mesh */
-  --blob-warm:#FF6A35;
-  --blob-cool:#5DB8FF;
-  --blob-accent:#D0EF00;
-  --blob-deep:#7B2DFF;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
-body{background:var(--bg);color:var(--text);font-family:'Geist','Inter',-apple-system,sans-serif;font-weight:400;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;}
-img{display:block;max-width:100%;height:auto;}
-a{color:inherit;text-decoration:none;}
-button{font:inherit;border:0;background:none;color:inherit;cursor:pointer;}
-::selection{background:var(--accent);color:#0A0A0A;}
-h1,h2,h3,h4{text-wrap:balance;font-weight:500;letter-spacing:-.035em;line-height:1.05;}
-.serif{font-family:'Fraunces',serif;font-weight:300;font-style:italic;letter-spacing:-.04em;}
-.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);}
-.tabular{font-variant-numeric:tabular-nums;}
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Woetive — Brands for companies that outgrew their first one." />
+  <meta name="twitter:description" content="Outsourced creative direction. Two brothers. Six weeks per brand." />
 
-/* CHROME utilities — metallic polish */
-.chrome-text{background:linear-gradient(180deg,#FFFFFF 0%,#F4F1EA 18%,#C8C8D0 42%,#888894 52%,#A8A8B0 60%,#E8E8EE 75%,#FFFFFF 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
-.chrome-text-dark{background:linear-gradient(180deg,#5A5A66 0%,#3A3A44 25%,#0A0A0A 50%,#2A2A34 75%,#5A5A66 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
-.chrome-border{position:relative;}
-.chrome-border::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(180,180,200,.2) 30%,rgba(140,140,160,.4) 50%,rgba(220,220,235,.3) 70%,rgba(255,255,255,.6));-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
-.chrome-pill{background:linear-gradient(180deg,#F8F8FA 0%,#D8D8E0 35%,#BABACC 65%,#9A9AA8 100%);color:#0A0A0A;border:1px solid rgba(255,255,255,.6);box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 -1px 0 rgba(0,0,0,.1) inset, 0 8px 24px -8px rgba(10,10,10,.25);}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-/* Layout */
-.container{max-width:1320px;margin:0 auto;padding:0 32px;}
-section{padding:140px 0;position:relative;}
-@media (max-width:900px){section{padding:88px 0;}.container{padding:0 20px;}}
+  <!-- Preload poster for LCP -->
+  <link rel="preload" as="image" href="/frames/01_act1_reveal/frame_0001.webp" />
 
-/* Section heading */
-.sec-head{display:grid;grid-template-columns:1fr 1.6fr;gap:64px;align-items:end;margin-bottom:88px;}
-.sec-head .label{display:flex;align-items:center;gap:12px;}
-.sec-head .label::before{content:"";width:24px;height:1px;background:var(--accent-2);}
-.sec-head h2{font-size:clamp(40px,5.4vw,84px);font-weight:400;letter-spacing:-.04em;}
-.sec-head h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:300;color:var(--text-faint);letter-spacing:-.04em;}
-@media (max-width:900px){.sec-head{grid-template-columns:1fr;gap:24px;margin-bottom:56px;}}
+  <!-- Styles -->
+  <link rel="stylesheet" href="/styles/main.css" />
 
-/* Reveal — fade-up */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out);}
-.reveal.in{opacity:1;transform:none;}
-
-/* Reveal — zoom-in (cards appearing from nothing) */
-.reveal-zoom{opacity:0;transform:scale(.88) translateY(40px);transition:opacity .9s var(--ease-out-back),transform .9s var(--ease-out-back),filter .9s var(--ease-out);filter:blur(8px);}
-.reveal-zoom.in{opacity:1;transform:scale(1) translateY(0);filter:blur(0);}
-
-/* Reveal — stagger (children) */
-.reveal-stagger > *{opacity:0;transform:translateY(28px) scale(.96);transition:opacity .95s var(--ease-out-back),transform .95s var(--ease-out-back),filter .9s var(--ease-out);filter:blur(6px);}
-.reveal-stagger.in > *:nth-child(1){transition-delay:0ms;}
-.reveal-stagger.in > *:nth-child(2){transition-delay:90ms;}
-.reveal-stagger.in > *:nth-child(3){transition-delay:180ms;}
-.reveal-stagger.in > *:nth-child(4){transition-delay:270ms;}
-.reveal-stagger.in > *:nth-child(5){transition-delay:360ms;}
-.reveal-stagger.in > *:nth-child(6){transition-delay:450ms;}
-.reveal-stagger.in > *:nth-child(7){transition-delay:540ms;}
-.reveal-stagger.in > *{opacity:1;transform:none;filter:blur(0);}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:14px;padding:14px 14px 14px 24px;border-radius:100px;font-weight:500;font-size:14px;letter-spacing:.005em;border:1px solid transparent;transition:transform .55s var(--ease-out-back),background .35s var(--ease),color .35s var(--ease),border-color .35s var(--ease),box-shadow .4s var(--ease);will-change:transform;}
-.btn .arr{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font-size:13px;line-height:1;transition:transform .5s var(--ease-out-expo),background .25s var(--ease);}
-.btn:active{transform:scale(.97);}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-.btn-primary{background:#0A0A0A;color:#FAFAF7;border-color:#0A0A0A;box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 14px 36px -14px rgba(10,10,10,.4);}
-.btn-primary .arr{background:rgba(250,250,247,.16);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 24px 50px -10px rgba(10,10,10,.45);}
-.btn-primary:hover .arr{transform:translateX(3px) rotate(-12deg);background:rgba(250,250,247,.28);}
-.btn-ghost{background:rgba(10,10,10,.025);color:var(--text);border-color:var(--hairline);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-.btn-ghost .arr{background:rgba(10,10,10,.06);}
-.btn-ghost:hover{background:rgba(10,10,10,.04);border-color:rgba(10,10,10,.2);transform:translateY(-2px);}
-.btn-ghost:hover .arr{transform:translateX(3px);background:rgba(10,10,10,.1);}
-
-/* Nav */
-.nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:100;padding:8px 8px 8px 22px;display:flex;align-items:center;gap:8px;border:1px solid var(--hairline);border-radius:100px;background:rgba(250,250,247,.7);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 24px 48px -24px rgba(10,10,10,.16);transition:transform .55s var(--ease-out),box-shadow .4s var(--ease),background .4s var(--ease),color .4s var(--ease),border-color .4s var(--ease);}
-.nav.scrolled{background:rgba(250,250,247,.82);box-shadow:0 1px 0 rgba(255,255,255,.85) inset, 0 24px 48px -10px rgba(10,10,10,.18);}
-/* Dark variant — when over dark hero / sections */
-.nav.on-dark{background:rgba(20,20,20,.55);border-color:rgba(244,241,234,.12);color:#F4F1EA;box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 24px 48px -24px rgba(0,0,0,.5);}
-.nav.on-dark .brand{border-right-color:rgba(244,241,234,.12);}
-.nav.on-dark .brand .star{color:var(--accent);}
-.nav.on-dark .nav-status{color:rgba(244,241,234,.55);}
-.nav.on-dark .nav-status .ns-dot{background:var(--accent);box-shadow:0 0 10px var(--accent);}
-.nav.on-dark .nav-links{border-left-color:rgba(244,241,234,.12);}
-.nav.on-dark .nav-links a:not(.nav-cta){color:rgba(244,241,234,.55);}
-.nav.on-dark .nav-links a:not(.nav-cta):hover{color:#F4F1EA;}
-.nav.on-dark .nav-cta{background:var(--accent);color:#0A0A0A;}
-.nav.on-dark .nav-cta:hover{background:#fff;}
-.nav .brand{font-weight:700;font-size:15px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;padding-right:12px;border-right:1px solid var(--hairline);margin-right:6px;}
-.nav .brand .star{color:var(--accent-2);font-size:11px;}
-.nav-status{display:flex;align-items:center;gap:8px;padding:0 12px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);}
-.nav-status .ns-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 10px var(--accent-2);animation:pulse 2.4s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.nav-links{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--hairline);margin-left:6px;}
-.nav-links a:not(.nav-cta){font-size:13px;color:var(--text-mute);padding:8px 12px;transition:color .25s;}
-.nav-links a:not(.nav-cta):hover{color:var(--text);}
-.nav-cta{padding:9px 18px;border-radius:100px;background:#0A0A0A;color:#FAFAF7;font-size:13px;font-weight:500;transition:background .3s var(--ease),transform .35s var(--ease-out-back);}
-.nav-cta:hover{background:var(--accent);color:#0A0A0A;transform:translateY(-1px);}
-@media (max-width:900px){.nav{top:12px;padding:6px 6px 6px 16px;}.nav .brand{padding-right:8px;margin-right:0;border-right:0;}.nav-status,.nav-links a:not(.nav-cta){display:none;}.nav-links{padding-left:0;border-left:0;margin-left:auto;}}
-
-/* Scroll progress */
-.scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent-2);z-index:200;transition:width .15s linear;box-shadow:0 0 8px rgba(92,122,0,.5);}
-
-/* Subtle paper grain */
-.grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");}
-
-/* HERO v16 — Editorial dark + floating mesh blobs + massive type, NO overlap */
-.hero{min-height:100dvh;position:relative;overflow:hidden;background:#0A0A0A;color:#F4F1EA;display:flex;flex-direction:column;padding:140px 0 100px;}
-
-/* Floating mesh blob system — multi-color organic shapes, blurred */
-.blobs{position:absolute;inset:-20%;z-index:0;pointer-events:none;}
-.blob{position:absolute;border-radius:50%;filter:blur(120px);mix-blend-mode:screen;opacity:.85;will-change:transform;}
-.blob-1{width:54vw;height:54vw;background:radial-gradient(circle,#FF6A35 0%,#FF3870 60%,transparent 80%);top:-8%;left:-6%;animation:blobFloat1 32s ease-in-out infinite;}
-.blob-2{width:48vw;height:48vw;background:radial-gradient(circle,#5DB8FF 0%,#2D5FE0 60%,transparent 80%);top:18%;right:-8%;animation:blobFloat2 38s ease-in-out infinite;}
-.blob-3{width:60vw;height:60vw;background:radial-gradient(circle,#D0EF00 0%,#88AC00 50%,transparent 75%);bottom:-15%;left:18%;animation:blobFloat3 42s ease-in-out infinite;opacity:.55;}
-.blob-4{width:36vw;height:36vw;background:radial-gradient(circle,#7B2DFF 0%,#4A0FB8 60%,transparent 80%);top:35%;left:42%;animation:blobFloat4 28s ease-in-out infinite;opacity:.45;}
-@keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(8vw,4vh) scale(1.1);}66%{transform:translate(-3vw,8vh) scale(.9);}}
-@keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(-6vw,5vh) scale(1.05);}66%{transform:translate(4vw,-3vh) scale(1.15);}}
-@keyframes blobFloat3{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(5vw,-4vh) scale(.95);}66%{transform:translate(-7vw,2vh) scale(1.1);}}
-@keyframes blobFloat4{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-8vw,6vh) scale(1.2);}}
-
-/* Subtle film grain over blobs */
-.hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-
-/* Top editorial strip */
-.hero-top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:0 40px;margin-bottom:auto;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,234,.55);}
-.hero-top .live{display:inline-flex;align-items:center;gap:8px;color:var(--accent);}
-.hero-top .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
-
-/* Center grid: massive type LEFT, side rail RIGHT — proper grid, no absolute overlap */
-.hero-center{position:relative;z-index:2;padding:48px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:64px;align-items:end;}
-.hero-massive{min-width:0;}
-.hero-headline{font-size:clamp(64px,11vw,180px);font-weight:600;letter-spacing:-.055em;line-height:.92;color:#F4F1EA;text-wrap:balance;}
-.hero-headline .em{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:#F4F1EA;}
-.hero-headline .word{display:inline-block;opacity:0;transform:translateY(40px);filter:blur(20px);transition:opacity 1.2s var(--ease-out),transform 1.2s var(--ease-out),filter 1.2s var(--ease-out);white-space:pre;}
-.hero-headline.in .word{opacity:1;transform:none;filter:blur(0);}
-
-.hero-side{display:flex;flex-direction:column;gap:24px;align-items:flex-start;padding-bottom:8px;}
-.hero-orb{width:100%;aspect-ratio:1;max-width:340px;align-self:flex-end;margin-bottom:8px;position:relative;}
-.hero-orb canvas{width:100%;height:100%;display:block;}
-.hero-orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,transparent 50%,rgba(208,239,0,.06) 70%,transparent 85%);pointer-events:none;}
-@media (max-width:900px){.hero-orb{max-width:240px;align-self:flex-start;}}
-.hero-sub{font-size:14px;font-weight:400;color:rgba(244,241,234,.7);line-height:1.6;max-width:36ch;}
-.hero-cta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-
-/* Bottom strip */
-.hero-bot{position:relative;z-index:3;margin-top:auto;padding:32px 40px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;border-top:1px solid var(--hairline);}
-.hero-bot .stats{display:flex;gap:64px;font-family:'JetBrains Mono',monospace;}
-.hero-bot .stats .item{display:flex;flex-direction:column;gap:6px;}
-.hero-bot .stats .item .v{font-family:'Geist',sans-serif;font-size:32px;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#F4F1EA;line-height:1;}
-.hero-bot .stats .item .l{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,241,234,.45);}
-.hero-bot .scroll{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,241,234,.45);display:inline-flex;align-items:center;gap:12px;}
-.hero-bot .scroll .ln{width:32px;height:1px;background:linear-gradient(to right,var(--accent),transparent);}
-.hero-bot .scroll .ar{display:inline-block;animation:arrow 2.6s ease-in-out infinite;}
-@keyframes arrow{0%,100%{transform:translateY(0);opacity:.6;}50%{transform:translateY(4px);opacity:1;}}
-
-/* Pill CTA */
-.pill-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 12px 12px 22px;border-radius:100px;background:#F4F1EA;color:#0A0A0A;font-weight:500;font-size:14px;letter-spacing:-.005em;border:1px solid rgba(244,241,234,.6);box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 16px 40px -12px rgba(0,0,0,.4);transition:transform .5s var(--ease-out-back),background .3s var(--ease),box-shadow .35s var(--ease);will-change:transform;}
-.pill-cta .arr{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(10,10,10,.1);font-size:13px;line-height:1;transition:transform .5s var(--ease-out-expo),background .25s var(--ease);}
-.pill-cta:hover{transform:translateY(-2px);background:var(--accent);box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 22px 48px -10px rgba(208,239,0,.5);}
-.pill-cta:hover .arr{transform:translateX(3px) rotate(-12deg);background:rgba(10,10,10,.2);}
-.pill-cta:active{transform:scale(.97);}
-.pill-cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-.pill-ghost{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:100px;background:transparent;color:#F4F1EA;font-weight:500;font-size:14px;border:1px solid rgba(244,241,234,.18);transition:transform .5s var(--ease-out-back),background .3s var(--ease),border-color .3s var(--ease);}
-.pill-ghost:hover{background:rgba(244,241,234,.08);border-color:rgba(244,241,234,.4);transform:translateY(-2px);}
-
-/* Mobile */
-@media (max-width:900px){
-  .hero{padding:104px 0 80px;}
-  .hero-top{padding:0 20px;font-size:10px;flex-wrap:wrap;gap:8px;}
-  .hero-center{padding:32px 20px;grid-template-columns:1fr;gap:32px;align-items:start;}
-  .hero-headline{font-size:clamp(52px,13vw,108px);}
-  .hero-side{padding-bottom:0;}
-  .hero-bot{padding:24px 20px 0;flex-direction:column;align-items:flex-start;gap:24px;}
-  .hero-bot .stats{gap:32px;}
-  .hero-bot .stats .item .v{font-size:24px;}
-}
-
-/* MARQUEE */
-.marquee{padding:24px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);overflow:hidden;background:rgba(10,10,10,.02);}
-.marquee-track{display:flex;gap:32px;animation:marquee 50s linear infinite;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-mute);}
-@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.marquee-track span{display:inline-flex;align-items:center;gap:32px;}
-.marquee-track .sep{color:var(--accent-2);}
-
-/* CLIENTS */
-.clients{padding:80px 0 40px;}
-.clients-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px 48px;align-items:center;text-align:center;}
-.clients-grid .c{font-family:'Fraunces',serif;font-weight:500;font-size:24px;letter-spacing:-.02em;color:var(--text-mute);transition:color .35s var(--ease);}
-.clients-grid .c:hover{color:var(--text);}
-
-/* PROCESS — Apple-clean numbered */
-.process-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;}
-.proc-card{position:relative;background:rgba(250,250,247,.5);border:1px solid var(--hairline);border-radius:24px;padding:32px;transition:transform .65s var(--ease-out),border-color .4s,box-shadow .5s,background .4s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--shadow-soft);overflow:hidden;}
-.proc-card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(208,239,0,.1),transparent 50%);opacity:0;transition:opacity .55s var(--ease-out);pointer-events:none;}
-.proc-card:hover{transform:translateY(-6px);border-color:rgba(10,10,10,.18);background:rgba(255,255,255,.85);box-shadow:var(--shadow-lift);}
-.proc-card:hover::before{opacity:1;}
-.proc-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--accent-2);text-transform:uppercase;margin-bottom:24px;display:block;}
-.proc-card h3{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-bottom:14px;color:var(--text);}
-.proc-card .body{font-size:14px;color:var(--text-mute);line-height:1.6;}
-.proc-card .visual{aspect-ratio:1.6;border-radius:14px;background:linear-gradient(135deg,rgba(208,239,0,.06),rgba(10,10,10,.04));border:1px solid var(--hairline-soft);margin-bottom:28px;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--accent-2);overflow:hidden;position:relative;}
-.proc-card.span4{grid-column:span 4;}
-.proc-card.span6{grid-column:span 6;}
-@media (max-width:900px){.proc-card.span4,.proc-card.span6{grid-column:span 12;}}
-
-/* SERVICES — dark dramatic break */
-.services-section{background:#0A0A0A;color:#FAFAF7;position:relative;}
-.services-section::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(208,239,0,.3),transparent);}
-.services-section .sec-head .label{color:rgba(250,250,247,.6);}
-.services-section .sec-head .label::before{background:var(--accent);}
-.services-section .sec-head h2{color:#FAFAF7;}
-.services-section .sec-head h2 em{color:rgba(250,250,247,.4);}
-.services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:980px;margin:0 auto;}
-.svc-card{position:relative;background:rgba(250,250,247,.025);border:1px solid rgba(250,250,247,.08);border-radius:24px;padding:40px;transition:transform .7s var(--ease-out),border-color .4s,box-shadow .5s,background .4s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow:hidden;}
-.svc-card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(208,239,0,.12),transparent 55%);opacity:0;transition:opacity .55s var(--ease-out);pointer-events:none;}
-.svc-card:hover{transform:translateY(-6px);border-color:rgba(250,250,247,.2);background:rgba(250,250,247,.04);box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 40px 80px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(208,239,0,.12);}
-.svc-card:hover::before{opacity:1;}
-.svc-icon{width:56px;height:56px;border-radius:16px;background:rgba(250,250,247,.05);border:1px solid rgba(250,250,247,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:28px;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
-.svc-card h3{font-size:24px;font-weight:500;letter-spacing:-.025em;margin-bottom:14px;color:#FAFAF7;}
-.svc-card .body{font-size:14px;color:rgba(250,250,247,.6);line-height:1.6;margin-bottom:24px;max-width:38ch;}
-.svc-card .meta{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(250,250,247,.4);padding-top:16px;border-top:1px solid rgba(250,250,247,.08);}
-@media (max-width:900px){.services-grid{grid-template-columns:1fr;}}
-
-/* WORK — editorial showcase, premium presentation */
-.work-section{position:relative;}
-.work-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;}
-.work-card{position:relative;background:#FFFFFF;border:1px solid var(--hairline);border-radius:28px;overflow:hidden;transition:transform .7s var(--ease-out),border-color .4s var(--ease),box-shadow .55s var(--ease);box-shadow:var(--shadow-soft);}
-.work-card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(208,239,0,.04),transparent 40%);opacity:0;transition:opacity .55s var(--ease);pointer-events:none;z-index:1;}
-.work-card:hover{transform:translateY(-8px);border-color:rgba(10,10,10,.22);box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 60px 100px -30px rgba(10,10,10,.22), 0 0 0 1px rgba(208,239,0,.12);}
-.work-card:hover::before{opacity:1;}
-
-.work-card .visual{aspect-ratio:16/10;background:#0A0A0A;position:relative;overflow:hidden;border-bottom:1px solid var(--hairline-soft);}
-.work-card .visual svg{position:absolute;inset:0;width:100%;height:100%;transition:transform 1.2s var(--ease-out);}
-.work-card:hover .visual svg{transform:scale(1.04);}
-.work-card .visual::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.08),transparent 60%);pointer-events:none;}
-
-.work-card .body{padding:40px;position:relative;z-index:2;}
-.work-card .pill-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint);}
-.work-card .pill-row .num{color:var(--accent-2);font-weight:500;}
-.work-card .pill-row .year{color:var(--text-mute);}
-.work-card h3{font-size:36px;letter-spacing:-.03em;margin-bottom:16px;font-weight:500;line-height:1.05;}
-.work-card .cat{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--hairline);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text-mute);text-transform:uppercase;background:var(--bg-warm);margin-bottom:24px;}
-.work-card .desc{font-size:15px;color:var(--text-mute);line-height:1.65;max-width:48ch;}
-.work-card .results{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:36px;padding-top:28px;border-top:1px solid var(--hairline-soft);}
-.work-card .r .v{font-size:28px;font-weight:500;letter-spacing:-.025em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#3A3A44 0%,#0A0A0A 50%,#2A2A34 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
-.work-card .r .l{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--text-faint);text-transform:uppercase;margin-top:6px;}
-.work-card .case-link{margin-top:36px;display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text);transition:color .25s,gap .35s var(--ease-out);}
-.work-card .case-link:hover{color:var(--accent-2);gap:14px;}
-.work-card .case-link::after{content:"→";font-family:'Geist',sans-serif;font-size:14px;}
-
-.work-card.feature{grid-column:span 12;display:grid;grid-template-columns:1.1fr 1fr;}
-.work-card.feature .visual{aspect-ratio:auto;border-bottom:0;border-right:1px solid var(--hairline-soft);min-height:520px;}
-.work-card.feature .body{padding:56px;display:flex;flex-direction:column;justify-content:center;}
-.work-card.feature h3{font-size:48px;letter-spacing:-.035em;line-height:1.0;}
-.work-card.half{grid-column:span 6;}
-
-/* See all work CTA */
-.work-cta{display:flex;justify-content:center;margin-top:48px;}
-.work-cta .btn{background:transparent;color:var(--text);border:1px solid var(--hairline);}
-.work-cta .btn:hover{background:#0A0A0A;color:#FAFAF7;border-color:#0A0A0A;}
-.work-cta .btn .arr{background:rgba(10,10,10,.06);}
-.work-cta .btn:hover .arr{background:rgba(255,255,255,.16);}
-
-@media (max-width:900px){
-  .work-card.feature{grid-template-columns:1fr;}
-  .work-card.feature .visual{border-right:0;border-bottom:1px solid var(--hairline-soft);aspect-ratio:16/10;min-height:0;}
-  .work-card.feature .body{padding:32px;}
-  .work-card.feature h3{font-size:36px;}
-  .work-card.half{grid-column:span 12;}
-  .work-card .body{padding:28px;}
-  .work-card h3{font-size:28px;}
-  .work-card .results{gap:16px;}
-  .work-card .r .v{font-size:22px;}
-}
-
-/* MANIFESTO */
-.manifesto{background:linear-gradient(180deg,var(--bg) 0%,var(--bg-warm) 50%,var(--bg) 100%);padding:180px 24px;text-align:center;}
-.manifesto-inner{max-width:980px;margin:0 auto;}
-.manifesto .lbl{display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:56px;}
-.manifesto .lbl::before,.manifesto .lbl::after{content:"";width:24px;height:1px;background:var(--accent-2);}
-.manifesto p{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(36px,5vw,76px);letter-spacing:-.025em;line-height:1.18;}
-.manifesto-reveal span{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(10px);transition:opacity .85s var(--ease-out),transform .85s var(--ease-out),filter .85s var(--ease-out);}
-.manifesto-reveal.in span{opacity:1;transform:none;filter:blur(0);}
-.manifesto-reveal.in span:nth-child(1){transition-delay:0ms;}
-.manifesto-reveal.in span:nth-child(2){transition-delay:60ms;}
-.manifesto-reveal.in span:nth-child(3){transition-delay:120ms;}
-.manifesto-reveal.in span:nth-child(4){transition-delay:180ms;}
-.manifesto-reveal.in span:nth-child(5){transition-delay:240ms;}
-.manifesto-reveal.in span:nth-child(6){transition-delay:380ms;}
-.manifesto-reveal.in span:nth-child(7){transition-delay:440ms;}
-.manifesto-reveal.in span:nth-child(8){transition-delay:540ms;}
-.manifesto-reveal.in span:nth-child(9){transition-delay:600ms;}
-.manifesto-reveal.in span:nth-child(10){transition-delay:760ms;}
-.manifesto-reveal.in span:nth-child(11){transition-delay:820ms;}
-.manifesto-reveal.in span:nth-child(12){transition-delay:880ms;}
-.manifesto-reveal.in span:nth-child(13){transition-delay:940ms;}
-.manifesto-reveal.in span:nth-child(14){transition-delay:1000ms;}
-.manifesto-reveal.in span:nth-child(15){transition-delay:1080ms;}
-.manifesto-reveal.in span:nth-child(16){transition-delay:1140ms;}
-.manifesto .fade{color:var(--text-faint);}
-.manifesto .hl{font-style:italic;color:var(--accent-2);}
-.manifesto .star{display:block;margin-top:80px;color:var(--accent-2);font-size:24px;}
-
-/* BENTO */
-.bento-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(200px,auto);gap:16px;}
-.bc{background:rgba(250,250,247,.5);border:1px solid var(--hairline);border-radius:24px;padding:36px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:20px;transition:transform .65s var(--ease-out),border-color .4s,background .4s,box-shadow .5s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--shadow-soft);}
-.bc::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(208,239,0,.1),transparent 50%);opacity:0;transition:opacity .5s var(--ease-out);pointer-events:none;}
-.bc:hover{transform:translateY(-4px);border-color:rgba(10,10,10,.2);background:rgba(255,255,255,.85);box-shadow:var(--shadow-lift);}
-.bc:hover::before{opacity:1;}
-.bc h3{font-size:26px;font-weight:600;letter-spacing:-.025em;line-height:1.1;}
-.bc .body{font-size:14px;color:var(--text-mute);line-height:1.6;max-width:38ch;}
-.bc .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--text-faint);text-transform:uppercase;}
-.bc-1{grid-column:span 7;grid-row:span 2;}
-.bc-2{grid-column:span 5;}
-.bc-3{grid-column:span 5;}
-.bc-4{grid-column:span 4;background:#0A0A0A;color:#FAFAF7;border-color:#0A0A0A;}
-.bc-4:hover{background:#1A1A1A;}
-.bc-4 .k{color:rgba(250,250,247,.55);}
-.bc-4 .body{color:rgba(250,250,247,.7);}
-.bc-4 .big{font-size:clamp(56px,7vw,96px);font-weight:300;letter-spacing:-.04em;line-height:1;background:linear-gradient(180deg,#E8FFA0 0%,#D0EF00 35%,#88AC00 55%,#D0EF00 80%,#F4FFC0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 2px 8px rgba(208,239,0,.4));}
-.bc-5{grid-column:span 5;}
-.bc-6{grid-column:span 3;}
-@media (max-width:900px){.bento-grid{grid-template-columns:1fr;grid-auto-rows:auto;}.bc-1,.bc-2,.bc-3,.bc-4,.bc-5,.bc-6{grid-column:span 1;grid-row:auto;}}
-
-/* TESTIMONIALS */
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.tcard{background:rgba(250,250,247,.5);border:1px solid var(--hairline);border-radius:24px;padding:36px;display:flex;flex-direction:column;gap:24px;transition:transform .6s var(--ease-out),border-color .4s,background .4s,box-shadow .5s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--shadow-soft);}
-.tcard:hover{transform:translateY(-4px);border-color:rgba(10,10,10,.2);background:rgba(255,255,255,.85);box-shadow:var(--shadow-lift);}
-.tcard .quote{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:22px;line-height:1.42;letter-spacing:-.01em;color:var(--text);}
-.tcard .quote::before{content:"\201C";color:var(--accent-2);font-size:48px;line-height:.5;display:inline-block;margin-right:4px;vertical-align:-12px;}
-.tcard .who{display:flex;align-items:center;gap:12px;padding-top:20px;border-top:1px solid var(--hairline-soft);margin-top:auto;}
-.tcard .who .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0A0A0A,#1A1A1A);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
-.tcard .who .meta .n{font-weight:600;font-size:14px;}
-.tcard .who .meta .c{font-size:12px;color:var(--text-mute);margin-top:2px;}
-.tcard .stars{font-size:13px;color:var(--accent-2);}
-@media (max-width:900px){.testimonials-grid{grid-template-columns:1fr;}}
-
-/* ABOUT — with brothers video */
-.about-stage{position:relative;border-radius:28px;overflow:hidden;background:#0A0A0A;aspect-ratio:21/9;border:1px solid var(--hairline);box-shadow:var(--shadow-lift);margin-bottom:48px;}
-.about-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;}
-.about-stage .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.2) 0%,rgba(10,10,10,.65) 100%);}
-.about-stage .stage-text{position:absolute;inset:0;padding:48px;display:flex;align-items:flex-end;justify-content:space-between;color:#FAFAF7;}
-.about-stage .stage-text h2{font-size:clamp(40px,5vw,80px);font-weight:700;letter-spacing:-.045em;line-height:.95;max-width:18ch;}
-.about-stage .stage-text h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:300;color:rgba(250,250,247,.6);}
-.about-stage .stage-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(250,250,247,.7);}
-.about-stage .stage-meta .live{display:inline-flex;align-items:center;gap:6px;color:var(--accent);}
-.about-stage .stage-meta .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
-@media (max-width:900px){.about-stage{aspect-ratio:4/5;}.about-stage .stage-text{padding:24px;flex-direction:column;align-items:flex-start;gap:24px;}.about-stage .stage-meta{align-items:flex-start;}}
-
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
-.bro{background:rgba(250,250,247,.5);border:1px solid var(--hairline);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;transition:transform .6s var(--ease-out),border-color .4s,box-shadow .5s;box-shadow:var(--shadow-soft);}
-.bro:hover{transform:translateY(-4px);border-color:rgba(10,10,10,.2);box-shadow:var(--shadow-lift);}
-.bro .photo{aspect-ratio:4/5;overflow:hidden;background:#E8E4DA;position:relative;}
-.bro .photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(80%) contrast(1.05);transition:filter .6s var(--ease-out);}
-.bro:hover .photo img{filter:grayscale(0) contrast(1);}
-.bro .info{padding:32px;}
-.bro .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--accent-2);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;}
-.bro .name{font-size:28px;letter-spacing:-.025em;font-weight:700;}
-.bro .role{font-size:14px;color:var(--text-mute);margin-top:6px;}
-.bro .bio{font-size:15px;color:var(--text-mute);line-height:1.6;margin-top:20px;}
-.bro .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:24px;}
-.bro .pill{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--hairline);border-radius:100px;color:var(--text-mute);background:rgba(250,250,247,.6);}
-@media (max-width:900px){.about-grid{grid-template-columns:1fr;}}
-
-/* CONTACT */
-.contact{background:linear-gradient(180deg,var(--bg) 0%,#0A0A0A 100%);padding:180px 0 80px;color:#FAFAF7;}
-.contact .container{max-width:1100px;}
-.contact .lbl{display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(250,250,247,.6);margin-bottom:32px;}
-.contact .lbl::before{content:"";width:24px;height:1px;background:var(--accent);}
-.contact .lbl .pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite;}
-.contact h2{font-size:clamp(64px,10vw,160px);font-weight:700;letter-spacing:-.055em;line-height:.92;margin-bottom:64px;color:#FAFAF7;}
-.contact h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:300;color:var(--accent);}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
-.contact-block h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(250,250,247,.5);margin-bottom:16px;}
-.contact-email{display:inline-block;font-size:clamp(28px,3.4vw,46px);font-weight:600;letter-spacing:-.025em;border-bottom:1px solid currentColor;color:#FAFAF7;transition:color .35s;}
-.contact-email:hover{color:var(--accent);}
-.contact-block p{font-size:16px;line-height:1.6;color:rgba(250,250,247,.7);max-width:42ch;margin-bottom:28px;}
-.contact-block .key{color:#FAFAF7;font-weight:500;}
-.contact .btn-primary{background:var(--accent);color:#0A0A0A;border-color:var(--accent);box-shadow:0 14px 36px -14px rgba(208,239,0,.4);}
-.contact .btn-primary:hover{background:#FAFAF7;color:#0A0A0A;}
-.contact .btn-primary .arr{background:rgba(10,10,10,.12);}
-@media (max-width:900px){.contact-grid{grid-template-columns:1fr;}}
-
-/* FOOTER */
-.foot{background:#0A0A0A;color:rgba(250,250,247,.5);padding:32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;border-top:1px solid rgba(250,250,247,.08);}
-</style>
+  <!-- GSAP + ScrollTrigger via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" defer></script>
+  <!-- Main script -->
+  <script src="/scripts/main.js" defer></script>
 </head>
 <body>
-<div class="grain"></div>
-<div class="scroll-progress" id="scrollProgress"></div>
+  <!-- Skip to content -->
+  <a href="#main" class="skip-link">Skip to content</a>
 
-<!-- v15: Sphere/canvas removed; using CSS-only floating mesh blobs in hero -->
-
-<nav class="nav" id="nav">
-  <a href="#" class="brand">Woetive <span class="star">✦</span></a>
-  <div class="nav-status"><span class="ns-dot"></span><span>AI Studio · Online</span></div>
-  <div class="nav-links">
-    <a href="#work">Work</a>
-    <a href="#process">Process</a>
-    <a href="#about">About</a>
-    <a href="#contact" class="nav-cta">Start a project</a>
-  </div>
-</nav>
-
-<section class="hero" id="hero">
-  <!-- Floating mesh blob system (CSS-only) -->
-  <div class="blobs" aria-hidden="true">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="blob blob-4"></div>
-  </div>
-  <div class="hero-grain" aria-hidden="true"></div>
-
-  <!-- Top editorial strip -->
-  <div class="hero-top">
-    <span>Woetive ✦ Studio · Issue 01 / 2026</span>
-    <span class="live">Now booking · May 2026</span>
-  </div>
-
-  <!-- Center: massive type LEFT, side rail RIGHT (proper grid, no overlap) -->
-  <div class="hero-center">
-    <div class="hero-massive">
-      <h1 class="hero-headline" data-blur-words>We don't follow trends.<br/>We <span class="em">build</span> them.</h1>
+  <!-- Fixed Navigation -->
+  <header class="nav" role="banner">
+    <div class="nav__inner">
+      <a href="#" class="nav__brand" aria-label="Woetive — Home">
+        <span class="nav__brand-mark">WOETIVE</span>
+        <span class="nav__brand-tagline">Built by hand. Accelerated by AI.</span>
+      </a>
+      <nav class="nav__menu" aria-label="Primary">
+        <a href="#work">Work</a>
+        <a href="#method">Method</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </div>
-    <aside class="hero-side">
-      <div class="hero-orb"><canvas id="sphereCanvas" aria-hidden="true"></canvas></div>
-      <p class="hero-sub" data-blur-letters>AI-driven boutique branding studio. Two brothers. One AI stack. Brand identity, web, and campaigns — shipped in weeks, not quarters.</p>
-      <div class="hero-cta-row">
-        <a class="pill-cta" href="#contact">Start a project <span class="arr">→</span></a>
-        <a class="pill-ghost" href="#work">See work</a>
-      </div>
-    </aside>
-  </div>
+  </header>
 
-  <!-- Bottom strip -->
-  <div class="hero-bot">
-    <div class="stats">
-      <div class="item"><span class="v"><span data-count="18">0</span>+</span><span class="l">Clients</span></div>
-      <div class="item"><span class="v"><span data-count="120">0</span>+</span><span class="l">Projects shipped</span></div>
-      <div class="item"><span class="v">4.8</span><span class="l">Rating · 18 reviews</span></div>
-    </div>
-    <div class="scroll"><span class="ln"></span><span>Scroll to read</span><span class="ar">↓</span></div>
-  </div>
-</section>
+  <main id="main">
+    <!-- ============================================ -->
+    <!-- SECTION 1 — HERO -->
+    <!-- ============================================ -->
+    <section class="section section--hero" id="hero" data-sequence="01_act1_reveal" data-frame-count="151">
+      <div class="section__pin">
+        <canvas
+          class="canvas-sequence"
+          data-canvas-id="hero"
+          aria-label="Macro detail of a luminous accent line revealing a figure"
+          width="1600"
+          height="900"
+        ></canvas>
 
-<div class="marquee">
-  <div class="marquee-track">
-    <span>Brand Identity<span class="sep">✦</span>Web Design<span class="sep">✦</span>Art Direction<span class="sep">✦</span>Campaign<span class="sep">✦</span>AI Workflow<span class="sep">✦</span>Motion<span class="sep">✦</span>Packaging<span class="sep">✦</span></span>
-    <span>Brand Identity<span class="sep">✦</span>Web Design<span class="sep">✦</span>Art Direction<span class="sep">✦</span>Campaign<span class="sep">✦</span>AI Workflow<span class="sep">✦</span>Motion<span class="sep">✦</span>Packaging<span class="sep">✦</span></span>
-  </div>
-</div>
-
-<section class="clients">
-  <div class="container">
-    <div class="sec-head reveal" style="margin-bottom:48px;">
-      <div class="label"><span class="mono">Clients · Trusted partners</span></div>
-      <h2 style="font-size:clamp(20px,1.6vw,24px);font-weight:400;color:var(--text-mute);letter-spacing:-.01em;line-height:1.5;">Founders who picked us over larger agencies — and stayed.</h2>
-    </div>
-    <div class="clients-grid reveal-stagger">
-      <div class="c">Labaš</div>
-      <div class="c">Fresh Plus</div>
-      <div class="c">Mobilonline</div>
-      <div class="c">Gams</div>
-      <div class="c">Strategy1st</div>
-      <div class="c">Forbestclients</div>
-      <div class="c">Flowy</div>
-    </div>
-  </div>
-</section>
-
-<section id="process">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="label"><span class="mono">Process · 5 stages</span></div>
-      <h2>How we ship <em>3× faster.</em></h2>
-    </div>
-    <div class="process-grid reveal-stagger">
-      <div class="proc-card span4 reveal-zoom">
-        <div class="visual">
-          <svg viewBox="0 0 200 100" width="100%" height="100%"><g fill="none" stroke="#5C7A00" stroke-width="1.5"><path d="M30,70 Q60,30 100,50 T170,40" /><circle cx="30" cy="70" r="3" fill="#5C7A00"/><circle cx="100" cy="50" r="3" fill="#5C7A00"/><circle cx="170" cy="40" r="3" fill="#5C7A00"/></g></svg>
-        </div>
-        <span class="proc-num">01 / Discovery</span>
-        <h3>Brand audit + AI moodboard</h3>
-        <p class="body">Spoznáme tvoju značku, trh, ambíciu. AI generuje 12+ smerov z tvojich referencií — skončíme s jasným severom, nie 30-stranou prezentáciou.</p>
-      </div>
-      <div class="proc-card span4 reveal-zoom">
-        <div class="visual">
-          <svg viewBox="0 0 200 100" width="100%" height="100%"><g fill="none" stroke="#5C7A00" stroke-width="1.5"><rect x="40" y="30" width="120" height="40" rx="20"/><circle cx="70" cy="50" r="5" fill="#5C7A00"/><circle cx="100" cy="50" r="5" fill="#5C7A00" opacity=".5"/><circle cx="130" cy="50" r="5" fill="#5C7A00" opacity=".25"/></g></svg>
-        </div>
-        <span class="proc-num">02 / Strategy</span>
-        <h3>Positioning + tone of voice</h3>
-        <p class="body">Definujeme čím sa odlíšiš. AI generuje varianty mesaging frameworkov, my vyberáme tie, ktoré držia tvoju identitu — nie agentúrny vkus.</p>
-      </div>
-      <div class="proc-card span4 reveal-zoom">
-        <div class="visual">
-          <svg viewBox="0 0 200 100" width="100%" height="100%"><g fill="#5C7A00"><circle cx="50" cy="50" r="6"/><circle cx="80" cy="35" r="6" opacity=".7"/><circle cx="110" cy="55" r="6" opacity=".5"/><circle cx="140" cy="40" r="6" opacity=".7"/><circle cx="170" cy="50" r="8"/></g></svg>
-        </div>
-        <span class="proc-num">03 / Iterate</span>
-        <h3>120+ AI-curated variants</h3>
-        <p class="body">Logo, system, web. AI iteruje varianty. My ranking-eme cez craft heuristiku. Klient vidí top 6 — nie prvý nápad LLM-u.</p>
-      </div>
-      <div class="proc-card span6 reveal-zoom">
-        <div class="visual">
-          <svg viewBox="0 0 200 100" width="100%" height="100%"><g fill="none" stroke="#5C7A00" stroke-width="1.5"><path d="M20,80 L80,80 L80,40 L140,40 L140,20 L180,20" stroke-dasharray="4 4"/><circle cx="180" cy="20" r="6" fill="#5C7A00"/></g></svg>
-        </div>
-        <span class="proc-num">04 / Refine + Ship</span>
-        <h3>Human-final, every pixel</h3>
-        <p class="body">Finálne rozhodnutia robia bratia, nie algoritmus. Každý kerning, každý gradient, každý transition — verifikovaný ručne pred odovzdaním. Žiadne AI artefakty.</p>
-      </div>
-      <div class="proc-card span6 reveal-zoom">
-        <div class="visual">
-          <svg viewBox="0 0 200 100" width="100%" height="100%"><g><circle cx="100" cy="50" r="36" fill="none" stroke="#5C7A00" stroke-width="1.5"/><circle cx="100" cy="50" r="36" fill="none" stroke="#D0EF00" stroke-width="3" stroke-dasharray="170 226" stroke-dashoffset="-30" transform="rotate(-90 100 50)"/><text x="100" y="56" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="600" fill="#0A0A0A">75%</text></g></svg>
-        </div>
-        <span class="proc-num">05 / Launch + retain</span>
-        <h3>Post-launch, AI on retainer</h3>
-        <p class="body">Dodávka, handover, post-launch metrics. Klienti, ktorí chcú držať brand consistency cez AI workflow, prechádzajú na ongoing partnership.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="services" class="services-section">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="label"><span class="mono">Services · Four disciplines</span></div>
-      <h2>One studio. <em>Four crafts.</em></h2>
-    </div>
-    <div class="services-grid reveal-stagger">
-      <div class="svc-card reveal-zoom">
-        <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
-        <h3>Brand Identity</h3>
-        <p class="body">Naming, logo, systém, guidelines — postavené na AI-akcelerovaných moodboardoch, ručne dolaďované.</p>
-        <div class="meta"><span>01 / Brand</span><span>Ship 6–10 wks</span></div>
-      </div>
-      <div class="svc-card reveal-zoom">
-        <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 14h10"/></svg></div>
-        <h3>Web Design &amp; Dev</h3>
-        <p class="body">Editorial-grade weby, ktoré sa načítajú rýchlo a konvertujú. AI-augmented design tempo, kódené ručne.</p>
-        <div class="meta"><span>02 / Web</span><span>Ship 4–8 wks</span></div>
-      </div>
-      <div class="svc-card reveal-zoom">
-        <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l4-4M3 12l4 4M21 12l-4-4M21 12l-4 4M12 3v18"/></svg></div>
-        <h3>Art Direction</h3>
-        <p class="body">Kampane, ktoré ľudia zdieľajú sami. AI píše varianty, my vyberáme tie, čo zasiahnu.</p>
-        <div class="meta"><span>03 / Campaign</span><span>Ship 3–6 wks</span></div>
-      </div>
-      <div class="svc-card reveal-zoom">
-        <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></div>
-        <h3>AI Workflow</h3>
-        <p class="body">Vlastný prompt stack pre brand: moodboards, copy, asset generation. Ľudská ruka tam, kde záleží.</p>
-        <div class="meta"><span>04 / AI</span><span>Ongoing</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="work" class="work-section">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="label"><span class="mono">Selected Work · 2023—2026</span></div>
-      <h2>Three projects. <em>Three problems solved.</em></h2>
-    </div>
-    <div class="work-grid">
-      <article class="work-card feature reveal-zoom">
-        <div class="visual"><svg viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="forma-g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1A1A1A"/><stop offset="1" stop-color="#0A0A0A"/></linearGradient><pattern id="forma-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(244,241,234,.05)" stroke-width="1"/></pattern></defs><rect width="600" height="480" fill="url(#forma-g)"/><rect width="600" height="480" fill="url(#forma-grid)"/><g fill="none" stroke="rgba(244,241,234,.5)" stroke-width="1.5"><rect x="120" y="200" width="100" height="180"/><rect x="220" y="140" width="100" height="240"/><rect x="320" y="170" width="100" height="210"/><rect x="420" y="220" width="60" height="160"/><line x1="60" y1="380" x2="540" y2="380" stroke-width="2"/></g><circle cx="300" cy="100" r="32" fill="#D0EF00"/><circle cx="300" cy="100" r="56" fill="none" stroke="#D0EF00" stroke-width="1" opacity=".4"/><circle cx="300" cy="100" r="80" fill="none" stroke="#D0EF00" stroke-width="1" opacity=".15"/><text x="40" y="60" font-family="JetBrains Mono" font-size="11" letter-spacing="3" fill="rgba(244,241,234,.45)">FORMA / 01</text><text x="40" y="450" font-family="JetBrains Mono" font-size="11" letter-spacing="3" fill="rgba(244,241,234,.45)">ARCHITECTURE STUDIO</text></svg></div>
-        <div class="body">
-          <div class="pill-row"><span class="num">Project 01</span><span class="year">2024 · Q4 · 4 weeks</span></div>
-          <h3>Architecture studio site that 3×'d the pipeline.</h3>
-          <span class="cat"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);"></span>Web · Brand refresh</span>
-          <p class="desc">Brief: "Naše portfólio je svetové, ale web vyzerá ako template." V 4 týždňoch sme dodali editorial-grade web postavený na ich vlastnom jazyku — nie agentúrnych šablónach.</p>
-          <div class="results">
-            <div class="r"><div class="v">+300%</div><div class="l">Leads / mo</div></div>
-            <div class="r"><div class="v">1.2s</div><div class="l">LCP</div></div>
-            <div class="r"><div class="v">4 wks</div><div class="l">Ship time</div></div>
+        <div class="hero-overlay">
+          <div class="hero-overlay__top">
+            <span class="eyebrow">Woetive ✦ Studio · Issue 02 / 2026</span>
+            <span class="eyebrow eyebrow--right">Currently directing for Q3 2026 · Two slots open</span>
           </div>
-          <a href="#" class="case-link">Read case study</a>
-        </div>
-      </article>
 
-      <article class="work-card half reveal-zoom">
-        <div class="visual"><svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="veldt-g" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1A1A1A"/><stop offset="1" stop-color="#0A0A0A"/></radialGradient><pattern id="veldt-dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="1" fill="rgba(208,239,0,.4)"/></pattern></defs><rect width="400" height="250" fill="url(#veldt-g)"/><rect width="400" height="250" fill="url(#veldt-dots)"/><circle cx="200" cy="125" r="76" fill="#D0EF00" opacity=".18"/><circle cx="200" cy="125" r="48" fill="#D0EF00" opacity=".4"/><circle cx="200" cy="125" r="24" fill="#D0EF00"/><circle cx="200" cy="125" r="10" fill="#0A0A0A"/><text x="20" y="40" font-family="JetBrains Mono" font-size="10" letter-spacing="3" fill="rgba(244,241,234,.45)">VELDT / 02</text><text x="20" y="232" font-family="JetBrains Mono" font-size="10" letter-spacing="3" fill="rgba(244,241,234,.45)">2.4M REACH · 0 PAID</text></svg></div>
-        <div class="body">
-          <div class="pill-row"><span class="num">Project 02</span><span class="year">2024 · Q2 · 6 weeks</span></div>
-          <h3>2.4M reach. Zero paid euros.</h3>
-          <span class="cat"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);"></span>Art direction · Campaign</span>
-          <p class="desc">Editorial campaign, ktorú ľudia zdieľali sami od seba — built on a single visual idea and tight typographic discipline.</p>
-          <div class="results">
-            <div class="r"><div class="v">2.4M</div><div class="l">Reach</div></div>
-            <div class="r"><div class="v">18%</div><div class="l">Engagement</div></div>
-            <div class="r"><div class="v">6 wks</div><div class="l">Live</div></div>
+          <div class="hero-overlay__center">
+            <h1 class="hero__headline">
+              Brands for companies<br>
+              that <em>outgrew</em> their first one.
+            </h1>
+            <p class="hero__subhead">Built by hand. Accelerated by AI.</p>
+            <div class="hero__actions">
+              <a href="#contact" class="btn btn--primary">Begin <span aria-hidden="true">→</span></a>
+              <a href="#work" class="btn btn--ghost">See work</a>
+            </div>
           </div>
-          <a href="#" class="case-link">Read case study</a>
-        </div>
-      </article>
 
-      <article class="work-card half reveal-zoom">
-        <div class="visual"><svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="nocta-g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#1A1A1A"/><stop offset=".5" stop-color="#0E0E0E"/><stop offset="1" stop-color="#1A1A1A"/></linearGradient></defs><rect width="400" height="250" fill="url(#nocta-g)"/><g fill="none" stroke="rgba(244,241,234,.4)" stroke-width="1.4"><path d="M170,40 L230,40 L240,60 L240,210 L160,210 L160,60 Z"/><line x1="160" y1="100" x2="240" y2="100"/><line x1="170" y1="135" x2="230" y2="135" stroke="rgba(244,241,234,.2)"/><line x1="170" y1="155" x2="230" y2="155" stroke="rgba(244,241,234,.2)"/><line x1="170" y1="175" x2="230" y2="175" stroke="rgba(244,241,234,.2)"/></g><text x="200" y="85" font-family="Fraunces" font-style="italic" font-size="14" letter-spacing="3" fill="#D0EF00" text-anchor="middle">NOCTA</text><circle cx="320" cy="80" r="22" fill="none" stroke="#D0EF00" stroke-width="1" opacity=".7"/><circle cx="320" cy="80" r="6" fill="#D0EF00"/><text x="20" y="40" font-family="JetBrains Mono" font-size="10" letter-spacing="3" fill="rgba(244,241,234,.45)">NOCTA / 03</text><text x="20" y="232" font-family="JetBrains Mono" font-size="10" letter-spacing="3" fill="rgba(244,241,234,.45)">3 AWARDS · SPIRITS</text></svg></div>
-        <div class="body">
-          <div class="pill-row"><span class="num">Project 03</span><span class="year">2023 · Q4 · 12 weeks</span></div>
-          <h3>From zero to 3 design awards.</h3>
-          <span class="cat"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);"></span>Brand identity · Packaging</span>
-          <p class="desc">Spirits brand stavaný od názvu po prvé fľaše v retaily. Drží premium pozíciu bez agentúrneho vkusu.</p>
-          <div class="results">
-            <div class="r"><div class="v">3</div><div class="l">Awards</div></div>
-            <div class="r"><div class="v">+210%</div><div class="l">Retail</div></div>
-            <div class="r"><div class="v">12 wks</div><div class="l">Launch</div></div>
+          <div class="hero-overlay__bottom">
+            <span class="scroll-cue">Scroll to read <span aria-hidden="true">↓</span></span>
           </div>
-          <a href="#" class="case-link">Read case study</a>
-        </div>
-      </article>
-    </div>
-
-    <div class="work-cta reveal">
-      <a class="btn" href="mailto:house@woetive.com?subject=Send me your full case studies">See full archive (8 cases) <span class="arr">→</span></a>
-    </div>
-  </div>
-</section>
-
-<section class="manifesto">
-  <div class="manifesto-inner">
-    <div class="lbl">Manifesto</div>
-    <p class="manifesto-reveal"><span>Every</span> <span>brand</span> <span>tells</span> <span>a</span> <span>story.</span><br/><span>Most</span> <span>are</span> <span class="fade">forgotten</span><span>.</span><br/><span>We</span> <span>build</span> <span>the</span> <span>ones</span> <span>people</span> <span class="hl">remember</span><span>.</span></p>
-    <span class="star">✦</span>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="label"><span class="mono">Why Woetive · 6 differentiators</span></div>
-      <h2>Not an agency. <em>Your creative team.</em></h2>
-    </div>
-    <div class="bento-grid">
-      <div class="bc bc-1 reveal">
-        <div>
-          <div class="k">01 · Team</div>
-          <h3 style="margin-top:14px;">Two people, one AI stack.</h3>
-        </div>
-        <p class="body">Žiadny middle management. Žiadni juniori. Brief, ktorý napíšeš, číta jeden z nás — a od piatej minúty má AI navrhnuté smerovanie, ktoré ručne dolaďujeme.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="k" style="padding:6px 14px;border:1px solid var(--hairline);border-radius:100px;color:var(--text);background:rgba(250,250,247,.7);">Strategy</span>
-          <span class="k" style="padding:6px 14px;border:1px solid var(--hairline);border-radius:100px;color:var(--text);background:rgba(250,250,247,.7);">Craft</span>
-          <span class="k" style="padding:6px 14px;border:1px solid var(--hairline);border-radius:100px;color:var(--text);background:rgba(250,250,247,.7);">AI Workflow</span>
         </div>
       </div>
-      <div class="bc bc-2 reveal"><div class="k">02 · Communication</div><h3>Direct line. No PMs.</h3><p class="body">Slack/email odpovede do hodín, nie dní. Bratia, ktorí vedia o čom je tvoj projekt, sa neskrývajú za "account managera".</p></div>
-      <div class="bc bc-3 reveal"><div class="k">03 · Mindset</div><h3>Strategic + executional.</h3><p class="body">Joshua vedie stratégiu a AD. Daniel vedie remeslo a kód. Jedna miestnosť, jedno rozhodovanie.</p></div>
-      <div class="bc bc-4 reveal"><div class="k">04 · Trust</div><div class="big tabular"><span data-count="1800">0</span>+</div><p class="body">Hodín odpracovaných priamo na klientskych projektoch. Žiadni subdodávatelia.</p></div>
-      <div class="bc bc-5 reveal"><div class="k">05 · Process</div><h3>Brainstorm at the dinner table.</h3><p class="body">Bývame spolu. Tvoj brief pokračuje v hlavách aj po šiestej. Rozhodnutia sa skladajú rýchlejšie, keď medzi meetingmi nie sú steny.</p></div>
-      <div class="bc bc-6 reveal"><div class="k">06 · Speed</div><h3>Weeks, not quarters.</h3><p class="body">AI iteruje. My finalizujeme. Brand v 6–10 wks, web v 4–8.</p></div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section>
-  <div class="container">
-    <div class="sec-head reveal"><div class="label"><span class="mono">Testimonials · 4.8 / 5</span></div><h2>Trust <em>that returns.</em></h2></div>
-    <div class="testimonials-grid reveal-stagger">
-      <article class="tcard">
-        <div class="quote">Strategicky, vizuálne, ľudsky — všetko sedí. Úroveň, ktorú sme u lokálnych štúdií nevideli.</div>
-        <div class="who"><div class="av">ML</div><div class="meta"><div class="n">Ing. Miroslav Labaš</div><div class="c">Spolumajiteľ · Labaš</div></div><div class="stars" style="margin-left:auto;">★★★★★</div></div>
-      </article>
-      <article class="tcard">
-        <div class="quote">Rýchlo, presne, bez zbytočného sales talku. Brand, ktorému rozumie zákazník aj konkurencia.</div>
-        <div class="who"><div class="av">MK</div><div class="meta"><div class="n">Ing. Milan Kovalančík</div><div class="c">Majiteľ · Mobilonline</div></div><div class="stars" style="margin-left:auto;">★★★★★</div></div>
-      </article>
-      <article class="tcard">
-        <div class="quote">Dvaja bratia, jedna hlava. Komunikácia na úrovni veľkých agentúr — bez ich inertie.</div>
-        <div class="who"><div class="av">IK</div><div class="meta"><div class="n">Ivan Kopčík</div><div class="c">CEO · Forbestclients</div></div><div class="stars" style="margin-left:auto;">★★★★★</div></div>
-      </article>
-    </div>
-  </div>
-</section>
+    <!-- ============================================ -->
+    <!-- SECTION 2 — MANIFESTO -->
+    <!-- ============================================ -->
+    <section class="section section--manifesto" id="manifesto" data-sequence="02_act1_pullback" data-frame-count="151">
+      <div class="section__pin">
+        <canvas
+          class="canvas-sequence"
+          data-canvas-id="manifesto"
+          aria-label="Anonymous figure standing in an architectural white space"
+          width="1600"
+          height="900"
+        ></canvas>
 
-<section id="about">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="label"><span class="mono">About · The brothers</span></div>
-      <h2>Two brothers. <em>One obsession.</em></h2>
-    </div>
-    <div class="about-stage reveal">
-      <video id="bros-video" autoplay muted playsinline preload="auto" disableRemotePlayback x-webkit-airplay="deny">
-        <source src="assets/hero-video.mp4" type="video/mp4">
-      </video>
-      <div class="veil"></div>
-      <div class="stage-text">
-        <h2>Built by hand. <em>Accelerated by AI.</em></h2>
-        <div class="stage-meta">
-          <span class="live">Live · since 2022</span>
-          <span>J.S.P / 001 · D.A.P / 002</span>
-          <span>Bratislava + Košice, SK</span>
+        <div class="manifesto-overlay">
+          <span class="eyebrow">Manifesto · 01</span>
+          <p class="manifesto__lead">
+            Most companies hit a moment when the brand stops keeping up.
+            The product evolves. The team grows. The customers change.
+            The identity stays the same — until it starts holding everything back.
+          </p>
+          <p class="manifesto__followup">
+            That's where we come in. Two directors. AI in the studio. Six weeks. One brand built for the next five years.
+          </p>
         </div>
       </div>
-    </div>
-    <div class="about-grid">
-      <article class="bro reveal">
-        <div class="photo"><img src="assets/joshua.webp" alt="Joshua Samuel Paquete" loading="lazy"/></div>
-        <div class="info">
-          <div class="badge"><span>J.S.P / 001</span><span>CEO · Art Director</span></div>
-          <div class="name">Joshua Samuel Paquete</div>
-          <div class="role">Older brother · Strategy first</div>
-          <p class="bio">Stavia AI workflow, ktorý nám dáva tempo desať-člennej agentúry. Obsesivný voči detailom, pokojný pod tlakom.</p>
-          <div class="pills"><span class="pill">Strategy</span><span class="pill">Art Direction</span><span class="pill">Prompt Eng.</span><span class="pill">AI Workflow</span></div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3 — PROOF / WORK INTRO -->
+    <!-- ============================================ -->
+    <section class="section section--proof" id="proof" data-sequence="03_act1_pointing" data-frame-count="151">
+      <div class="section__pin">
+        <canvas
+          class="canvas-sequence"
+          data-canvas-id="proof"
+          aria-label="Figure pointing toward an artwork in a vast gallery space"
+          width="1600"
+          height="900"
+        ></canvas>
+
+        <div class="proof-overlay">
+          <span class="eyebrow eyebrow--right">Selected ↓</span>
+          <h2 class="proof__heading">Recent work.</h2>
         </div>
-      </article>
-      <article class="bro reveal">
-        <div class="photo"><img src="assets/daniel.webp" alt="Daniel Alexander Paquete" loading="lazy"/></div>
-        <div class="info">
-          <div class="badge"><span>D.A.P / 002</span><span>Creative Director</span></div>
-          <div class="name">Daniel Alexander Paquete</div>
-          <div class="role">Younger brother · Craft first</div>
-          <p class="bio">AI generuje varianty, ja vyberám tú jednu, ktorá zostane v hlave klienta na desať rokov. Mysli ako dizajnér, robí ako remeselník.</p>
-          <div class="pills"><span class="pill">Web</span><span class="pill">Identity</span><span class="pill">Motion</span><span class="pill">AI Curation</span></div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 4 — SELECTED WORK (STATIC) -->
+    <!-- ============================================ -->
+    <section class="section section--work" id="work">
+      <div class="section__inner">
+        <div class="work-header">
+          <span class="eyebrow">Work · 2023—2026</span>
+          <h2 class="section__heading">Three projects. <em>Three problems solved.</em></h2>
         </div>
-      </article>
-    </div>
-  </div>
-</section>
 
-<section class="contact" id="contact">
-  <div class="container">
-    <div class="lbl"><span class="pulse"></span><span>Contact · Available May 2026</span></div>
-    <h2 class="reveal">Let's <em>talk.</em></h2>
-    <div class="contact-grid">
-      <div class="contact-block reveal">
-        <h4>Email · Direct to both of us</h4>
-        <a class="contact-email" href="mailto:house@woetive.com">house@woetive.com</a>
-        <p style="margin-top:24px;">Bratislava / Košice · Slovakia<br/>@woetive on IG · LI · BE</p>
+        <ol class="work-grid" role="list">
+          <li class="work-item">
+            <a href="mailto:house@woetive.com?subject=FORMA case study" class="work-item__link">
+              <div class="work-item__media">
+                <div class="work-item__placeholder" data-tone="charcoal">
+                  <span class="work-item__index">01</span>
+                  <span class="work-item__category">Architecture studio</span>
+                </div>
+              </div>
+              <div class="work-item__meta">
+                <h3 class="work-item__title">FORMA</h3>
+                <p class="work-item__brief">Architecture studio site that 3×'d the pipeline.</p>
+                <ul class="work-item__stats">
+                  <li><strong>+300%</strong> Leads / mo</li>
+                  <li><strong>1.2s</strong> LCP</li>
+                  <li><strong>4 wks</strong> Ship time</li>
+                </ul>
+                <span class="work-item__tag">Web · Brand refresh</span>
+              </div>
+            </a>
+          </li>
+
+          <li class="work-item">
+            <a href="mailto:house@woetive.com?subject=VELDT case study" class="work-item__link">
+              <div class="work-item__media">
+                <div class="work-item__placeholder" data-tone="black">
+                  <span class="work-item__index">02</span>
+                  <span class="work-item__category">Editorial campaign</span>
+                </div>
+              </div>
+              <div class="work-item__meta">
+                <h3 class="work-item__title">VELDT</h3>
+                <p class="work-item__brief">2.4M reach. Zero paid euros.</p>
+                <ul class="work-item__stats">
+                  <li><strong>2.4M</strong> Reach</li>
+                  <li><strong>18%</strong> Engagement</li>
+                  <li><strong>6 wks</strong> Live</li>
+                </ul>
+                <span class="work-item__tag">Art direction · Campaign</span>
+              </div>
+            </a>
+          </li>
+
+          <li class="work-item">
+            <a href="mailto:house@woetive.com?subject=NOCTA case study" class="work-item__link">
+              <div class="work-item__media">
+                <div class="work-item__placeholder" data-tone="ink">
+                  <span class="work-item__index">03</span>
+                  <span class="work-item__category">Spirits brand</span>
+                </div>
+              </div>
+              <div class="work-item__meta">
+                <h3 class="work-item__title">NOCTA</h3>
+                <p class="work-item__brief">From zero to 3 design awards.</p>
+                <ul class="work-item__stats">
+                  <li><strong>3</strong> Awards</li>
+                  <li><strong>+210%</strong> Retail</li>
+                  <li><strong>12 wks</strong> Launch</li>
+                </ul>
+                <span class="work-item__tag">Brand identity · Packaging</span>
+              </div>
+            </a>
+          </li>
+        </ol>
+
+        <a href="mailto:house@woetive.com?subject=Send me your full case studies" class="work-archive-link">
+          See full archive (8 cases) <span aria-hidden="true">→</span>
+        </a>
       </div>
-      <div class="contact-block reveal">
-        <h4>Start a project</h4>
-        <p>Najrýchlejší brief: <span class="key">čo robíte · pre koho · čo treba zmeniť · kedy.</span> Ozveme sa do 24 hodín.</p>
-        <a class="btn btn-primary magnetic" href="mailto:house@woetive.com?subject=New project brief">Start a project <span class="arr">→</span></a>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 5 — METHOD -->
+    <!-- ============================================ -->
+    <section class="section section--method" id="method" data-sequence="04_act2_compose" data-frame-count="151">
+      <div class="section__pin">
+        <canvas
+          class="canvas-sequence canvas-sequence--method"
+          data-canvas-id="method"
+          aria-label="Top-down view of a figure composing brand artifacts on a concrete floor"
+          width="1600"
+          height="900"
+        ></canvas>
+
+        <div class="method-overlay">
+          <span class="eyebrow">Method · 04</span>
+          <h2 class="method__heading">How we direct.</h2>
+
+          <ol class="method-steps" role="list">
+            <li class="method-step" data-step="1">
+              <span class="method-step__index">01</span>
+              <h3 class="method-step__title">Listen for two weeks.</h3>
+              <p class="method-step__copy">Most agencies skip this. It's why their work could belong to anyone.</p>
+            </li>
+            <li class="method-step" data-step="2">
+              <span class="method-step__index">02</span>
+              <h3 class="method-step__title">Position.</h3>
+              <p class="method-step__copy">Before any visual decision, we know what your brand stands for — and against.</p>
+            </li>
+            <li class="method-step" data-step="3">
+              <span class="method-step__index">03</span>
+              <h3 class="method-step__title">Design.</h3>
+              <p class="method-step__copy">Two directors, AI as a third hand. Thirty directions explored, three presented.</p>
+            </li>
+            <li class="method-step" data-step="4">
+              <span class="method-step__index">04</span>
+              <h3 class="method-step__title">Ship in six weeks.</h3>
+              <p class="method-step__copy">Full system, documented. No retainer trap.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 6 — FOUNDERS (STATIC) -->
+    <!-- ============================================ -->
+    <section class="section section--founders" id="founders">
+      <div class="section__inner">
+        <span class="eyebrow">About · The brothers</span>
+        <h2 class="founders__heading">Two brothers. <em>Same hand.</em></h2>
+
+        <div class="founders__lead">
+          <p>
+            Joshua leads strategy and art direction. Daniel leads craft and code. We live together. Brand decisions continue at the dinner table, not just in the studio. AI gives us the tempo of a ten-person agency. Hand finishes give us the integrity of a two-person one.
+          </p>
+        </div>
+
+        <div class="founders__grid">
+          <article class="founder-card">
+            <div class="founder-card__id">J.S.P / 001</div>
+            <div class="founder-card__portrait" aria-hidden="true">
+              <div class="founder-card__placeholder">JSP</div>
+            </div>
+            <h3 class="founder-card__name">Joshua Samuel Paquete</h3>
+            <span class="founder-card__role">CEO · Art Director</span>
+            <p class="founder-card__bio">Older brother · Strategy first. Builds the AI workflow that gives us ten-person tempo. Obsessed with detail, calm under pressure.</p>
+            <ul class="founder-card__tags">
+              <li>Strategy</li>
+              <li>Art Direction</li>
+              <li>Prompt Eng.</li>
+              <li>AI Workflow</li>
+            </ul>
+          </article>
+
+          <article class="founder-card">
+            <div class="founder-card__id">D.A.P / 002</div>
+            <div class="founder-card__portrait" aria-hidden="true">
+              <div class="founder-card__placeholder">DAP</div>
+            </div>
+            <h3 class="founder-card__name">Daniel Alexander Paquete</h3>
+            <span class="founder-card__role">Creative Director</span>
+            <p class="founder-card__bio">Younger brother · Craft first. Picks the one direction that stays in the client's head for ten years. Thinks like a designer, ships like a craftsman.</p>
+            <ul class="founder-card__tags">
+              <li>Web</li>
+              <li>Identity</li>
+              <li>Motion</li>
+              <li>AI Curation</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 7 — CONTACT -->
+    <!-- ============================================ -->
+    <section class="section section--contact" id="contact" data-sequence="05_act3_invitation" data-frame-count="151">
+      <div class="section__pin">
+        <canvas
+          class="canvas-sequence"
+          data-canvas-id="contact"
+          aria-label="Figure raising an open hand toward the viewer in invitation"
+          width="1600"
+          height="900"
+        ></canvas>
+
+        <div class="contact-overlay">
+          <span class="eyebrow">Contact · Q3 2026</span>
+          <h2 class="contact__heading">Your turn.</h2>
+          <p class="contact__line">
+            One project at a time. Currently directing for Q3 2026. Two slots open.
+          </p>
+          <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--accent btn--large">
+            Begin <span aria-hidden="true">→</span>
+          </a>
+          <p class="contact__email">
+            Or write directly: <a href="mailto:house@woetive.com">house@woetive.com</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================ -->
+  <!-- FOOTER -->
+  <!-- ============================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="footer__mark">WOETIVE</span>
+        <span class="footer__tagline">Built by hand. Accelerated by AI.</span>
+      </div>
+      <div class="footer__meta">
+        <span>© 2026 Woetive · Slovakia</span>
+        <span>Bratislava / Košice</span>
+        <span>Built by the brothers</span>
+      </div>
+      <div class="footer__social">
+        <a href="https://instagram.com/woetive" rel="noopener noreferrer" target="_blank">IG</a>
+        <a href="https://linkedin.com/company/woetive" rel="noopener noreferrer" target="_blank">LI</a>
+        <a href="https://behance.net/woetive" rel="noopener noreferrer" target="_blank">BE</a>
       </div>
     </div>
+  </footer>
+
+  <!-- Loading indicator (will be removed by JS once first sequence is ready) -->
+  <div class="boot" aria-hidden="true">
+    <div class="boot__bar"><div class="boot__fill"></div></div>
+    <span class="boot__label">Loading</span>
   </div>
-</section>
-
-<footer class="foot">
-  <span>© 2026 Woetive ✦ Slovakia</span>
-  <span>Bratislava / Košice</span>
-  <span>Built by the brothers</span>
-</footer>
-
-<script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://woetive.com/#org","name":"Woetive","url":"https://woetive.com/","email":"house@woetive.com","description":"AI-driven boutique branding studio. Two brothers, one AI stack.","foundingDate":"2022","founders":[{"@type":"Person","name":"Joshua Samuel Paquete","jobTitle":"CEO, Art Director"},{"@type":"Person","name":"Daniel Alexander Paquete","jobTitle":"Creative Director"}],"address":{"@type":"PostalAddress","addressLocality":"Bratislava","addressCountry":"SK"},"areaServed":["SK","CZ","AT","DE","HU","PL","EU"],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"18","bestRating":"5"}},{"@type":"WebSite","@id":"https://woetive.com/#website","url":"https://woetive.com/","name":"Woetive","publisher":{"@id":"https://woetive.com/#org"},"inLanguage":["en-US","sk-SK"]}]}
-</script>
-<script>
-// HERO blur reveals — words + letters
-(function(){
-  const head=document.querySelector('[data-blur-words]');
-  if(head){
-    // Wrap each word (preserving inline children like <span class="em">)
-    const wrap=(node)=>{
-      const out=document.createDocumentFragment();
-      node.childNodes.forEach(child=>{
-        if(child.nodeType===3){
-          const words=child.textContent.split(/(\s+)/);
-          words.forEach(w=>{
-            if(w.trim()===''){out.appendChild(document.createTextNode(w));return;}
-            const span=document.createElement('span');
-            span.className='word';span.textContent=w;
-            out.appendChild(span);
-          });
-        }else if(child.nodeType===1){
-          const span=document.createElement('span');
-          span.className='word';
-          // recurse children of element
-          const inner=document.createDocumentFragment();
-          child.childNodes.forEach(c=>{
-            if(c.nodeType===3){inner.appendChild(document.createTextNode(c.textContent));}
-            else inner.appendChild(c.cloneNode(true));
-          });
-          // copy classes from original element to inner content
-          const wrapper=document.createElement(child.tagName);
-          wrapper.className=child.className;
-          wrapper.appendChild(inner);
-          span.appendChild(wrapper);
-          out.appendChild(span);
-        }
-      });
-      node.innerHTML='';
-      node.appendChild(out);
-    };
-    wrap(head);
-    // Stagger reveal
-    const words=head.querySelectorAll('.word');
-    words.forEach((w,i)=>{w.style.transitionDelay=(80+i*70)+'ms';});
-    setTimeout(()=>head.classList.add('in'),100);
-  }
-
-  const sub=document.querySelector('[data-blur-letters]');
-  if(sub){
-    const text=sub.textContent;
-    sub.textContent='';
-    const frag=document.createDocumentFragment();
-    [...text].forEach((ch,i)=>{
-      const span=document.createElement('span');
-      span.className='ltr';
-      span.textContent=ch;
-      span.style.transitionDelay=(i*8)+'ms';
-      frag.appendChild(span);
-    });
-    sub.appendChild(frag);
-    // Reveal when in viewport
-    if('IntersectionObserver' in window){
-      const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.3});
-      io.observe(sub);
-    }else{sub.classList.add('in');}
-  }
-})();
-
-// SECTION 3D zoom — each section subtly scales + lifts as it enters/exits viewport
-(function(){
-  const sections=document.querySelectorAll('section');
-  if(!sections.length)return;
-  let raf=0;
-  const update=()=>{
-    const vh=innerHeight;
-    sections.forEach(s=>{
-      const r=s.getBoundingClientRect();
-      const center=(r.top+r.bottom)/2;
-      const dist=(center-vh/2)/vh;  // -1 (above) to 1 (below)
-      const absDist=Math.min(1,Math.abs(dist));
-      const scale=1-absDist*0.04;
-      const ty=dist*-12;
-      s.style.transform=`scale(${scale}) translateY(${ty}px)`;
-      s.style.opacity=String(1-absDist*0.3);
-    });
-  };
-  addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{update();raf=0;});},{passive:true});
-  update();
-})();
-
-// HERO per-component scroll motion (3D scene + typography stack)
-(function(){
-  const hero=document.getElementById('hero');
-  if(!hero)return;
-  const headline=hero.querySelector('.hero-headline');
-  const subEl=hero.querySelector('.hero-sub');
-  const ctas=hero.querySelector('.hero-ctas');
-  const top=hero.querySelector('.hero-top');
-  const bot=hero.querySelector('.hero-bot');
-  const ambient=hero.querySelector('.hero-ambient');
-  const stage=document.getElementById('stage');
-
-  let raf=0,sy=0;
-  const update=()=>{
-    const h=hero.offsetHeight;
-    const k=Math.min(1,Math.max(0,sy/h));
-    if(stage)stage.style.transform=`translateY(${k*-30}px) scale(${1-k*0.08})`;
-    if(headline)headline.style.transform=`translateY(${k*-50}px)`;
-    if(subEl){subEl.style.transform=`translateY(${k*-25}px)`;subEl.style.opacity=String(1-k*0.7);}
-    if(ctas){ctas.style.transform=`translateY(${k*-15}px) scale(${1-k*0.05})`;ctas.style.opacity=String(1-k*0.5);}
-    if(top){top.style.transform=`translateY(${k*-15}px)`;top.style.opacity=String(1-k*0.6);}
-    if(bot){bot.style.transform=`translateY(${k*40}px)`;bot.style.opacity=String(1-k*0.8);}
-    if(ambient)ambient.style.transform=`scale(${1+k*0.15})`;
-  };
-  addEventListener('scroll',()=>{sy=scrollY;if(!raf)raf=requestAnimationFrame(()=>{update();raf=0;});},{passive:true});
-  update();
-})();
-
-function initIridescentSphere(){
-  const canvas=document.getElementById('sphereCanvas');
-  if(!canvas||typeof THREE==='undefined')return;
-
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(40,1,0.1,100);
-  camera.position.z=5;
-  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
-  // Lights for iridescent reflection
-  scene.add(new THREE.AmbientLight(0xFFFFFF,0.45));
-  const l1=new THREE.PointLight(0xFFD0F0,2.6,10);l1.position.set(2,2,3);scene.add(l1);
-  const l2=new THREE.PointLight(0x80E6FF,2.4,10);l2.position.set(-2,-1,3);scene.add(l2);
-  const l3=new THREE.PointLight(0xD0EF00,1.4,10);l3.position.set(0,3,2);scene.add(l3);
-
-  // Perfectly smooth iridescent sphere — Apple Intelligence orb
-  const geo=new THREE.SphereGeometry(1.5,128,128);
-  const mat=new THREE.MeshPhysicalMaterial({
-    color:0xFFFFFF,
-    metalness:.35,
-    roughness:.04,
-    iridescence:1.0,
-    iridescenceIOR:1.45,
-    iridescenceThicknessRange:[100,900],
-    transmission:.4,
-    thickness:1.5,
-    clearcoat:1.0,
-    clearcoatRoughness:.08,
-    envMapIntensity:1.8,
-    transparent:true,
-    opacity:.92,
-  });
-  const sphere=new THREE.Mesh(geo,mat);
-  scene.add(sphere);
-
-  // Soft outer halo — atmospheric
-  const haloGeo=new THREE.SphereGeometry(1.62,64,64);
-  const haloMat=new THREE.MeshBasicMaterial({color:0xE8D6FF,transparent:true,opacity:.06,side:THREE.BackSide});
-  const halo=new THREE.Mesh(haloGeo,haloMat);
-  scene.add(halo);
-
-  // Particle dust
-  const pCount=600;
-  const pPos=new Float32Array(pCount*3);
-  for(let i=0;i<pCount;i++){
-    const r=2.5+Math.random()*2.5;
-    const theta=Math.random()*Math.PI*2;
-    const phi=Math.acos(2*Math.random()-1);
-    pPos[i*3]=r*Math.sin(phi)*Math.cos(theta);
-    pPos[i*3+1]=r*Math.sin(phi)*Math.sin(theta);
-    pPos[i*3+2]=r*Math.cos(phi);
-  }
-  const pGeo=new THREE.BufferGeometry();
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-  const pMat=new THREE.PointsMaterial({color:0xFFFFFF,size:.014,transparent:true,opacity:.55,sizeAttenuation:true,blending:THREE.AdditiveBlending});
-  const points=new THREE.Points(pGeo,pMat);
-  scene.add(points);
-
-  function resize(){
-    const r=canvas.getBoundingClientRect();
-    if(r.width===0||r.height===0)return;
-    renderer.setSize(r.width,r.height,false);
-    camera.aspect=r.width/r.height;
-    camera.updateProjectionMatrix();
-  }
-  resize();addEventListener('resize',resize);
-
-  let mx=0,my=0,tx=0,ty=0,sy=0;
-  addEventListener('mousemove',(e)=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;});
-  addEventListener('scroll',()=>{sy=scrollY;},{passive:true});
-
-  let visible=true;
-  if('IntersectionObserver' in window){
-    new IntersectionObserver((es)=>{visible=es[0].isIntersecting;},{threshold:0.01}).observe(canvas);
-  }
-
-  let t=0;
-  function tick(){
-    requestAnimationFrame(tick);
-    if(!visible)return;
-    t+=0.0035;
-    tx+=(mx*0.35-tx)*0.04;
-    ty+=(my*0.25-ty)*0.04;
-
-    // Slow rotation + mouse follow
-    sphere.rotation.y=t*0.35+tx;
-    sphere.rotation.x=Math.sin(t*0.25)*0.12+ty;
-    halo.rotation.y=-t*0.15;
-
-    // Breathe — subtle organic scale
-    const breathe=1+Math.sin(t*1.2)*0.025;
-    const scrollK=Math.min(1,sy/innerHeight);
-    sphere.scale.setScalar(breathe*(1-scrollK*0.12));
-    halo.scale.setScalar(breathe*1.04*(1-scrollK*0.1));
-    sphere.position.y=-scrollK*0.35;
-    halo.position.y=-scrollK*0.32;
-
-    points.rotation.y=t*0.06;
-    points.rotation.x=t*0.03;
-
-    // Animate lights for shifting iridescent reflection
-    l1.position.x=Math.sin(t*0.45)*2.6;
-    l1.position.y=Math.cos(t*0.55)*2.1;
-    l2.position.x=Math.cos(t*0.32)*2.6;
-    l2.position.y=Math.sin(t*0.42)*2;
-    l3.position.x=Math.sin(t*0.6+1)*2;
-    l3.position.y=Math.cos(t*0.5+1)*2.5;
-
-    renderer.render(scene,camera);
-  }
-  tick();
-}
-if(typeof THREE!=='undefined'){initIridescentSphere();}
-else{window.addEventListener('load',initIridescentSphere);}
-
-// Reveal on scroll
-(function(){
-  const els=document.querySelectorAll('.reveal,.reveal-zoom,.reveal-stagger,.manifesto-reveal');
-  if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}
-  const io=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
-  },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
-  els.forEach(el=>io.observe(el));
-})();
-
-// Counter
-(function(){
-  const counters=document.querySelectorAll('[data-count]');
-  if(!counters.length)return;
-  const animate=(el)=>{
-    const target=parseInt(el.dataset.count,10);
-    const dur=1600,start=performance.now();
-    const tick=(t)=>{
-      const p=Math.min(1,(t-start)/dur);
-      const ease=1-Math.pow(1-p,3);
-      el.textContent=Math.round(target*ease).toLocaleString();
-      if(p<1)requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-  if(!('IntersectionObserver' in window)){counters.forEach(animate);return;}
-  const io=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{if(e.isIntersecting){animate(e.target);io.unobserve(e.target);}});
-  },{threshold:0.4});
-  counters.forEach(c=>io.observe(c));
-})();
-
-// Hero kicker typewriter
-(function(){
-  const el=document.getElementById('heroType');
-  if(!el||!el.dataset.cycle)return;
-  const lines=el.dataset.cycle.split('|');
-  let i=0,j=0,deleting=false;
-  function step(){
-    const cur=lines[i];
-    if(!deleting){
-      el.textContent=cur.slice(0,j+1);
-      j++;
-      if(j===cur.length){deleting=true;setTimeout(step,2800);return;}
-      setTimeout(step,32);
-    }else{
-      el.textContent=cur.slice(0,j-1);
-      j--;
-      if(j===0){deleting=false;i=(i+1)%lines.length;setTimeout(step,250);return;}
-      setTimeout(step,18);
-    }
-  }
-  setTimeout(step,2200);
-})();
-
-// Card 3D tilt (desktop)
-(function(){
-  if(matchMedia('(pointer:coarse)').matches)return;
-  document.querySelectorAll('.work-card,.bc,.tcard,.bro,.proc-card,.svc-card').forEach(c=>{
-    let raf=0;
-    c.addEventListener('mousemove',(e)=>{
-      const r=c.getBoundingClientRect();
-      const px=(e.clientX-r.left)/r.width-0.5;
-      const py=(e.clientY-r.top)/r.height-0.5;
-      cancelAnimationFrame(raf);
-      raf=requestAnimationFrame(()=>{c.style.transform=`perspective(1200px) rotateY(${px*3.5}deg) rotateX(${-py*3.5}deg) translateY(-4px)`;});
-    });
-    c.addEventListener('mouseleave',()=>{
-      cancelAnimationFrame(raf);
-      c.style.transition='transform .7s cubic-bezier(.34,1.56,.64,1)';
-      c.style.transform='';
-      setTimeout(()=>{c.style.transition='';},720);
-    });
-  });
-})();
-
-// Magnetic buttons
-(function(){
-  if(matchMedia('(pointer:coarse)').matches)return;
-  document.querySelectorAll('.btn').forEach(btn=>{
-    let raf=0;
-    btn.addEventListener('mousemove',(e)=>{
-      const r=btn.getBoundingClientRect();
-      const dx=e.clientX-(r.left+r.width/2);
-      const dy=e.clientY-(r.top+r.height/2);
-      if(Math.hypot(dx,dy)<120){
-        cancelAnimationFrame(raf);
-        raf=requestAnimationFrame(()=>{btn.style.transform=`translate(${dx*0.22}px,${dy*0.22}px)`;});
-      }
-    });
-    btn.addEventListener('mouseleave',()=>{
-      cancelAnimationFrame(raf);
-      btn.style.transition='transform .7s cubic-bezier(.34,1.56,.64,1)';
-      btn.style.transform='';
-      setTimeout(()=>{btn.style.transition='';},720);
-    });
-  });
-})();
-
-// (Old hero parallax removed in v8 — replaced by per-component scroll motion above)
-
-// Brothers video — freeze on last frame after natural end (no JS replay = no stutter)
-(function(){
-  const v=document.getElementById('bros-video');
-  if(!v)return;
-  v.addEventListener('ended',()=>{
-    v.pause();
-    if(v.duration&&isFinite(v.duration)){
-      v.currentTime=Math.max(0,v.duration-0.04);
-    }
-  });
-})();
-
-// Nav scroll state + progress bar + on-dark detection
-(function(){
-  const nav=document.getElementById('nav');
-  const bar=document.getElementById('scrollProgress');
-  const darks=[...document.querySelectorAll('.hero,.services-section,.contact')];
-  const onScroll=()=>{
-    nav.classList.toggle('scrolled',scrollY>40);
-    if(bar){
-      const h=document.documentElement.scrollHeight-innerHeight;
-      bar.style.width=(h?(scrollY/h)*100:0)+'%';
-    }
-    // Detect if nav is over a dark section
-    const navY=40;
-    let onDark=false;
-    for(const s of darks){
-      const r=s.getBoundingClientRect();
-      if(r.top<=navY&&r.bottom>=navY){onDark=true;break;}
-    }
-    nav.classList.toggle('on-dark',onDark);
-  };
-  addEventListener('scroll',onScroll,{passive:true});onScroll();
-})();
-</script>
-
-<!-- AI sphere — clean smooth Three.js, mouse + scroll reactive -->
-<script type="module">
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-const canvas = document.getElementById('sphereCanvas');
-if (canvas) {
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
-  camera.position.z = 3.5;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
-
-  // Procedural environment for iridescence
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-  // Smooth sphere — Apple AI orb feel
-  const geo = new THREE.SphereGeometry(1.0, 96, 96);
-  const mat = new THREE.MeshPhysicalMaterial({
-    color: 0xFFFFFF,
-    metalness: 0.5,
-    roughness: 0.08,
-    iridescence: 0.7,
-    iridescenceIOR: 1.5,
-    iridescenceThicknessRange: [200, 700],
-    transmission: 0.3,
-    thickness: 1.4,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.06,
-    envMapIntensity: 1.4,
-  });
-  const sphere = new THREE.Mesh(geo, mat);
-  scene.add(sphere);
-
-  // STATIC lights — no orbiting, no flashing
-  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.5));
-  const keyLight = new THREE.PointLight(0xFFFFFF, 4, 10, 1.4);
-  keyLight.position.set(2, 2, 3);
-  scene.add(keyLight);
-  const accentLight = new THREE.PointLight(0xD0EF00, 1.2, 6, 1.6);
-  accentLight.position.set(-1.5, -1, 2);
-  scene.add(accentLight);
-
-  function resize() {
-    const r = canvas.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0) return;
-    renderer.setSize(r.width, r.height, false);
-    camera.aspect = r.width / r.height;
-    camera.updateProjectionMatrix();
-  }
-  resize();
-  addEventListener('resize', resize);
-
-  // Mouse + scroll
-  let mx = 0, my = 0, tx = 0, ty = 0, sy = 0;
-  addEventListener('mousemove', (e) => {
-    mx = (e.clientX / innerWidth - 0.5) * 2;
-    my = (e.clientY / innerHeight - 0.5) * 2;
-  });
-  addEventListener('scroll', () => { sy = scrollY; }, { passive: true });
-
-  let visible = true;
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { threshold: 0.01 }).observe(canvas);
-  }
-
-  let t = 0;
-  function tick() {
-    requestAnimationFrame(tick);
-    if (!visible) return;
-    t += 0.004;
-
-    // Strong mouse follow
-    tx += (mx * 0.6 - tx) * 0.06;
-    ty += (my * 0.4 - ty) * 0.06;
-
-    // Sphere rotation: slow base + mouse-reactive
-    sphere.rotation.y = t * 0.25 + tx * 0.8;
-    sphere.rotation.x = Math.sin(t * 0.2) * 0.08 + ty * 0.5;
-
-    // Scroll-driven scale + slight lift
-    const scrollK = Math.min(1, Math.max(0, sy / innerHeight));
-    sphere.scale.setScalar(1 + scrollK * 0.15);
-    sphere.position.y = -scrollK * 0.4;
-
-    renderer.render(scene, camera);
-  }
-  tick();
-}
-</script>
-
 </body>
 </html>
