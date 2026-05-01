@@ -38,6 +38,8 @@
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" defer></script>
   <!-- Main script -->
   <script src="/scripts/main.js" defer></script>
+  <!-- Animations layer (page enter, reveals, lime accent draw-in) -->
+  <script src="/scripts/animations.js" defer></script>
 </head>
 <body>
   <!-- Skip to content -->
@@ -62,7 +64,7 @@
     <!-- ============================================ -->
     <!-- SECTION 1 — HERO -->
     <!-- ============================================ -->
-    <section class="section section--hero" id="hero" data-sequence="01_act1_reveal" data-frame-count="151">
+    <section class="section section--hero section--has-canvas" id="hero" data-sequence="01_act1_reveal" data-frame-count="151">
       <div class="section__pin">
         <canvas
           class="canvas-sequence"
@@ -71,6 +73,8 @@
           width="1600"
           height="900"
         ></canvas>
+        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
+        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
         <div class="hero-overlay">
           <div class="hero-overlay__top">
@@ -81,7 +85,7 @@
           <div class="hero-overlay__center">
             <h1 class="hero__headline">
               Brands for companies<br>
-              that <em>outgrew</em> their first one.
+              that <em class="lime-accent">outgrew</em> their first one.
             </h1>
             <p class="hero__subhead">Built by hand. Accelerated by AI.</p>
             <div class="hero__actions">
@@ -98,9 +102,64 @@
     </section>
 
     <!-- ============================================ -->
-    <!-- SECTION 2 — MANIFESTO -->
+    <!-- SECTION 2 — TRUST RIBBON (static, marquee) -->
     <!-- ============================================ -->
-    <section class="section section--manifesto" id="manifesto" data-sequence="02_act1_pullback" data-frame-count="151">
+    <section class="section section--trust" id="trust" aria-label="Trusted clients">
+      <div class="section__inner">
+        <div class="trust-ribbon__head reveal-on-scroll">
+          <span class="eyebrow">Trusted by founders building real companies</span>
+        </div>
+      </div>
+      <div class="trust-ribbon" aria-hidden="false">
+        <div class="trust-row">
+          <span class="trust-name">Labaš</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Fresh Plus</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Mobilonline</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Gams</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Strategy1st</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Forbestclients</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Flowy</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-04</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-05</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-06</span><span class="trust-sep">✦</span>
+          <!-- duplicate for seamless loop -->
+          <span class="trust-name">Labaš</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Fresh Plus</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Mobilonline</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Gams</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Strategy1st</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Forbestclients</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Flowy</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-04</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-05</span><span class="trust-sep">✦</span>
+          <span class="trust-name">TBD-06</span><span class="trust-sep">✦</span>
+        </div>
+        <div class="trust-row trust-row--reverse">
+          <span class="trust-name">Identity</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Web</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Campaign</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Packaging</span><span class="trust-sep">✦</span>
+          <span class="trust-name">AI Workflow</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Strategy</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Art Direction</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Motion</span><span class="trust-sep">✦</span>
+          <!-- duplicate -->
+          <span class="trust-name">Identity</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Web</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Campaign</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Packaging</span><span class="trust-sep">✦</span>
+          <span class="trust-name">AI Workflow</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Strategy</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Art Direction</span><span class="trust-sep">✦</span>
+          <span class="trust-name">Motion</span><span class="trust-sep">✦</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3 — MANIFESTO -->
+    <!-- ============================================ -->
+    <section class="section section--manifesto section--has-canvas" id="manifesto" data-sequence="02_act1_pullback" data-frame-count="151">
       <div class="section__pin">
         <canvas
           class="canvas-sequence"
@@ -109,6 +168,8 @@
           width="1600"
           height="900"
         ></canvas>
+        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
+        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
         <div class="manifesto-overlay">
           <span class="eyebrow">Manifesto · 01</span>
@@ -127,7 +188,7 @@
     <!-- ============================================ -->
     <!-- SECTION 3 — PROOF / WORK INTRO -->
     <!-- ============================================ -->
-    <section class="section section--proof" id="proof" data-sequence="03_act1_pointing" data-frame-count="151">
+    <section class="section section--proof section--has-canvas" id="proof" data-sequence="03_act1_pointing" data-frame-count="151">
       <div class="section__pin">
         <canvas
           class="canvas-sequence"
@@ -136,6 +197,8 @@
           width="1600"
           height="900"
         ></canvas>
+        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
+        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
         <div class="proof-overlay">
           <span class="eyebrow eyebrow--right">Selected ↓</span>
@@ -149,12 +212,12 @@
     <!-- ============================================ -->
     <section class="section section--work" id="work">
       <div class="section__inner">
-        <div class="work-header">
+        <div class="work-header reveal-on-scroll">
           <span class="eyebrow">Work · 2023—2026</span>
           <h2 class="section__heading">Three projects. <em>Three problems solved.</em></h2>
         </div>
 
-        <ol class="work-grid" role="list">
+        <ol class="work-grid reveal-stagger" role="list">
           <li class="work-item">
             <a href="mailto:house@woetive.com?subject=FORMA case study" class="work-item__link">
               <div class="work-item__media">
@@ -228,7 +291,7 @@
     <!-- ============================================ -->
     <!-- SECTION 5 — METHOD -->
     <!-- ============================================ -->
-    <section class="section section--method" id="method" data-sequence="04_act2_compose" data-frame-count="151">
+    <section class="section section--method section--has-canvas" id="method" data-sequence="04_act2_compose" data-frame-count="151">
       <div class="section__pin">
         <canvas
           class="canvas-sequence canvas-sequence--method"
@@ -237,6 +300,8 @@
           width="1600"
           height="900"
         ></canvas>
+        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
+        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
         <div class="method-overlay">
           <span class="eyebrow">Method · 04</span>
@@ -269,20 +334,119 @@
     </section>
 
     <!-- ============================================ -->
-    <!-- SECTION 6 — FOUNDERS (STATIC) -->
+    <!-- SECTION 7 — WHY WOETIVE (static differentiators) -->
+    <!-- ============================================ -->
+    <section class="section section--why" id="why">
+      <div class="section__inner">
+        <div class="why-header reveal-on-scroll">
+          <span class="eyebrow">Why Woetive · 06 differentiators</span>
+          <h2 class="section__heading">Not an agency. <em>Your creative team.</em></h2>
+        </div>
+        <ol class="why-grid reveal-stagger" role="list">
+          <li class="why-card">
+            <span class="why-card__index">01 · Team</span>
+            <h3 class="why-card__title">Two people, one AI stack.</h3>
+            <p class="why-card__copy">No middle management. No juniors. Your brief gets read by a director, not parsed by a project manager.</p>
+            <ul class="why-card__tags">
+              <li>Strategy</li><li>Craft</li><li>AI Workflow</li>
+            </ul>
+          </li>
+          <li class="why-card">
+            <span class="why-card__index">02 · Communication</span>
+            <h3 class="why-card__title">Direct line. No PMs.</h3>
+            <p class="why-card__copy">Slack and email replies in hours, not days. The brothers who own your project answer their own DMs.</p>
+          </li>
+          <li class="why-card">
+            <span class="why-card__index">03 · Mindset</span>
+            <h3 class="why-card__title">Strategic + executional.</h3>
+            <p class="why-card__copy">Joshua leads strategy and AD. Daniel leads craft and code. One room, one decision.</p>
+          </li>
+          <li class="why-card">
+            <span class="why-card__index">04 · Trust</span>
+            <h3 class="why-card__title">100% in-house.</h3>
+            <p class="why-card__copy">Every hour billed is worked by Joshua or Daniel. No subcontractors. No outsourced asset farms.</p>
+          </li>
+          <li class="why-card">
+            <span class="why-card__index">05 · Process</span>
+            <h3 class="why-card__title">Brainstorm at the dinner table.</h3>
+            <p class="why-card__copy">We live together. Your brief continues in our heads after 6pm. Decisions compound faster when there's no wall between us.</p>
+          </li>
+          <li class="why-card">
+            <span class="why-card__index">06 · Speed</span>
+            <h3 class="why-card__title">Weeks, not quarters.</h3>
+            <p class="why-card__copy">AI iterates. We finalize. Brand identity in 6–10 weeks. Web in 4–8.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 8 — TESTIMONIALS (off-white bg) -->
+    <!-- ============================================ -->
+    <section class="section section--testimonials" id="testimonials">
+      <div class="section__inner">
+        <div class="testimonials-header reveal-on-scroll">
+          <span class="eyebrow">Testimonials · 4.8 / 5</span>
+          <h2 class="section__heading">Trust <em>that returns.</em></h2>
+        </div>
+        <ol class="testimonials-grid reveal-stagger" role="list">
+          <li class="tcard">
+            <p class="tcard__quote">Strategically, visually, humanly — everything fits. A level we hadn't seen from local studios.</p>
+            <div class="tcard__divider" aria-hidden="true"></div>
+            <div class="tcard__attr">
+              <div class="tcard__avatar">ML</div>
+              <div>
+                <div class="tcard__name">Ing. Miroslav Labaš</div>
+                <div class="tcard__role">Co-owner · Labaš</div>
+                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+              </div>
+            </div>
+          </li>
+          <li class="tcard">
+            <p class="tcard__quote">Fast, precise, no sales talk. A brand the customer understands — and the competition notices.</p>
+            <div class="tcard__divider" aria-hidden="true"></div>
+            <div class="tcard__attr">
+              <div class="tcard__avatar">MK</div>
+              <div>
+                <div class="tcard__name">Ing. Milan Kovalančík</div>
+                <div class="tcard__role">Owner · Mobilonline</div>
+                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+              </div>
+            </div>
+          </li>
+          <li class="tcard">
+            <p class="tcard__quote">Two brothers, one head. Communication at the level of big agencies — without their inertia.</p>
+            <div class="tcard__divider" aria-hidden="true"></div>
+            <div class="tcard__attr">
+              <div class="tcard__avatar">IK</div>
+              <div>
+                <div class="tcard__name">Ivan Kopčík</div>
+                <div class="tcard__role">CEO · Forbestclients</div>
+                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 9 — FOUNDERS (STATIC) -->
     <!-- ============================================ -->
     <section class="section section--founders" id="founders">
       <div class="section__inner">
-        <span class="eyebrow">About · The brothers</span>
-        <h2 class="founders__heading">Two brothers. <em>Same hand.</em></h2>
+        <div class="reveal-on-scroll">
+          <span class="eyebrow">About · The brothers</span>
+          <h2 class="founders__heading">Two brothers. <em>Same hand.</em></h2>
+        </div>
 
-        <div class="founders__lead">
+        <div class="founders__lead reveal-on-scroll">
           <p>
             Joshua leads strategy and art direction. Daniel leads craft and code. We live together. Brand decisions continue at the dinner table, not just in the studio. AI gives us the tempo of a ten-person agency. Hand finishes give us the integrity of a two-person one.
           </p>
         </div>
 
-        <div class="founders__grid">
+        <div class="founders__grid reveal-stagger">
           <article class="founder-card">
             <div class="founder-card__id">J.S.P / 001</div>
             <div class="founder-card__portrait" aria-hidden="true">
@@ -321,7 +485,7 @@
     <!-- ============================================ -->
     <!-- SECTION 7 — CONTACT -->
     <!-- ============================================ -->
-    <section class="section section--contact" id="contact" data-sequence="05_act3_invitation" data-frame-count="151">
+    <section class="section section--contact section--has-canvas" id="contact" data-sequence="05_act3_invitation" data-frame-count="151">
       <div class="section__pin">
         <canvas
           class="canvas-sequence"
@@ -330,10 +494,12 @@
           width="1600"
           height="900"
         ></canvas>
+        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
+        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
         <div class="contact-overlay">
           <span class="eyebrow">Contact · Q3 2026</span>
-          <h2 class="contact__heading">Your turn.</h2>
+          <h2 class="contact__heading">Your <em class="lime-accent">turn.</em></h2>
           <p class="contact__line">
             One project at a time. Currently directing for Q3 2026. Two slots open.
           </p>
