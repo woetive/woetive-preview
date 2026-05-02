@@ -130,6 +130,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   justify-content: center;
   gap: 1rem;
   transition: opacity 0.6s var(--ease-out), visibility 0.6s var(--ease-out);
+  /* CSS failsafe — boot self-dismisses at 3s even if JS never runs */
+  animation: bootSafetyDismiss 0.6s var(--ease-out) 3s forwards;
+}
+@keyframes bootSafetyDismiss {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 .boot--hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .boot__bar {
@@ -146,6 +151,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.3s var(--ease-out);
+  /* Fill animates to 100% as failsafe progresses */
+  animation: bootFailsafeFill 3s linear forwards;
+}
+@keyframes bootFailsafeFill {
+  to { transform: scaleX(1); }
 }
 .boot__label {
   font-family: var(--font-mono);

@@ -190,7 +190,9 @@
       if (pct < 1 && !firstSeq.disposed && !dismissed) requestAnimationFrame(tick);
       else dismiss();
     };
-    setTimeout(dismiss, 4500);
+    setTimeout(dismiss, 2500);
+    // Click-to-dismiss escape hatch (in case anything goes wrong)
+    boot.addEventListener('click', dismiss);
     requestAnimationFrame(tick);
   }
 
