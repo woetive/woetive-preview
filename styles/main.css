@@ -4,18 +4,24 @@
    ============================================================ */
 
 :root {
-  --bg: #FFFFFF;
-  --bg-elevated: #FAFAFA;
-  --ink: #0A0A0A;
-  --ink-soft: rgba(10, 10, 10, 0.65);
-  --ink-faint: rgba(10, 10, 10, 0.40);
-  --line: rgba(10, 10, 10, 0.08);
-  --line-strong: rgba(10, 10, 10, 0.16);
+  /* Warm off-white system — replaces pure #FFF for editorial depth */
+  --bg: #FAFAF8;
+  --bg-elevated: #F1F0EC;
+  --bg-warm: #F4F2EC;
+  --ink: #0E0E0C;
+  --ink-soft: rgba(14, 14, 12, 0.66);
+  --ink-faint: rgba(14, 14, 12, 0.42);
+  --line: rgba(14, 14, 12, 0.08);
+  --line-strong: rgba(14, 14, 12, 0.16);
+  --line-bright: rgba(255, 255, 255, 0.55);
+  --shadow-tinted: 0 24px 48px -28px rgba(28, 24, 16, 0.18);
+  --shadow-tinted-lg: 0 36px 80px -40px rgba(28, 24, 16, 0.24);
   --accent: #D0EF00;
   --accent-glow: rgba(208, 239, 0, 0.5);
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   --t-display: clamp(2.5rem, 5.5vw, 5rem);
   --t-h-l: clamp(2rem, 4.5vw, 4rem);
@@ -28,12 +34,15 @@
 
   --container-max: 1440px;
   --container-pad: clamp(1.25rem, 4vw, 3rem);
-  --section-pad: clamp(4rem, 8vw, 8rem);
+  --section-pad: clamp(5rem, 10vw, 10rem);
   --nav-height: 4.5rem;
 
+  /* Custom motion — physical spring feel per high-end UI directive */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
   --t-fast: 0.2s var(--ease-out);
   --t-base: 0.4s var(--ease-out);
+  --t-soft: 0.7s var(--ease-spring);
 }
 
 /* ---- Reset + Base ---- */
@@ -53,15 +62,37 @@ body {
   font-size: var(--t-body);
   font-weight: 400;
   line-height: 1.5;
+  font-feature-settings: 'ss01' on, 'ss02' on, 'cv11' on;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Subtle film grain — fixed pseudo-overlay, GPU-cheap, never on scroll content */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
 }
 
 img, canvas { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 ol, ul { list-style: none; }
 h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.section-heading em,
+.overlay__sub em,
+.overlay__heading-display .lime-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
 em { font-style: italic; font-weight: 500; }
 button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointer; }
 
@@ -97,13 +128,31 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 }
 
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
   font-family: var(--font-mono);
   font-size: var(--t-eyebrow);
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  display: inline-block;
+  color: var(--ink-soft);
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(14, 14, 12, 0.04);
+  box-shadow:
+    inset 0 0 0 1px rgba(14, 14, 12, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  width: max-content;
+}
+.eyebrow::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  flex-shrink: 0;
 }
 
 /* ---- Boot loader ---- */
@@ -222,23 +271,39 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 .nav__menu a:hover { color: var(--ink); }
 .nav__menu a:hover::after { width: 100%; }
 
-/* ---- Buttons ---- */
+/* ---- Buttons — pill with nested icon (button-in-button) ---- */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem 0.5rem 1.25rem;
   border-radius: 999px;
   font-size: var(--t-body-s);
   font-weight: 500;
   letter-spacing: -0.005em;
   border: 1px solid transparent;
-  transition: transform var(--t-fast), background var(--t-fast),
-              color var(--t-fast), border-color var(--t-fast),
-              box-shadow var(--t-fast);
+  transition: transform 0.5s var(--ease-spring), background 0.5s var(--ease-spring),
+              color 0.5s var(--ease-spring), border-color 0.5s var(--ease-spring),
+              box-shadow 0.5s var(--ease-spring);
   cursor: pointer;
+  text-decoration: none;
 }
+.btn__label { line-height: 1; padding: 0.05em 0; }
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.5s var(--ease-spring), background 0.5s var(--ease-spring);
+  flex-shrink: 0;
+}
+.btn:hover .btn__icon { transform: translate(2px, -1px) scale(1.06); }
 .btn:active { transform: scale(0.97); }
+
 .btn--primary {
   background: var(--ink);
   color: var(--bg);
@@ -248,33 +313,43 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   background: var(--accent);
   color: var(--ink);
   border-color: var(--accent);
-  box-shadow: 0 12px 32px -10px var(--accent-glow);
+  box-shadow: 0 18px 40px -14px var(--accent-glow);
 }
+.btn--primary:hover .btn__icon { background: rgba(14, 14, 12, 0.12); box-shadow: inset 0 0 0 1px rgba(14, 14, 12, 0.16); }
+
 .btn--ghost {
   background: transparent;
   color: var(--ink);
   border-color: var(--line-strong);
+  padding: 0.625rem 1.25rem;
 }
 .btn--ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
 .btn--accent {
   background: var(--accent);
   color: var(--ink);
   border-color: var(--accent);
-  box-shadow: 0 8px 24px -10px var(--accent-glow);
+  box-shadow: 0 12px 32px -12px var(--accent-glow);
 }
+.btn--accent .btn__icon { background: rgba(14, 14, 12, 0.12); box-shadow: inset 0 0 0 1px rgba(14, 14, 12, 0.18); }
 .btn--accent:hover {
   background: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
-  box-shadow: 0 14px 36px -10px rgba(10, 10, 10, 0.4);
+  box-shadow: 0 18px 44px -14px rgba(14, 14, 12, 0.4);
 }
-.btn--large { padding: 1.125rem 2rem; font-size: var(--t-body); }
+.btn--accent:hover .btn__icon { background: rgba(255, 255, 255, 0.14); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
 
-/* ---- Lime accent draw-in ---- */
+.btn--large { padding: 0.625rem 0.75rem 0.625rem 1.625rem; font-size: var(--t-body); }
+.btn--large .btn__icon { width: 2.25rem; height: 2.25rem; }
+
+/* ---- Lime accent draw-in (serif for editorial feel) ---- */
 .lime-accent {
   position: relative;
+  font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   display: inline-block;
 }
 .lime-accent::after {
@@ -305,6 +380,7 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   top: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--bg);
 }
@@ -470,20 +546,28 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   margin-top: 1.5rem;
 }
 .work-card {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid transparent;
+  border-radius: 1.5rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px var(--line),
+    var(--shadow-tinted);
   opacity: 0;
   transform: translateX(60px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color var(--t-base), box-shadow var(--t-base);
+  transition: opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring),
+              box-shadow 0.6s var(--ease-spring);
 }
 .work-card.is-visible { opacity: 1; transform: translateX(0); }
 .work-card:hover {
-  border-color: var(--line-strong);
-  box-shadow: 0 24px 48px -28px rgba(10, 10, 10, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px var(--line-strong),
+    var(--shadow-tinted-lg);
 }
 .work-card__media {
   aspect-ratio: 4 / 3;
@@ -693,7 +777,7 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
-.trust__eyebrow { text-align: center; display: block; }
+.trust__eyebrow { margin: 0 auto; }
 .marquee {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent 0, var(--ink) 8%, var(--ink) 92%, transparent 100%);
@@ -737,18 +821,23 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 }
 .why-card {
   padding: 2rem;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--bg);
+  border: 1px solid transparent;
+  border-radius: 1.5rem;
+  background: var(--bg-elevated);
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  transition: transform var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px var(--line);
+  transition: transform 0.6s var(--ease-spring), box-shadow 0.6s var(--ease-spring);
 }
 .why-card:hover {
   transform: translateY(-4px);
-  border-color: var(--line-strong);
-  box-shadow: 0 24px 48px -28px rgba(10, 10, 10, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px var(--line-strong),
+    var(--shadow-tinted);
 }
 .why-card__num {
   font-family: var(--font-mono);
@@ -799,18 +888,23 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 .testimonial-card {
   padding: 2rem;
   background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid transparent;
+  border-radius: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 2rem;
-  transition: transform var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px var(--line);
+  transition: transform 0.6s var(--ease-spring), box-shadow 0.6s var(--ease-spring);
 }
 .testimonial-card:hover {
   transform: translateY(-3px);
-  border-color: var(--line-strong);
-  box-shadow: 0 24px 48px -28px rgba(10, 10, 10, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px var(--line-strong),
+    var(--shadow-tinted);
 }
 .testimonial-card__quote {
   font-size: var(--t-body-l);
@@ -874,17 +968,23 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 }
 .founder-card {
   padding: 2rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid transparent;
+  border-radius: 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: transform var(--t-base), border-color var(--t-base);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px var(--line);
+  transition: transform 0.6s var(--ease-spring), box-shadow 0.6s var(--ease-spring);
 }
 .founder-card:hover {
   transform: translateY(-3px);
-  border-color: var(--line-strong);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px var(--line-strong),
+    var(--shadow-tinted);
 }
 .founder-card__id {
   font-family: var(--font-mono);
