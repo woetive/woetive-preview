@@ -726,6 +726,189 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 
 
 /* ============================================================
+   MANIFESTO 3D — dark cinematic close-up section, sticky 250vh
+   ============================================================ */
+.manifesto3d {
+  position: relative;
+  height: 250vh;
+  background: #0A0A09;
+  color: #F5F5F0;
+  isolation: isolate;
+}
+.manifesto3d__sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+.manifesto3d__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #0A0A09;
+  opacity: 0;
+  transition: opacity 1s var(--ease-spring);
+}
+.manifesto3d__canvas.is-ready { opacity: 1; }
+
+.manifesto3d__fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 50%, rgba(208, 239, 0, 0.06), transparent 60%),
+    radial-gradient(ellipse 100% 100% at 70% 60%, #1a1a17 0%, #0A0A09 70%);
+  opacity: 1;
+  transition: opacity 1s var(--ease-spring);
+}
+.manifesto3d__canvas.is-ready ~ .manifesto3d__fallback { opacity: 0; }
+
+.manifesto3d__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  padding: calc(var(--nav-height) + 2rem) clamp(2rem, 5vw, 4rem) 4rem;
+  pointer-events: none;
+  gap: 2rem;
+}
+.manifesto3d__copy {
+  max-width: 50ch;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  pointer-events: auto;
+}
+.manifesto3d__eyebrow {
+  background: rgba(208, 239, 0, 0.10);
+  color: var(--accent);
+  box-shadow:
+    inset 0 0 0 1px rgba(208, 239, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.manifesto3d__eyebrow::before { background: var(--accent); }
+
+.manifesto-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.manifesto-item {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: 1.25rem 0 1.5rem;
+  border-bottom: 1px solid rgba(245, 245, 240, 0.10);
+  opacity: 0.32;
+  transition: opacity 0.6s var(--ease-spring);
+}
+.manifesto-item:last-child { border-bottom: 0; }
+.manifesto-item.is-active { opacity: 1; }
+
+.manifesto-item__num {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding-top: 0.55rem;
+}
+.manifesto-item__title {
+  font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  text-transform: uppercase;
+}
+.manifesto-item__title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.04em;
+  text-transform: none;
+  color: rgba(245, 245, 240, 0.86);
+  letter-spacing: -0.005em;
+}
+
+.manifesto3d__tagline {
+  font-size: var(--t-body-s);
+  color: rgba(245, 245, 240, 0.55);
+  max-width: 38ch;
+  margin-top: 1.25rem;
+  line-height: 1.5;
+}
+
+.manifesto3d__indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  align-items: flex-end;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: rgba(245, 245, 240, 0.32);
+  padding-right: 0.5rem;
+  position: relative;
+}
+.manifesto3d__indicator::before {
+  /* vertical guide line */
+  content: "";
+  position: absolute;
+  right: -0.75rem;
+  top: 0.5rem;
+  bottom: 3.5rem;
+  width: 1px;
+  background: rgba(245, 245, 240, 0.10);
+}
+.manifesto3d__step {
+  position: relative;
+  transition: color 0.4s var(--ease-spring);
+  padding-right: 1.25rem;
+}
+.manifesto3d__step::after {
+  content: "";
+  position: absolute;
+  right: -1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(245, 245, 240, 0.20);
+  transition: background 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring);
+}
+.manifesto3d__step.is-active {
+  color: var(--accent);
+}
+.manifesto3d__step.is-active::after {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.manifesto3d__cue {
+  margin-top: 2rem;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: rgba(245, 245, 240, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.manifesto3d__cue span { color: var(--accent); }
+
+/* Static fallback adjusts overlay layout */
+.manifesto3d--static .manifesto3d__canvas { display: none; }
+.manifesto3d--static .manifesto-item { opacity: 1; }
+.manifesto3d--static .manifesto3d__step { color: rgba(245, 245, 240, 0.55); }
+
+/* ============================================================
    STATIC SECTIONS — Trust, Why, Testimonials, Founders, Footer
    ============================================================ */
 .section { position: relative; }

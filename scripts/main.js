@@ -283,6 +283,44 @@
     addEventListener('scroll', update, { passive: true });
   }
 
+  // ---------- Manifesto 3D — sync overlay items with scroll ----
+  function setupManifesto3D() {
+    if (typeof ScrollTrigger === 'undefined') return;
+    const section = document.getElementById('manifesto3d');
+    if (!section) return;
+    const items = Array.from(section.querySelectorAll('.manifesto-item'));
+    const steps = Array.from(section.querySelectorAll('.manifesto3d__step'));
+    if (!items.length) return;
+
+    // Active ranges within section progress (0..1)
+    const ranges = [
+      [0.06, 0.32],
+      [0.30, 0.56],
+      [0.54, 0.78],
+      [0.76, 1.0],
+    ];
+
+    let activeIndex = -1;
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => {
+        const p = self.progress;
+        let idx = -1;
+        for (let i = 0; i < ranges.length; i++) {
+          if (p >= ranges[i][0] && p < ranges[i][1]) { idx = i; break; }
+        }
+        // If user scrolled past last range, keep last active
+        if (idx === -1 && p >= ranges[ranges.length - 1][0]) idx = ranges.length - 1;
+        if (idx === activeIndex) return;
+        activeIndex = idx;
+        items.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+        steps.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+      },
+    });
+  }
+
   // ---------- Stage scroll choreography ----------------------
   /**
    * Frame-indexed text reveals.
@@ -411,6 +449,7 @@
       gsap.registerPlugin(ScrollTrigger);
       setupScroll();
       bindStage(sequence);
+      setupManifesto3D();
 
       requestAnimationFrame(() => {
         sequence.resize();

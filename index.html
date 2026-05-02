@@ -25,6 +25,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" defer></script>
   <script src="/scripts/main.js" defer></script>
+  <script type="module" src="/scripts/scene3d.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -116,6 +117,50 @@
         </div>
       </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- MANIFESTO 3D — real Three.js scene, dark close-up, scroll-driven -->
+    <!-- ============================================================ -->
+    <section class="manifesto3d" id="manifesto3d" aria-label="Our manifesto">
+      <div class="manifesto3d__sticky">
+        <canvas class="manifesto3d__canvas" id="manifesto3d-canvas" aria-hidden="true"></canvas>
+        <!-- Static fallback (mobile / reduced-motion) — no canvas, just gradient -->
+        <div class="manifesto3d__fallback" aria-hidden="true"></div>
+
+        <div class="manifesto3d__overlay">
+          <div class="manifesto3d__copy">
+            <span class="eyebrow manifesto3d__eyebrow">Our Manifesto</span>
+            <ol class="manifesto-list" role="list">
+              <li class="manifesto-item" data-step="1">
+                <span class="manifesto-item__num">01</span>
+                <h3 class="manifesto-item__title"><span>We see</span><br/><em>the next chapter.</em></h3>
+              </li>
+              <li class="manifesto-item" data-step="2">
+                <span class="manifesto-item__num">02</span>
+                <h3 class="manifesto-item__title"><span>We shape</span><br/><em>what comes next.</em></h3>
+              </li>
+              <li class="manifesto-item" data-step="3">
+                <span class="manifesto-item__num">03</span>
+                <h3 class="manifesto-item__title"><span>We build systems</span><br/><em>that scale meaning.</em></h3>
+              </li>
+              <li class="manifesto-item" data-step="4">
+                <span class="manifesto-item__num">04</span>
+                <h3 class="manifesto-item__title"><span>We elevate brands</span><br/><em>beyond the first one.</em></h3>
+              </li>
+            </ol>
+            <p class="manifesto3d__tagline">Outsourced creative direction for companies that outgrew their first chapter.</p>
+          </div>
+
+          <aside class="manifesto3d__indicator" aria-hidden="true">
+            <span class="manifesto3d__step" data-step="1">01</span>
+            <span class="manifesto3d__step" data-step="2">02</span>
+            <span class="manifesto3d__step" data-step="3">03</span>
+            <span class="manifesto3d__step" data-step="4">04</span>
+            <span class="manifesto3d__cue">Scroll to continue <span aria-hidden="true">↓</span></span>
+          </aside>
+        </div>
+      </div>
+    </section>
 
     <!-- ============================================================ -->
     <!-- STATIC SECTIONS — appear after stage releases at 300vh.      -->
