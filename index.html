@@ -19,13 +19,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 
   <link rel="preload" as="image" href="/frames/01_act1/frame_0001.webp" />
-  <link rel="stylesheet" href="/styles/main.css?v=22a" />
+  <link rel="stylesheet" href="/styles/main.css?v=22b" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" defer></script>
-  <script src="/scripts/main.js?v=22a" defer></script>
-  <script type="module" src="/scripts/scene3d.js?v=22a"></script>
+  <script src="/scripts/main.js?v=22b" defer></script>
+
+  <!-- Three.js importmap — required so GLTFLoader's `import 'three'` resolves -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="/scripts/scene3d.js?v=22b"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
