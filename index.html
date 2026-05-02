@@ -11,14 +11,14 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Woetive — Brands for companies that outgrew their first one." />
   <meta property="og:description" content="Two brothers. AI in the studio. Six weeks per brand." />
-  <meta property="og:image" content="/frames/01_act1/frame_0001.jpg" />
+  <meta property="og:image" content="/frames/01_act1/frame_0001.webp" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 
-  <link rel="preload" as="image" href="/frames/01_act1/frame_0001.jpg" />
+  <link rel="preload" as="image" href="/frames/01_act1/frame_0001.webp" />
   <link rel="stylesheet" href="/styles/main.css" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
@@ -46,149 +46,67 @@
   <main id="main">
 
     <!-- ============================================================ -->
-    <!-- THE STAGE — single pinned canvas, 500vh of scroll, 5 acts -->
+    <!-- HERO STAGE — single canvas, 300vh scroll, 3 acts.            -->
+    <!-- v3 (REVEAL) → v5 (OFFER) → v2 (POINT). 363 frames continuous. -->
     <!-- ============================================================ -->
     <div class="stage" id="stage">
       <div class="stage__viewport">
-        <canvas class="stage__canvas" id="stage-canvas" aria-label="Anonymous figure performing through five acts in a white studio"></canvas>
+        <canvas class="stage__canvas" id="stage-canvas" aria-label="Anonymous figure turning, opening and pointing across three acts in a white studio"></canvas>
 
-        <!-- ACT 1 — HERO -->
-        <div class="overlay overlay--hero" data-act="1">
-          <div class="overlay__inner">
-            <div class="overlay__top">
-              <span class="eyebrow">Woetive ✦ Issue 02 / 2026</span>
-              <span class="eyebrow">Q3 2026 · Two slots open</span>
-            </div>
-            <h1 class="overlay__headline">
-              Brands for companies that <span class="lime-accent">outgrew</span> their first one.
+        <!-- ACT 1 — REVEAL — figure 3/4 back → frontal. Text on LEFT. -->
+        <div class="hero-overlay" data-act="1">
+          <div class="hero-text">
+            <span class="eyebrow" data-enter="0" data-exit="125">Woetive · Issue 02 / 2026</span>
+            <span class="eyebrow" data-enter="15" data-exit="125">Q3 2026 · Two slots open</span>
+            <h1 class="hero-headline">
+              <span class="hero-headline__row" data-enter="30" data-exit="125">Brands for</span>
+              <span class="hero-headline__row" data-enter="50" data-exit="125">companies that</span>
+              <span class="hero-headline__row" data-enter="70" data-exit="125"><span class="lime-accent" data-lime-trigger="100">outgrew</span></span>
+              <span class="hero-headline__row" data-enter="90" data-exit="125">their first one.</span>
             </h1>
-            <p class="overlay__subhead">Built by hand. Accelerated by AI.</p>
-            <div class="overlay__cta">
-              <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--primary"><span class="btn__label">Begin</span><span class="btn__icon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+            <p class="hero-subhead" data-enter="115" data-exit="125">
+              <span>Built by hand</span><span class="hero-subhead__sep" aria-hidden="true">·</span><span>Accelerated by AI</span>
+            </p>
+          </div>
+          <span class="scroll-cue" data-enter="0" data-exit="100" aria-hidden="true">Scroll <span>↓</span></span>
+        </div>
+
+        <!-- ACT 2 — OFFER — figure slides L, opens palm. Text on RIGHT, parallax. -->
+        <div class="hero-overlay" data-act="2">
+          <div class="hero-overlay__parallax">
+            <div class="hero-text hero-text--right">
+              <span class="eyebrow" data-enter="155" data-exit="250">Manifesto · 01</span>
+              <h2 class="hero-manifesto">
+                <span class="hero-manifesto__row" data-enter="170" data-exit="250">We don't redesign.</span>
+                <span class="hero-manifesto__row" data-enter="190" data-exit="250">We <em>re-direct.</em></span>
+              </h2>
+              <p class="hero-manifesto-sub" data-enter="210" data-exit="250">
+                Two directors · AI in studio · Six weeks per brand.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACT 3 — POINT — figure on left, arm extends right. Text on RIGHT, CTA at hand height. -->
+        <div class="hero-overlay" data-act="3" id="contact-cta">
+          <div class="hero-text hero-text--right hero-text--cta">
+            <span class="eyebrow" data-enter="270">Ready when you are</span>
+            <h2 class="hero-cta-headline">
+              <span class="hero-cta-headline__row" data-enter="285">Your</span>
+              <span class="hero-cta-headline__row"><span class="lime-accent" data-enter="305" data-lime-trigger="320">turn.</span></span>
+            </h2>
+            <p class="hero-cta-line" data-enter="335">
+              One project at a time. Currently directing for Q3 2026.
+            </p>
+            <div class="hero-cta-buttons" data-enter="345">
+              <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--accent btn--large">
+                <span class="btn__label">Begin</span>
+                <span class="btn__icon" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </a>
               <a href="#why" class="btn btn--ghost"><span class="btn__label">See work</span></a>
             </div>
-          </div>
-          <span class="scroll-cue" aria-hidden="true">Scroll <span>↓</span></span>
-        </div>
-
-        <!-- ACT 2 — MANIFESTO -->
-        <div class="overlay overlay--manifesto" data-act="2">
-          <div class="overlay__inner overlay__inner--right">
-            <span class="eyebrow">Manifesto · 01</span>
-            <p class="overlay__lead">
-              Most companies hit a moment when the brand stops keeping up. The product evolves. The team grows. The customers change. The identity stays the same — until it starts holding everything back.
-            </p>
-            <p class="overlay__followup">
-              That's where we come in. Two directors. AI in the studio. Six weeks. One brand built for the next five years.
-            </p>
-          </div>
-        </div>
-
-        <!-- ACT 3 — WORK -->
-        <div class="overlay overlay--work" data-act="3">
-          <div class="overlay__inner overlay__inner--full">
-            <div class="overlay__header">
-              <span class="eyebrow">Work · 2023—2026</span>
-              <h2 class="overlay__heading">Recent work.</h2>
-              <p class="overlay__sub">Three projects. <em>Three problems solved.</em></p>
-            </div>
-            <ol class="work-cards" role="list">
-              <li class="work-card" data-card="1">
-                <div class="work-card__media work-card__media--charcoal">
-                  <span class="work-card__index">01</span>
-                  <span class="work-card__category">Architecture studio</span>
-                  <div class="work-card__lime-line" aria-hidden="true"></div>
-                </div>
-                <div class="work-card__body">
-                  <span class="work-card__meta">Project 01 · 2024 Q4 · 4 weeks</span>
-                  <h3 class="work-card__title">FORMA</h3>
-                  <p class="work-card__brief">Architecture studio site that 3×'d the pipeline.</p>
-                  <ul class="work-card__stats">
-                    <li><strong>+300%</strong><span>Leads / mo</span></li>
-                    <li><strong>1.2s</strong><span>LCP</span></li>
-                    <li><strong>4 wks</strong><span>Ship time</span></li>
-                  </ul>
-                  <span class="work-card__tag">Web · Brand refresh</span>
-                </div>
-              </li>
-              <li class="work-card" data-card="2">
-                <div class="work-card__media work-card__media--black">
-                  <span class="work-card__index">02</span>
-                  <span class="work-card__category">Editorial campaign</span>
-                  <div class="work-card__lime-line" aria-hidden="true"></div>
-                </div>
-                <div class="work-card__body">
-                  <span class="work-card__meta">Project 02 · 2024 Q2 · 6 weeks</span>
-                  <h3 class="work-card__title">VELDT</h3>
-                  <p class="work-card__brief">2.4M reach. Zero paid euros.</p>
-                  <ul class="work-card__stats">
-                    <li><strong>2.4M</strong><span>Reach</span></li>
-                    <li><strong>18%</strong><span>Engagement</span></li>
-                    <li><strong>6 wks</strong><span>Live</span></li>
-                  </ul>
-                  <span class="work-card__tag">Art direction · Campaign</span>
-                </div>
-              </li>
-              <li class="work-card" data-card="3">
-                <div class="work-card__media work-card__media--ink">
-                  <span class="work-card__index">03</span>
-                  <span class="work-card__category">Spirits brand</span>
-                  <div class="work-card__lime-line" aria-hidden="true"></div>
-                </div>
-                <div class="work-card__body">
-                  <span class="work-card__meta">Project 03 · 2023 Q4 · 12 weeks</span>
-                  <h3 class="work-card__title">NOCTA</h3>
-                  <p class="work-card__brief">From zero to 3 design awards.</p>
-                  <ul class="work-card__stats">
-                    <li><strong>3</strong><span>Awards</span></li>
-                    <li><strong>+210%</strong><span>Retail</span></li>
-                    <li><strong>12 wks</strong><span>Launch</span></li>
-                  </ul>
-                  <span class="work-card__tag">Brand identity · Packaging</span>
-                </div>
-              </li>
-            </ol>
-          </div>
-        </div>
-
-        <!-- ACT 4 — METHOD -->
-        <div class="overlay overlay--method" data-act="4">
-          <div class="overlay__inner overlay__inner--right">
-            <span class="eyebrow">Method · 04</span>
-            <h2 class="overlay__heading">How we direct.</h2>
-            <ol class="method-steps" role="list">
-              <li class="method-step" data-step="1">
-                <span class="method-step__num">01</span>
-                <h3 class="method-step__title">Listen for two weeks.</h3>
-                <p class="method-step__copy">Most agencies skip this. It's why their work could belong to anyone.</p>
-              </li>
-              <li class="method-step" data-step="2">
-                <span class="method-step__num">02</span>
-                <h3 class="method-step__title">Position.</h3>
-                <p class="method-step__copy">Before any visual decision, we know what your brand stands for — and against.</p>
-              </li>
-              <li class="method-step" data-step="3">
-                <span class="method-step__num">03</span>
-                <h3 class="method-step__title">Design.</h3>
-                <p class="method-step__copy">Two directors, AI as a third hand. Thirty directions explored, three presented.</p>
-              </li>
-              <li class="method-step" data-step="4">
-                <span class="method-step__num">04</span>
-                <h3 class="method-step__title">Ship in six weeks.</h3>
-                <p class="method-step__copy">Full system, documented. No retainer trap.</p>
-              </li>
-            </ol>
-          </div>
-        </div>
-
-        <!-- ACT 5 — CONTACT -->
-        <div class="overlay overlay--contact" data-act="5" id="contact-cta">
-          <div class="overlay__inner overlay__inner--center">
-            <span class="eyebrow">Contact · Q3 2026</span>
-            <h2 class="overlay__heading-display">Your <span class="lime-accent">turn.</span></h2>
-            <p class="overlay__line">One project at a time. Currently directing for Q3 2026. Two slots open.</p>
-            <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--accent btn--large"><span class="btn__label">Begin</span><span class="btn__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-            <p class="overlay__email">Or write directly: <a href="mailto:house@woetive.com">house@woetive.com</a></p>
           </div>
         </div>
 
@@ -200,7 +118,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- STATIC SECTIONS — appear only after the stage releases     -->
+    <!-- STATIC SECTIONS — appear after stage releases at 300vh.      -->
     <!-- ============================================================ -->
 
     <!-- Trust ribbon -->

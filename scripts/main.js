@@ -1,8 +1,9 @@
 /* ============================================================
- * Woetive — v21 Stage Architecture
+ * Woetive — Hero Stage v22
  *
- * ONE pinned canvas, 5 acts, 605 frames continuous timeline.
- * Vanilla. Globals: gsap, ScrollTrigger, Lenis.
+ * 3 acts × 121 frames = 363-frame continuous timeline.
+ * v3 (REVEAL) → v5 (OFFER) → v2 (POINT).
+ * Text appears frame-indexed (sync with figure motion, not scroll %).
  * ========================================================== */
 (() => {
   'use strict';
@@ -10,16 +11,8 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = matchMedia('(max-width: 768px)').matches;
 
-  // Frames per act. Adjust if folder counts differ.
-  const ACT_FRAME_COUNTS = {
-    act1: 121,
-    act2: 121,
-    act3: 121,
-    act4: 121,
-    act5: 121,
-  };
+  const ACT_FRAME_COUNTS = { act1: 121, act2: 121, act3: 121 };
 
-  // Build cumulative ranges for global frame index → (act, localIdx)
   function buildRanges() {
     const ranges = {};
     let cum = 0;
@@ -31,26 +24,22 @@
   }
   const { ranges: ACT_RANGES, total: TOTAL_FRAMES } = buildRanges();
 
-  // Map global index → folder + local index
   function globalToActLocal(globalIdx) {
     for (const [act, r] of Object.entries(ACT_RANGES)) {
-      if (globalIdx <= r.end) {
-        return { act, localIdx: globalIdx - r.start };
-      }
+      if (globalIdx <= r.end) return { act, localIdx: globalIdx - r.start };
     }
     const last = Object.values(ACT_RANGES).pop();
-    return { act: 'act5', localIdx: last.count - 1 };
+    return { act: 'act3', localIdx: last.count - 1 };
   }
 
   function actFolder(act) {
-    // 'act1' → '01_act1'
     const n = act.slice(3);
     return `0${n}_act${n}`;
   }
 
   function framePath(act, localIdx) {
     const num = String(localIdx + 1).padStart(4, '0');
-    return `/frames/${actFolder(act)}/frame_${num}.jpg`;
+    return `/frames/${actFolder(act)}/frame_${num}.webp`;
   }
 
   // ---------- StageSequence ----------------------------------
@@ -66,6 +55,7 @@
       this.loaded = 0;
       this.dpr = 1;
       this.disposed = false;
+      this.bgColor = '#FAFAF8';
       this.setupCanvas();
       this.fillBackground();
     }
@@ -86,7 +76,7 @@
     }
 
     fillBackground() {
-      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.fillStyle = this.bgColor;
       this.ctx.fillRect(0, 0, this.intrinsic.w, this.intrinsic.h);
     }
 
@@ -97,7 +87,8 @@
     }
 
     /**
-     * CONTAIN fit — figure is never cropped, white background fills empty space.
+     * COVER fit — figure fills the frame edge-to-edge cinematically.
+     * Frames are 16:9 wide; on most viewports we crop top/bottom slightly.
      */
     drawImage(img) {
       const w = this.intrinsic.w;
@@ -108,17 +99,19 @@
       const canvasRatio = w / h;
       let dw, dh, dx, dy;
       if (imgRatio > canvasRatio) {
-        dw = w;
-        dh = w / imgRatio;
-        dx = 0;
-        dy = (h - dh) / 2;
-      } else {
+        // image wider than canvas — fit height, crop sides equally
         dh = h;
         dw = h * imgRatio;
         dx = (w - dw) / 2;
         dy = 0;
+      } else {
+        // image taller than canvas — fit width, crop top/bottom equally
+        dw = w;
+        dh = w / imgRatio;
+        dx = 0;
+        dy = (h - dh) / 2;
       }
-      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.fillStyle = this.bgColor;
       this.ctx.fillRect(0, 0, w, h);
       this.ctx.drawImage(img, dx, dy, dw, dh);
     }
@@ -126,17 +119,16 @@
     draw(idx) {
       idx = Math.max(0, Math.min(TOTAL_FRAMES - 1, idx | 0));
       const img = this.images[idx];
-      if (img && img.complete) {
+      if (img && img.complete && img.naturalWidth) {
         this.drawImage(img);
         return;
       }
-      // Nearest-loaded fallback — search bidirectional, max 12 steps
       for (let d = 1; d <= 12; d++) {
         const a = idx - d, b = idx + d;
-        if (a >= 0 && this.images[a] && this.images[a].complete) {
+        if (a >= 0 && this.images[a] && this.images[a].complete && this.images[a].naturalWidth) {
           this.drawImage(this.images[a]); return;
         }
-        if (b < TOTAL_FRAMES && this.images[b] && this.images[b].complete) {
+        if (b < TOTAL_FRAMES && this.images[b] && this.images[b].complete && this.images[b].naturalWidth) {
           this.drawImage(this.images[b]); return;
         }
       }
@@ -169,7 +161,7 @@
       const { act, localIdx } = globalToActLocal(globalIdx);
       const img = new Image();
       img.decoding = 'async';
-      this.images[globalIdx] = img;       // reserve slot
+      this.images[globalIdx] = img;
       return new Promise((resolve) => {
         img.onload = () => {
           if (this.disposed) return resolve();
@@ -184,24 +176,16 @@
 
     /**
      * Two-phase preload:
-     *  Phase 1 — eager: poster (frame 0) + first frame of each subsequent act
-     *            so act transitions are instant
-     *  Phase 2 — bulk: rest of frames in batches of 12
+     *  Phase 1 — eager: poster (frame 0) + first frame of each act
+     *  Phase 2 — bulk: remaining frames in batches
      */
     async preload(onProgress) {
-      // Phase 1 — eager keyframes
-      const eagerIndices = [0];
-      let cum = ACT_RANGES.act1.count;
-      for (const act of ['act2', 'act3', 'act4', 'act5']) {
-        eagerIndices.push(cum);
-        cum += ACT_RANGES[act].count;
-      }
+      const eagerIndices = [0, ACT_RANGES.act2.start, ACT_RANGES.act3.start];
       await Promise.all(eagerIndices.map((i) => this.loadFrame(i)));
       this.canvas.classList.add('is-ready');
       this.draw(0);
       if (onProgress) onProgress(this);
 
-      // Phase 2 — bulk
       const batchSize = 12;
       for (let i = 1; i < TOTAL_FRAMES; i += batchSize) {
         if (this.disposed) return;
@@ -237,8 +221,7 @@
       setTimeout(() => boot.remove(), 700);
       document.dispatchEvent(new CustomEvent('woetive:boot-done'));
     };
-    // Watch loaded count for first ~10 frames
-    const target = 10;
+    const target = 6;
     let last = 0;
     const tick = () => {
       const pct = Math.min(1, seq.loaded / target);
@@ -249,7 +232,7 @@
       if (pct < 1 && !seq.disposed && !dismissed) requestAnimationFrame(tick);
       else dismiss();
     };
-    setTimeout(dismiss, 2500);
+    setTimeout(dismiss, 2200);
     boot.addEventListener('click', dismiss);
     requestAnimationFrame(tick);
   }
@@ -274,7 +257,6 @@
     return lenis;
   }
 
-  // ---------- Reveal observer for static sections -------------
   function setupRevealObservers() {
     if (reduceMotion) {
       document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) =>
@@ -293,7 +275,6 @@
     document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) => io.observe(el));
   }
 
-  // ---------- Nav scroll state -------------------------------
   function setupNavScroll() {
     const nav = document.querySelector('.nav');
     if (!nav) return;
@@ -302,68 +283,80 @@
     addEventListener('scroll', update, { passive: true });
   }
 
-  // ---------- Hero entrance ----------------------------------
-  function heroEntrance() {
-    const heroOverlay = document.querySelector('.overlay--hero');
-    const limeAccent = heroOverlay && heroOverlay.querySelector('.lime-accent');
-
-    if (reduceMotion || typeof gsap === 'undefined') {
-      if (heroOverlay) heroOverlay.classList.add('is-active');
-      if (limeAccent) limeAccent.classList.add('is-visible');
-      return;
-    }
-
-    const start = () => {
-      // Mark hero as active so opacity transitions correctly
-      if (heroOverlay) heroOverlay.classList.add('is-active');
-
-      const eyebrows = document.querySelectorAll('.overlay--hero .eyebrow');
-      const headline = document.querySelector('.overlay--hero .overlay__headline');
-      const subhead = document.querySelector('.overlay--hero .overlay__subhead');
-      const ctaButtons = document.querySelectorAll('.overlay--hero .btn');
-
-      gsap.set([eyebrows, headline, subhead, ctaButtons], { opacity: 0, y: 12 });
-
-      const tl = gsap.timeline();
-      tl.to(eyebrows, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' })
-        .to(headline, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.3')
-        .to(subhead, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.5')
-        .to(ctaButtons, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, '-=0.3');
-
-      // Lime accent draws in 1.4s after page load
-      setTimeout(() => {
-        if (limeAccent) limeAccent.classList.add('is-visible');
-      }, 1400);
-    };
-
-    const canvas = document.getElementById('stage-canvas');
-    if (canvas && canvas.classList.contains('is-ready')) {
-      start();
-    } else if (canvas) {
-      const id = setInterval(() => {
-        if (canvas.classList.contains('is-ready')) {
-          clearInterval(id);
-          start();
-        }
-      }, 80);
-      setTimeout(() => { clearInterval(id); start(); }, 1600);
-    } else {
-      start();
-    }
-  }
-
   // ---------- Stage scroll choreography ----------------------
+  /**
+   * Frame-indexed text reveals.
+   *
+   * Each [data-enter] element becomes visible when globalFrame >= enter.
+   * Optional [data-exit]: hidden again past that frame.
+   * The parent .hero-overlay also gets is-active when its act range matches.
+   *
+   * Act 2 parallax: text container drifts +/-20px X opposite to figure slide,
+   * mounted via CSS variable on the overlay element.
+   */
   function bindStage(sequence) {
     if (typeof ScrollTrigger === 'undefined') return;
 
     const stage = document.getElementById('stage');
-    const overlays = Array.from(document.querySelectorAll('.overlay'));
+    const overlays = Array.from(document.querySelectorAll('.hero-overlay'));
+    const triggers = Array.from(document.querySelectorAll('[data-enter]'));
+    const limeAccents = Array.from(document.querySelectorAll('[data-lime-trigger]'));
     const progressBar = document.querySelector('.stage__progress-bar');
-    const workCards = document.querySelectorAll('.overlay--work .work-card');
-    const methodSteps = document.querySelectorAll('.overlay--method .method-step');
-    const contactLime = document.querySelector('.overlay--contact .lime-accent');
+    const overlayAct2 = document.querySelector('.hero-overlay[data-act="2"]');
+    const scrollCue = document.querySelector('.scroll-cue');
 
     let activeAct = 1;
+
+    const apply = (globalFrame) => {
+      // Activate the right overlay (cross-fade between acts)
+      let act;
+      if (globalFrame < ACT_RANGES.act1.end + 0.5) act = 1;
+      else if (globalFrame < ACT_RANGES.act2.end + 0.5) act = 2;
+      else act = 3;
+
+      if (act !== activeAct) {
+        activeAct = act;
+        overlays.forEach((o) => {
+          const a = parseInt(o.dataset.act, 10);
+          o.classList.toggle('is-active', a === activeAct);
+        });
+      }
+
+      // Per-element frame-indexed reveals
+      for (const el of triggers) {
+        const enter = parseFloat(el.dataset.enter);
+        const exit = el.dataset.exit ? parseFloat(el.dataset.exit) : Infinity;
+        const visible = globalFrame >= enter && globalFrame < exit;
+        if (visible !== el.classList.contains('is-visible')) {
+          el.classList.toggle('is-visible', visible);
+        }
+      }
+
+      // Lime accent draw-ins
+      for (const el of limeAccents) {
+        const trigger = parseFloat(el.dataset.limeTrigger);
+        const visible = globalFrame >= trigger;
+        if (visible !== el.classList.contains('is-visible')) {
+          el.classList.toggle('is-visible', visible);
+        }
+      }
+
+      // Act 2 parallax — text drifts opposite to figure motion
+      if (overlayAct2) {
+        if (act === 2) {
+          const localT = (globalFrame - ACT_RANGES.act2.start) / ACT_RANGES.act2.count;
+          const offset = (localT - 0.5) * 32; // -16px → +16px
+          overlayAct2.style.setProperty('--parallax-x', offset.toFixed(2) + 'px');
+        } else {
+          overlayAct2.style.setProperty('--parallax-x', '0px');
+        }
+      }
+
+      // Hide scroll cue past act 1
+      if (scrollCue) {
+        scrollCue.style.opacity = globalFrame > 100 ? '0' : '';
+      }
+    };
 
     ScrollTrigger.create({
       trigger: stage,
@@ -372,83 +365,26 @@
       scrub: 0.5,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        const p = self.progress; // 0–1 across all 5 acts
+        const p = self.progress;
         sequence.setProgress(p);
-
         if (progressBar) progressBar.style.transform = `scaleX(${p})`;
-
-        // Determine active act (each act = 20% of stage scroll)
-        let act;
-        if (p < 0.2) act = 1;
-        else if (p < 0.4) act = 2;
-        else if (p < 0.6) act = 3;
-        else if (p < 0.8) act = 4;
-        else act = 5;
-
-        if (act !== activeAct) {
-          activeAct = act;
-          overlays.forEach((o) => {
-            const a = parseInt(o.dataset.act, 10);
-            o.classList.toggle('is-active', a === activeAct);
-          });
-        }
-
-        // Frame-indexed sub-events
         const globalFrame = p * (TOTAL_FRAMES - 1);
-
-        // Act 3 (work cards) — slide-in based on local frame within act 3
-        if (activeAct === 3) {
-          const act3LocalFrame = globalFrame - ACT_RANGES.act3.start;
-          workCards.forEach((card) => {
-            const cardN = parseInt(card.dataset.card, 10);
-            const threshold = cardN === 1 ? 30 : cardN === 2 ? 60 : 90;
-            card.classList.toggle('is-visible', act3LocalFrame >= threshold);
-          });
-        } else if (activeAct < 3) {
-          // Hide cards if user scrolls back before act 3
-          workCards.forEach((card) => card.classList.remove('is-visible'));
-        } else {
-          // Past act 3 — keep all visible
-          workCards.forEach((card) => card.classList.add('is-visible'));
-        }
-
-        // Act 4 (method steps) — fade in by local progress within act 4
-        if (activeAct === 4) {
-          const act4Local = (p - 0.6) / 0.2; // 0..1 within act 4
-          methodSteps.forEach((step) => {
-            const stepN = parseInt(step.dataset.step, 10);
-            const threshold = (stepN - 1) * 0.25;
-            step.classList.toggle('is-visible', act4Local >= threshold);
-          });
-        } else if (activeAct < 4) {
-          methodSteps.forEach((step) => step.classList.remove('is-visible'));
-        } else {
-          methodSteps.forEach((step) => step.classList.add('is-visible'));
-        }
-
-        // Act 5 (contact lime accent) — appears in last 30% of act 5
-        if (contactLime) {
-          const act5Local = (p - 0.8) / 0.2; // 0..1 within act 5
-          const visible = activeAct === 5 && act5Local >= 0.3;
-          contactLime.classList.toggle('is-visible', visible);
-        }
+        apply(globalFrame);
       },
     });
 
-    // Initial sync — ensure act 1 is active
-    overlays.forEach((o) => {
-      const a = parseInt(o.dataset.act, 10);
-      o.classList.toggle('is-active', a === 1);
-    });
+    // Initial state — activate act 1 + apply triggers for frame 0
+    overlays.forEach((o) => o.classList.toggle('is-active', parseInt(o.dataset.act, 10) === 1));
+    apply(0);
   }
 
   // ---------- Reduced-motion fallback -------------------------
   function reducedMotionFallback(sequence) {
     sequence.preload();
-    // Show all overlays as static blocks (CSS handles vertical layout)
-    document.querySelectorAll('.overlay').forEach((o) => o.classList.add('is-active'));
-    document.querySelectorAll('.work-card, .method-step').forEach((el) => el.classList.add('is-visible'));
-    document.querySelectorAll('.lime-accent').forEach((el) => el.classList.add('is-visible'));
+    document.querySelectorAll('.hero-overlay').forEach((o) => o.classList.add('is-active'));
+    document.querySelectorAll('[data-enter], [data-lime-trigger]').forEach((el) =>
+      el.classList.add('is-visible')
+    );
   }
 
   // ---------- Bootstrap --------------------------------------
@@ -475,7 +411,6 @@
       gsap.registerPlugin(ScrollTrigger);
       setupScroll();
       bindStage(sequence);
-      heroEntrance();
 
       requestAnimationFrame(() => {
         sequence.resize();
@@ -484,7 +419,6 @@
     };
     start();
 
-    // Resize handler
     let resizeTimer = 0;
     addEventListener('resize', () => {
       clearTimeout(resizeTimer);

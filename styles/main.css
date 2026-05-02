@@ -85,9 +85,7 @@ img, canvas { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 ol, ul { list-style: none; }
 h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
-.section-heading em,
-.overlay__sub em,
-.overlay__heading-display .lime-accent {
+.section-heading em {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
@@ -369,11 +367,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 .lime-accent.is-visible::after { transform: scaleX(1); }
 
 /* ============================================================
-   THE STAGE — single canvas, 500vh of scroll
+   THE STAGE — single canvas, 300vh of scroll, 3 hero acts
    ============================================================ */
 .stage {
   position: relative;
-  height: 500vh;   /* total scroll for all 5 acts */
+  height: 300vh;
 }
 .stage__viewport {
   position: sticky;
@@ -416,127 +414,189 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* ---- Overlays — base ---- */
-.overlay {
+/* ---- Hero overlays — frame-indexed text + per-act layout ---- */
+.hero-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
-  padding: calc(var(--nav-height) + 2rem) var(--container-pad) 4rem;
+  padding: calc(var(--nav-height) + 2rem) clamp(2rem, 6vw, 5rem) 4rem;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.6s var(--ease-out);
+  transition: opacity 0.7s var(--ease-spring);
   z-index: 5;
 }
-.overlay.is-active { opacity: 1; }
-.overlay.is-active * { pointer-events: auto; }
+.hero-overlay.is-active { opacity: 1; }
+.hero-overlay.is-active *:not([data-enter]) { pointer-events: auto; }
 
-.overlay__inner {
+.hero-overlay__parallax {
   width: 100%;
-  max-width: var(--container-max);
-  margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  transform: translateX(var(--parallax-x, 0));
+  will-change: transform;
 }
 
-/* Hero — left half */
-.overlay--hero .overlay__inner {
-  max-width: 50ch;
-  align-self: flex-start;
-}
-.overlay--hero .overlay__top {
+.hero-text {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 52ch;
 }
-.overlay--hero .overlay__headline {
-  font-size: var(--t-display);
+.hero-text--right { margin-left: auto; }
+
+/* Frame-indexed reveal: each [data-enter] starts hidden, fades up + unblurs */
+[data-enter] {
+  opacity: 0;
+  transform: translateY(22px);
+  filter: blur(8px);
+  transition: opacity 0.8s var(--ease-spring),
+              transform 1s var(--ease-spring),
+              filter 0.8s var(--ease-spring);
+  will-change: opacity, transform, filter;
+}
+[data-enter].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+/* ACT 1 — REVEAL — left, large display headline */
+.hero-overlay[data-act="1"] { justify-content: flex-start; }
+.hero-overlay[data-act="1"] .hero-text { max-width: 14ch; }
+.hero-overlay[data-act="1"] .eyebrow + .eyebrow { margin-top: -0.5rem; }
+.hero-headline {
+  font-size: clamp(3rem, 6.5vw, 6rem);
   font-weight: 700;
-  line-height: 0.96;
-  letter-spacing: -0.04em;
-  margin: 0;
-  max-width: 14ch;
-  text-wrap: balance;
-}
-.overlay--hero .overlay__subhead {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-  margin: 0;
-}
-.overlay--hero .overlay__cta {
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  margin: 0.25rem 0 0;
   display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
+  flex-direction: column;
+  gap: 0.05em;
 }
+.hero-headline__row {
+  display: inline-block;
+  width: max-content;
+  text-wrap: nowrap;
+}
+.hero-headline__row .lime-accent {
+  font-size: 1.04em;
+  line-height: 0.9;
+}
+.hero-subhead {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  margin: 0.5rem 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  white-space: nowrap;
+}
+.hero-subhead__sep { color: var(--accent); font-weight: 600; }
+
+/* ACT 2 — OFFER — right, editorial manifesto in serif italic */
+.hero-overlay[data-act="2"] { justify-content: flex-end; }
+.hero-overlay[data-act="2"] .hero-text { max-width: 18ch; }
+.hero-manifesto {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 5.5vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.04em;
+}
+.hero-manifesto__row { display: block; }
+.hero-manifesto__row em {
+  font-style: italic;
+  color: var(--ink);
+  position: relative;
+}
+.hero-manifesto-sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+
+/* ACT 3 — POINT — right, CTA at figure-hand height */
+.hero-overlay[data-act="3"] { justify-content: flex-end; }
+.hero-overlay[data-act="3"] .hero-text--cta {
+  max-width: 22ch;
+  /* push down so CTA buttons sit roughly where figure's hand points (~52% from top) */
+  margin-top: clamp(2rem, 8vh, 6rem);
+}
+.hero-cta-headline {
+  font-size: clamp(3rem, 7vw, 7rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  margin: 0.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.hero-cta-headline__row { display: inline-block; width: max-content; }
+.hero-cta-headline__row .lime-accent {
+  font-size: 1.08em;
+  letter-spacing: -0.03em;
+}
+.hero-cta-line {
+  font-size: var(--t-body-l);
+  color: var(--ink-soft);
+  max-width: 30ch;
+  margin: 0.75rem 0 0;
+  line-height: 1.4;
+}
+.hero-cta-buttons {
+  display: flex;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* Scroll cue — only visible early in act 1 */
 .scroll-cue {
   position: absolute;
-  bottom: 2rem;
+  bottom: 2.5rem;
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-mono);
   font-size: var(--t-eyebrow);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-faint);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   animation: scrollBob 2.4s var(--ease-out) infinite;
   z-index: 6;
+  opacity: 0.85;
+  transition: opacity 0.6s var(--ease-out);
+}
+.scroll-cue[data-enter] {
+  /* Override base reveal — stays anchored, no Y-translate */
+  transform: translateX(-50%) translateY(8px);
+  filter: blur(3px);
+}
+.scroll-cue[data-enter].is-visible {
+  transform: translateX(-50%);
+  filter: blur(0);
 }
 @keyframes scrollBob {
-  0%, 100% { transform: translate(-50%, 0); opacity: 0.7; }
-  50% { transform: translate(-50%, 4px); opacity: 1; }
-}
-
-/* Manifesto — right half */
-.overlay--manifesto .overlay__inner--right,
-.overlay--method .overlay__inner--right {
-  max-width: 50ch;
-  margin-left: auto;
-  margin-right: 0;
-}
-.overlay--manifesto .overlay__lead {
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
-  font-weight: 500;
-  line-height: 1.18;
-  letter-spacing: -0.025em;
-  max-width: 22ch;
-  margin: 0;
-  text-wrap: balance;
-}
-.overlay--manifesto .overlay__followup {
-  font-size: var(--t-body-l);
-  line-height: 1.55;
-  color: var(--ink-soft);
-  max-width: 32ch;
-  margin: 0;
-}
-
-/* Work — full width */
-.overlay--work .overlay__inner--full {
-  max-width: var(--container-max);
-}
-.overlay--work .overlay__header {
-  margin-bottom: 1.5rem;
-}
-.overlay--work .overlay__heading {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 0.96;
-  margin: 0.5rem 0 0.5rem;
-}
-.overlay--work .overlay__sub {
-  font-size: var(--t-body-l);
-  color: var(--ink-soft);
-  margin: 0;
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(4px); }
 }
 
 .work-cards {
@@ -664,75 +724,6 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   margin-top: 0.25rem;
 }
 
-/* Method — right half */
-.overlay--method .overlay__heading {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 0.96;
-  margin: 0.5rem 0 0;
-}
-.method-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  margin-top: 1rem;
-}
-.method-step {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-.method-step.is-visible { opacity: 1; transform: none; }
-.method-step__num {
-  font-family: var(--font-mono);
-  font-size: var(--t-eyebrow);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.method-step__title {
-  font-size: var(--t-h-s);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-}
-.method-step__copy {
-  font-size: var(--t-body-s);
-  color: var(--ink-soft);
-  line-height: 1.5;
-}
-
-/* Contact — center */
-.overlay--contact .overlay__inner--center {
-  max-width: 50ch;
-  align-items: center;
-  text-align: center;
-  margin: 0 auto;
-}
-.overlay--contact .overlay__heading-display {
-  font-size: clamp(3rem, 7vw, 6rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
-  margin: 0;
-}
-.overlay--contact .overlay__line {
-  font-size: var(--t-body-l);
-  color: var(--ink-soft);
-  max-width: 38ch;
-  margin: 0.5rem auto 0;
-}
-.overlay--contact .overlay__email {
-  font-family: var(--font-mono);
-  font-size: var(--t-body-s);
-  color: var(--ink-faint);
-  margin-top: 0.5rem;
-}
-.overlay--contact .overlay__email a { color: var(--ink); transition: color var(--t-fast); }
-.overlay--contact .overlay__email a:hover { color: var(--accent); }
 
 /* ============================================================
    STATIC SECTIONS — Trust, Why, Testimonials, Founders, Footer
@@ -1087,18 +1078,16 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   .nav__brand-tagline { display: none; }
   .nav__menu { gap: 1rem; }
 
-  /* Stage shorter on mobile */
-  .stage { height: 400vh; }
+  /* Mobile is intentionally minimal for now — desktop hero is the focus */
+  .stage { height: 300vh; }
+  .hero-overlay { padding: calc(var(--nav-height) + 1.5rem) 1.25rem 3rem; }
+  .hero-overlay[data-act="2"] .hero-text,
+  .hero-overlay[data-act="3"] .hero-text { max-width: 100%; }
+  .hero-overlay[data-act="1"] .hero-text { max-width: 100%; }
+  .hero-cta-buttons { flex-direction: column; align-items: stretch; }
+  .hero-cta-buttons .btn { justify-content: center; }
 
-  .overlay { padding: calc(var(--nav-height) + 1.5rem) var(--container-pad) 3rem; }
-  .overlay--manifesto .overlay__inner--right,
-  .overlay--method .overlay__inner--right { max-width: 100%; margin: 0; }
-  .overlay--hero .overlay__inner { max-width: 100%; }
-  .overlay--hero .overlay__cta { flex-direction: column; align-items: stretch; }
-  .overlay--hero .overlay__cta .btn { justify-content: center; }
-
-  .work-cards, .why__grid, .testimonials__grid { grid-template-columns: 1fr; }
-  .work-cards .work-card:nth-child(3) { max-width: 100%; }
+  .why__grid, .testimonials__grid { grid-template-columns: 1fr; }
   .founders__grid { grid-template-columns: 1fr; }
   .founders__meta span:nth-child(even) { display: none; }
   .footer__inner { grid-template-columns: 1fr; }
@@ -1118,9 +1107,10 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   .scroll-cue { animation: none !important; }
   .stage { height: auto; }
   .stage__viewport { position: relative; height: 100vh; }
-  .overlay { position: relative; opacity: 1; height: auto; min-height: 100vh; padding-block: var(--section-pad); }
-  .overlay.is-active { opacity: 1; }
-  .reveal-on-scroll, .reveal-stagger > *, .work-card, .method-step {
+  .hero-overlay { position: relative; opacity: 1; height: auto; min-height: 100vh; padding-block: var(--section-pad); }
+  .hero-overlay.is-active { opacity: 1; }
+  [data-enter] { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .reveal-on-scroll, .reveal-stagger > * {
     opacity: 1 !important;
     transform: none !important;
   }
