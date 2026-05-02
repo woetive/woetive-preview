@@ -1,38 +1,71 @@
 /* ============================================================
- * Woetive v20 — scroll-driven canvas with frame sequences
+ * Woetive — v21 Stage Architecture
  *
+ * ONE pinned canvas, 5 acts, 605 frames continuous timeline.
  * Vanilla. Globals: gsap, ScrollTrigger, Lenis.
- * 9 sections, 5 with canvas + 4 static. Frame format: JPG, 4-digit padded.
  * ========================================================== */
 (() => {
   'use strict';
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = matchMedia('(max-width: 768px)').matches;
-  const FRAME_EXT = 'jpg';
-  const FRAMES_BASE = '/frames';
-  const POSTER_BATCH = 12;            // count toward boot loader
 
-  const padded = (n) => String(n + 1).padStart(4, '0');
-  const framePath = (seq, idx) => `${FRAMES_BASE}/${seq}/frame_${padded(idx)}.${FRAME_EXT}`;
+  // Frames per act. Adjust if folder counts differ.
+  const ACT_FRAME_COUNTS = {
+    act1: 121,
+    act2: 121,
+    act3: 121,
+    act4: 121,
+    act5: 121,
+  };
 
-  // ---------- FrameSequence ----------------------------------
-  class FrameSequence {
-    constructor(canvas, basePath, frameCount, fitMode = 'cover') {
+  // Build cumulative ranges for global frame index → (act, localIdx)
+  function buildRanges() {
+    const ranges = {};
+    let cum = 0;
+    for (const [act, count] of Object.entries(ACT_FRAME_COUNTS)) {
+      ranges[act] = { start: cum, end: cum + count - 1, count };
+      cum += count;
+    }
+    return { ranges, total: cum };
+  }
+  const { ranges: ACT_RANGES, total: TOTAL_FRAMES } = buildRanges();
+
+  // Map global index → folder + local index
+  function globalToActLocal(globalIdx) {
+    for (const [act, r] of Object.entries(ACT_RANGES)) {
+      if (globalIdx <= r.end) {
+        return { act, localIdx: globalIdx - r.start };
+      }
+    }
+    const last = Object.values(ACT_RANGES).pop();
+    return { act: 'act5', localIdx: last.count - 1 };
+  }
+
+  function actFolder(act) {
+    // 'act1' → '01_act1'
+    const n = act.slice(3);
+    return `0${n}_act${n}`;
+  }
+
+  function framePath(act, localIdx) {
+    const num = String(localIdx + 1).padStart(4, '0');
+    return `/frames/${actFolder(act)}/frame_${num}.jpg`;
+  }
+
+  // ---------- StageSequence ----------------------------------
+  class StageSequence {
+    constructor(canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
-      this.basePath = basePath;
-      this.frameCount = frameCount;
-      this.fitMode = fitMode;        // 'cover' | 'contain'
-      this.images = new Array(frameCount).fill(null);
+      this.images = new Array(TOTAL_FRAMES).fill(null);
       this.currentFrame = 0;
       this.targetFrame = 0;
-      this.lerpFactor = 0.15;
+      this.lerpFactor = 0.18;
       this.rafId = null;
       this.loaded = 0;
-      this.disposed = false;
       this.dpr = 1;
-      this.posterReady = false;
+      this.disposed = false;
       this.setupCanvas();
       this.fillBackground();
     }
@@ -63,27 +96,10 @@
       this.draw(Math.round(this.currentFrame));
     }
 
-    /** Cover-fit draw, crop overflow centered. */
-    draw(idx) {
-      idx = Math.max(0, Math.min(this.frameCount - 1, idx | 0));
-      const img = this.images[idx];
-      if (!img || !img.complete) {
-        // Nearest-loaded fallback to avoid blank canvas
-        for (let d = 1; d <= 6; d++) {
-          const a = idx - d, b = idx + d;
-          if (a >= 0 && this.images[a] && this.images[a].complete) {
-            this._paintImg(this.images[a]); return;
-          }
-          if (b < this.frameCount && this.images[b] && this.images[b].complete) {
-            this._paintImg(this.images[b]); return;
-          }
-        }
-        return;
-      }
-      this._paintImg(img);
-    }
-
-    _paintImg(img) {
+    /**
+     * CONTAIN fit — figure is never cropped, white background fills empty space.
+     */
+    drawImage(img) {
       const w = this.intrinsic.w;
       const h = this.intrinsic.h;
       const iw = img.naturalWidth || img.width;
@@ -91,66 +107,43 @@
       const imgRatio = iw / ih;
       const canvasRatio = w / h;
       let dw, dh, dx, dy;
-      if (this.fitMode === 'contain') {
-        // Show whole image, leave breathing room (white bg fills it)
-        if (imgRatio > canvasRatio) {
-          dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
-        } else {
-          dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
-        }
+      if (imgRatio > canvasRatio) {
+        dw = w;
+        dh = w / imgRatio;
+        dx = 0;
+        dy = (h - dh) / 2;
       } else {
-        // Cover — fill canvas, crop overflow centered
-        if (imgRatio > canvasRatio) {
-          dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
-        } else {
-          dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
-        }
+        dh = h;
+        dw = h * imgRatio;
+        dx = (w - dw) / 2;
+        dy = 0;
       }
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.fillRect(0, 0, w, h);
       this.ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    loadFrame(idx) {
-      if (this.images[idx]) return Promise.resolve();
-      const img = new Image();
-      img.decoding = 'async';
-      this.images[idx] = img; // reserve slot to avoid duplicate fetch
-      return new Promise((resolve) => {
-        img.onload = () => {
-          if (this.disposed) return resolve();
-          this.loaded++;
-          if (idx === Math.round(this.currentFrame)) this.draw(idx);
-          resolve();
-        };
-        img.onerror = () => { this.images[idx] = null; resolve(); };
-        img.src = framePath(this.basePath, idx);
-      });
-    }
-
-    async preload(onProgress) {
-      // Poster first — and mark canvas ready (CSS fades it in)
-      await this.loadFrame(0);
-      this.posterReady = true;
-      this.draw(0);
-      this.canvas.classList.add('canvas-sequence--ready');
-      if (onProgress) onProgress(this);
-
-      // Rest in batches of 8
-      const batchSize = 8;
-      for (let i = 1; i < this.frameCount; i += batchSize) {
-        if (this.disposed) return;
-        const batch = [];
-        for (let j = 0; j < batchSize && i + j < this.frameCount; j++) {
-          batch.push(this.loadFrame(i + j));
+    draw(idx) {
+      idx = Math.max(0, Math.min(TOTAL_FRAMES - 1, idx | 0));
+      const img = this.images[idx];
+      if (img && img.complete) {
+        this.drawImage(img);
+        return;
+      }
+      // Nearest-loaded fallback — search bidirectional, max 12 steps
+      for (let d = 1; d <= 12; d++) {
+        const a = idx - d, b = idx + d;
+        if (a >= 0 && this.images[a] && this.images[a].complete) {
+          this.drawImage(this.images[a]); return;
         }
-        await Promise.all(batch);
-        if (onProgress) onProgress(this);
+        if (b < TOTAL_FRAMES && this.images[b] && this.images[b].complete) {
+          this.drawImage(this.images[b]); return;
+        }
       }
     }
 
     setProgress(progress) {
-      this.targetFrame = Math.max(0, Math.min(1, progress)) * (this.frameCount - 1);
+      this.targetFrame = Math.max(0, Math.min(1, progress)) * (TOTAL_FRAMES - 1);
       if (!this.rafId) this.startLoop();
     }
 
@@ -171,6 +164,58 @@
       this.rafId = requestAnimationFrame(loop);
     }
 
+    loadFrame(globalIdx) {
+      if (this.images[globalIdx]) return Promise.resolve();
+      const { act, localIdx } = globalToActLocal(globalIdx);
+      const img = new Image();
+      img.decoding = 'async';
+      this.images[globalIdx] = img;       // reserve slot
+      return new Promise((resolve) => {
+        img.onload = () => {
+          if (this.disposed) return resolve();
+          this.loaded++;
+          if (Math.round(this.currentFrame) === globalIdx) this.draw(globalIdx);
+          resolve();
+        };
+        img.onerror = () => { this.images[globalIdx] = null; resolve(); };
+        img.src = framePath(act, localIdx);
+      });
+    }
+
+    /**
+     * Two-phase preload:
+     *  Phase 1 — eager: poster (frame 0) + first frame of each subsequent act
+     *            so act transitions are instant
+     *  Phase 2 — bulk: rest of frames in batches of 12
+     */
+    async preload(onProgress) {
+      // Phase 1 — eager keyframes
+      const eagerIndices = [0];
+      let cum = ACT_RANGES.act1.count;
+      for (const act of ['act2', 'act3', 'act4', 'act5']) {
+        eagerIndices.push(cum);
+        cum += ACT_RANGES[act].count;
+      }
+      await Promise.all(eagerIndices.map((i) => this.loadFrame(i)));
+      this.canvas.classList.add('is-ready');
+      this.draw(0);
+      if (onProgress) onProgress(this);
+
+      // Phase 2 — bulk
+      const batchSize = 12;
+      for (let i = 1; i < TOTAL_FRAMES; i += batchSize) {
+        if (this.disposed) return;
+        const batch = [];
+        for (let j = 0; j < batchSize && i + j < TOTAL_FRAMES; j++) {
+          if (!this.images[i + j] || !this.images[i + j].complete) {
+            batch.push(this.loadFrame(i + j));
+          }
+        }
+        if (batch.length) await Promise.all(batch);
+        if (onProgress) onProgress(this);
+      }
+    }
+
     dispose() {
       this.disposed = true;
       if (this.rafId) cancelAnimationFrame(this.rafId);
@@ -179,7 +224,7 @@
   }
 
   // ---------- Boot loader ------------------------------------
-  function setupBootLoader(firstSeq) {
+  function setupBootLoader(seq) {
     const boot = document.querySelector('.boot');
     const fill = document.querySelector('.boot__fill');
     if (!boot) return;
@@ -192,23 +237,24 @@
       setTimeout(() => boot.remove(), 700);
       document.dispatchEvent(new CustomEvent('woetive:boot-done'));
     };
+    // Watch loaded count for first ~10 frames
+    const target = 10;
     let last = 0;
     const tick = () => {
-      const pct = Math.min(1, firstSeq.loaded / POSTER_BATCH);
+      const pct = Math.min(1, seq.loaded / target);
       if (pct !== last) {
         if (fill) fill.style.transform = `scaleX(${pct})`;
         last = pct;
       }
-      if (pct < 1 && !firstSeq.disposed && !dismissed) requestAnimationFrame(tick);
+      if (pct < 1 && !seq.disposed && !dismissed) requestAnimationFrame(tick);
       else dismiss();
     };
     setTimeout(dismiss, 2500);
-    // Click-to-dismiss escape hatch (in case anything goes wrong)
     boot.addEventListener('click', dismiss);
     requestAnimationFrame(tick);
   }
 
-  // ---------- Lenis + GSAP ticker ----------------------------
+  // ---------- Lenis smooth scroll ----------------------------
   function setupScroll() {
     if (reduceMotion) return null;
     if (typeof Lenis === 'undefined') return null;
@@ -228,45 +274,7 @@
     return lenis;
   }
 
-  // ---------- Hero word reveal -------------------------------
-  function wrapHeadlineWords() {
-    const head = document.querySelector('.hero__headline');
-    if (!head) return null;
-    // Walk children: text nodes get split into <span class="word">; element
-    // children (e.g. .lime-accent) are kept as single word units.
-    const out = document.createDocumentFragment();
-    const wordsList = [];
-    head.childNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const parts = node.textContent.split(/(\s+)/);
-        parts.forEach((p) => {
-          if (!p) return;
-          if (/^\s+$/.test(p)) {
-            out.appendChild(document.createTextNode(p));
-          } else {
-            const w = document.createElement('span');
-            w.className = 'word';
-            w.textContent = p;
-            out.appendChild(w);
-            wordsList.push(w);
-          }
-        });
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const w = document.createElement('span');
-        w.className = 'word';
-        w.appendChild(node.cloneNode(true));
-        out.appendChild(w);
-        wordsList.push(w);
-      }
-    });
-    head.innerHTML = '';
-    head.appendChild(out);
-    // Stagger transition delays
-    wordsList.forEach((w, i) => { w.style.transitionDelay = `${i * 70}ms`; });
-    return { headline: head, words: wordsList };
-  }
-
-  // ---------- Reveal-on-scroll (static sections) -------------
+  // ---------- Reveal observer for static sections -------------
   function setupRevealObservers() {
     if (reduceMotion) {
       document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) =>
@@ -285,105 +293,34 @@
     document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) => io.observe(el));
   }
 
-  // ---------- Bind canvas section to ScrollTrigger -----------
-  function bindCanvasSection(section, sequence) {
-    if (typeof ScrollTrigger === 'undefined') return null;
-
-    const isHero = section.id === 'hero';
-    const heroCanvas = isHero ? section.querySelector('canvas.scroll-canvas') : null;
-    const contactLime = section.id === 'contact' ? section.querySelector('.lime-accent') : null;
-    const stepEls = section.querySelectorAll('.method-step');
-    const workCards = section.classList.contains('section--work')
-      ? section.querySelectorAll('.work-card')
-      : [];
-    const frameRevealEls = section.querySelectorAll('[data-reveal-frame]');
-
-    const pinDistance = section.dataset.pinDistance
-      ? `+=${section.dataset.pinDistance}%`
-      : '+=100%';
-
-    return ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: pinDistance,
-      scrub: 0.5,
-      pin: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        const p = self.progress;
-        const frame = p * (sequence.frameCount - 1);
-        sequence.setProgress(p);
-
-        // Frame-indexed reveals
-        if (frameRevealEls.length) {
-          frameRevealEls.forEach((el) => {
-            const threshold = parseFloat(el.dataset.revealFrame);
-            const visible = frame >= threshold;
-            if (visible !== el.classList.contains('is-visible')) {
-              el.classList.toggle('is-visible', visible);
-            }
-          });
-        }
-
-        // HERO: fade canvas in final 25% of scroll for soft handoff into trust ribbon
-        if (heroCanvas) {
-          if (p > 0.75) {
-            const fadeProgress = (p - 0.75) / 0.25;     // 0 → 1
-            heroCanvas.style.opacity = String(1 - fadeProgress * 0.7); // → 0.3
-          } else {
-            heroCanvas.style.opacity = '1';
-          }
-        }
-
-        // Contact: lime accent appears at frame 70
-        if (contactLime) {
-          contactLime.classList.toggle('is-visible', frame >= 70);
-        }
-
-        // Work: card slide-ins at frames 40 / 70 / 100
-        if (workCards.length) {
-          workCards.forEach((card) => {
-            const cardN = parseInt(card.dataset.card, 10);
-            const threshold = cardN === 1 ? 40 : cardN === 2 ? 70 : 100;
-            const visible = frame >= threshold;
-            if (visible !== card.classList.contains('is-visible')) {
-              card.classList.toggle('is-visible', visible);
-            }
-          });
-        }
-
-        // Method: step fade-ins by progress thresholds
-        if (stepEls.length) {
-          stepEls.forEach((step) => {
-            const threshold = parseFloat(step.dataset.stepProgress) || 0.5;
-            const visible = p >= threshold;
-            if (visible !== step.classList.contains('is-visible')) {
-              step.classList.toggle('is-visible', visible);
-            }
-          });
-        }
-      },
-    });
+  // ---------- Nav scroll state -------------------------------
+  function setupNavScroll() {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+    const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 100);
+    update();
+    addEventListener('scroll', update, { passive: true });
   }
 
-  // ---------- Hero copy stagger reveal + lime accent draw-in --
-  function heroEntranceAnimations() {
+  // ---------- Hero entrance ----------------------------------
+  function heroEntrance() {
+    const heroOverlay = document.querySelector('.overlay--hero');
+    const limeAccent = heroOverlay && heroOverlay.querySelector('.lime-accent');
+
     if (reduceMotion || typeof gsap === 'undefined') {
-      // Still trigger lime accent in reduced motion
-      const lime = document.querySelector('.hero__headline .lime-accent');
-      if (lime) lime.classList.add('is-visible');
+      if (heroOverlay) heroOverlay.classList.add('is-active');
+      if (limeAccent) limeAccent.classList.add('is-visible');
       return;
     }
 
-    // Wait for hero canvas to be ready (poster painted) before starting reveals
-    const heroCanvas = document.querySelector('#hero-canvas');
     const start = () => {
-      // Set initial state to avoid flash before timeline runs
-      const eyebrows = document.querySelectorAll('.hero__top .eyebrow');
-      const headline = document.querySelector('.hero__headline');
-      const subhead = document.querySelector('.hero__subhead');
-      const ctaButtons = document.querySelectorAll('.hero__cta .btn');
+      // Mark hero as active so opacity transitions correctly
+      if (heroOverlay) heroOverlay.classList.add('is-active');
+
+      const eyebrows = document.querySelectorAll('.overlay--hero .eyebrow');
+      const headline = document.querySelector('.overlay--hero .overlay__headline');
+      const subhead = document.querySelector('.overlay--hero .overlay__subhead');
+      const ctaButtons = document.querySelectorAll('.overlay--hero .btn');
 
       gsap.set([eyebrows, headline, subhead, ctaButtons], { opacity: 0, y: 12 });
 
@@ -395,71 +332,123 @@
 
       // Lime accent draws in 1.4s after page load
       setTimeout(() => {
-        const lime = document.querySelector('.hero__headline .lime-accent');
-        if (lime) lime.classList.add('is-visible');
+        if (limeAccent) limeAccent.classList.add('is-visible');
       }, 1400);
     };
 
-    if (heroCanvas && heroCanvas.classList.contains('canvas-sequence--ready')) {
+    const canvas = document.getElementById('stage-canvas');
+    if (canvas && canvas.classList.contains('is-ready')) {
       start();
-    } else if (heroCanvas) {
-      // Poll briefly until canvas is ready (poster painted)
+    } else if (canvas) {
       const id = setInterval(() => {
-        if (heroCanvas.classList.contains('canvas-sequence--ready')) {
+        if (canvas.classList.contains('is-ready')) {
           clearInterval(id);
           start();
         }
       }, 80);
-      // Failsafe — start anyway after 1.5s
-      setTimeout(() => { clearInterval(id); start(); }, 1500);
+      setTimeout(() => { clearInterval(id); start(); }, 1600);
     } else {
       start();
     }
   }
 
-  // ---------- Trust ribbon fade-up entrance -------------------
-  function trustRibbonEntrance() {
-    if (reduceMotion || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-    const ribbon = document.querySelector('.section--trust');
-    if (!ribbon) return;
-    gsap.from(ribbon, {
-      opacity: 0,
-      y: 40,
-      duration: 1.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: ribbon,
-        start: 'top 90%',
-        toggleActions: 'play none none reverse',
+  // ---------- Stage scroll choreography ----------------------
+  function bindStage(sequence) {
+    if (typeof ScrollTrigger === 'undefined') return;
+
+    const stage = document.getElementById('stage');
+    const overlays = Array.from(document.querySelectorAll('.overlay'));
+    const progressBar = document.querySelector('.stage__progress-bar');
+    const workCards = document.querySelectorAll('.overlay--work .work-card');
+    const methodSteps = document.querySelectorAll('.overlay--method .method-step');
+    const contactLime = document.querySelector('.overlay--contact .lime-accent');
+
+    let activeAct = 1;
+
+    ScrollTrigger.create({
+      trigger: stage,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 0.5,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        const p = self.progress; // 0–1 across all 5 acts
+        sequence.setProgress(p);
+
+        if (progressBar) progressBar.style.transform = `scaleX(${p})`;
+
+        // Determine active act (each act = 20% of stage scroll)
+        let act;
+        if (p < 0.2) act = 1;
+        else if (p < 0.4) act = 2;
+        else if (p < 0.6) act = 3;
+        else if (p < 0.8) act = 4;
+        else act = 5;
+
+        if (act !== activeAct) {
+          activeAct = act;
+          overlays.forEach((o) => {
+            const a = parseInt(o.dataset.act, 10);
+            o.classList.toggle('is-active', a === activeAct);
+          });
+        }
+
+        // Frame-indexed sub-events
+        const globalFrame = p * (TOTAL_FRAMES - 1);
+
+        // Act 3 (work cards) — slide-in based on local frame within act 3
+        if (activeAct === 3) {
+          const act3LocalFrame = globalFrame - ACT_RANGES.act3.start;
+          workCards.forEach((card) => {
+            const cardN = parseInt(card.dataset.card, 10);
+            const threshold = cardN === 1 ? 30 : cardN === 2 ? 60 : 90;
+            card.classList.toggle('is-visible', act3LocalFrame >= threshold);
+          });
+        } else if (activeAct < 3) {
+          // Hide cards if user scrolls back before act 3
+          workCards.forEach((card) => card.classList.remove('is-visible'));
+        } else {
+          // Past act 3 — keep all visible
+          workCards.forEach((card) => card.classList.add('is-visible'));
+        }
+
+        // Act 4 (method steps) — fade in by local progress within act 4
+        if (activeAct === 4) {
+          const act4Local = (p - 0.6) / 0.2; // 0..1 within act 4
+          methodSteps.forEach((step) => {
+            const stepN = parseInt(step.dataset.step, 10);
+            const threshold = (stepN - 1) * 0.25;
+            step.classList.toggle('is-visible', act4Local >= threshold);
+          });
+        } else if (activeAct < 4) {
+          methodSteps.forEach((step) => step.classList.remove('is-visible'));
+        } else {
+          methodSteps.forEach((step) => step.classList.add('is-visible'));
+        }
+
+        // Act 5 (contact lime accent) — appears in last 30% of act 5
+        if (contactLime) {
+          const act5Local = (p - 0.8) / 0.2; // 0..1 within act 5
+          const visible = activeAct === 5 && act5Local >= 0.3;
+          contactLime.classList.toggle('is-visible', visible);
+        }
       },
     });
-  }
 
-  // ---------- Reduced-motion path ----------------------------
-  function paintPostersOnly(sections) {
-    sections.forEach(({ section, sequence }) => {
-      sequence.preload();
-      // Reveal all frame-keyed elements immediately
-      section.querySelectorAll('[data-reveal-frame]').forEach((el) =>
-        el.classList.add('is-visible')
-      );
-      section.querySelectorAll('.method-step, .work-card').forEach((el) =>
-        el.classList.add('is-visible')
-      );
-      const lime = section.querySelector('.lime-accent');
-      if (lime) lime.classList.add('is-visible');
-      const head = section.querySelector('.hero__headline');
-      if (head) head.classList.add('is-revealed');
+    // Initial sync — ensure act 1 is active
+    overlays.forEach((o) => {
+      const a = parseInt(o.dataset.act, 10);
+      o.classList.toggle('is-active', a === 1);
     });
   }
 
-  // ---------- Nav scroll state -------------------------------
-  function setupNavScroll() {
-    const nav = document.querySelector('.nav');
-    if (!nav) return;
-    const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 40);
-    update();
-    addEventListener('scroll', update, { passive: true });
+  // ---------- Reduced-motion fallback -------------------------
+  function reducedMotionFallback(sequence) {
+    sequence.preload();
+    // Show all overlays as static blocks (CSS handles vertical layout)
+    document.querySelectorAll('.overlay').forEach((o) => o.classList.add('is-active'));
+    document.querySelectorAll('.work-card, .method-step').forEach((el) => el.classList.add('is-visible'));
+    document.querySelectorAll('.lime-accent').forEach((el) => el.classList.add('is-visible'));
   }
 
   // ---------- Bootstrap --------------------------------------
@@ -467,64 +456,40 @@
     setupNavScroll();
     setupRevealObservers();
 
-    const canvasSections = Array.from(document.querySelectorAll('section[data-sequence]'));
-    const sections = canvasSections.map((section) => {
-      const canvas = section.querySelector('canvas.scroll-canvas');
-      const seq = section.dataset.sequence;
-      const count = parseInt(section.dataset.frameCount, 10) || 121;
-      const fit = section.dataset.canvasFit || 'cover';   // hero uses 'contain'
-      const sequence = new FrameSequence(canvas, seq, count, fit);
-      return { section, sequence };
-    });
+    const canvas = document.getElementById('stage-canvas');
+    if (!canvas) return;
+    const sequence = new StageSequence(canvas);
 
-    if (!sections.length) return;
-
-    // Boot loader gated on first section's poster batch
-    setupBootLoader(sections[0].sequence);
-
-    // Eager-preload all sequences (start with hero, others go in parallel after)
-    sections[0].sequence.preload(() => {});
-    // Start preloading remaining sequences after a short delay so hero gets bandwidth first
-    setTimeout(() => {
-      for (let i = 1; i < sections.length; i++) {
-        sections[i].sequence.preload(() => {});
-      }
-    }, 600);
+    setupBootLoader(sequence);
+    sequence.preload();
 
     if (reduceMotion) {
-      paintPostersOnly(sections);
+      reducedMotionFallback(sequence);
       return;
     }
 
-    // Wait for GSAP + ScrollTrigger
-    const waitAndInit = () => {
+    const start = () => {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-        return setTimeout(waitAndInit, 50);
+        return setTimeout(start, 50);
       }
       gsap.registerPlugin(ScrollTrigger);
       setupScroll();
+      bindStage(sequence);
+      heroEntrance();
 
-      sections.forEach(({ section, sequence }) => bindCanvasSection(section, sequence));
-
-      // Hero copy stagger + lime accent draw-in
-      heroEntranceAnimations();
-      // Trust ribbon fade-up entrance (scroll-triggered)
-      trustRibbonEntrance();
-
-      // Refresh after layout settles
       requestAnimationFrame(() => {
-        sections.forEach(({ sequence }) => sequence.resize());
+        sequence.resize();
         ScrollTrigger.refresh();
       });
     };
-    waitAndInit();
+    start();
 
     // Resize handler
     let resizeTimer = 0;
     addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        sections.forEach(({ sequence }) => sequence.resize());
+        sequence.resize();
         if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
       }, 150);
     }, { passive: true });
