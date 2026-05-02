@@ -8,44 +8,27 @@
   <title>Woetive — Brands for companies that outgrew their first one.</title>
   <meta name="description" content="Outsourced creative direction for companies past their first chapter. Two brothers. AI in the studio. Six weeks per brand." />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Woetive — Brands for companies that outgrew their first one." />
-  <meta property="og:description" content="Outsourced creative direction. Two brothers. Six weeks per brand." />
-  <meta property="og:url" content="https://woetive-preview-cmvq.vercel.app/" />
-  <meta property="og:image" content="/frames/01_act1_reveal/frame_0001.webp" />
-
-  <!-- Twitter -->
+  <meta property="og:description" content="Two brothers. AI in the studio. Six weeks per brand." />
+  <meta property="og:image" content="/frames/01_act1/frame_0001.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Woetive — Brands for companies that outgrew their first one." />
-  <meta name="twitter:description" content="Outsourced creative direction. Two brothers. Six weeks per brand." />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Preload poster for LCP -->
-  <link rel="preload" as="image" href="/frames/01_act1_reveal/frame_0001.webp" />
-
-  <!-- Styles -->
+  <link rel="preload" as="image" href="/frames/01_act1/frame_0001.jpg" />
   <link rel="stylesheet" href="/styles/main.css" />
 
-  <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-  <!-- Lenis smooth scroll -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js" defer></script>
-  <!-- Main script -->
   <script src="/scripts/main.js" defer></script>
-  <!-- Animations layer (page enter, reveals, lime accent draw-in) -->
-  <script src="/scripts/animations.js" defer></script>
 </head>
 <body>
-  <!-- Skip to content -->
-  <a href="#main" class="skip-link">Skip to content</a>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Fixed Navigation -->
   <header class="nav" role="banner">
     <div class="nav__inner">
       <a href="#" class="nav__brand" aria-label="Woetive — Home">
@@ -61,270 +44,162 @@
   </header>
 
   <main id="main">
-    <!-- ============================================ -->
-    <!-- SECTION 1 — HERO -->
-    <!-- ============================================ -->
-    <section class="section section--hero section--has-canvas" id="hero" data-sequence="01_act1_reveal" data-frame-count="151">
-      <div class="section__pin">
-        <canvas
-          class="canvas-sequence"
-          data-canvas-id="hero"
-          aria-label="Macro detail of a luminous accent line revealing a figure"
-          width="1600"
-          height="900"
-        ></canvas>
-        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
-        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
 
-        <div class="hero-overlay">
-          <div class="hero-overlay__top">
-            <span class="eyebrow">Woetive ✦ Studio · Issue 02 / 2026</span>
-            <span class="eyebrow eyebrow--right">Currently directing for Q3 2026 · Two slots open</span>
-          </div>
-
-          <div class="hero-overlay__center">
-            <h1 class="hero__headline">
-              Brands for companies<br>
-              that <em class="lime-accent">outgrew</em> their first one.
-            </h1>
-            <p class="hero__subhead">Built by hand. Accelerated by AI.</p>
-            <div class="hero__actions">
-              <a href="#contact" class="btn btn--primary">Begin <span aria-hidden="true">→</span></a>
-              <a href="#work" class="btn btn--ghost">See work</a>
-            </div>
-          </div>
-
-          <div class="hero-overlay__bottom">
-            <span class="scroll-cue">Scroll to read <span aria-hidden="true">↓</span></span>
+    <!-- 1. HERO ====================================================== -->
+    <section class="section section--canvas section--hero" id="hero" data-sequence="01_act1" data-frame-count="121">
+      <canvas class="scroll-canvas" aria-label="Anonymous figure rotating to face the viewer"></canvas>
+      <div class="hero__overlay">
+        <div class="hero__top">
+          <span class="eyebrow">Woetive ✦ Issue 02 / 2026</span>
+          <span class="eyebrow eyebrow--right">Q3 2026 · Two slots open</span>
+        </div>
+        <div class="hero__center">
+          <h1 class="hero__headline" data-reveal-words>
+            Brands for companies that <span class="lime-accent">outgrew</span> their first one.
+          </h1>
+          <p class="hero__subhead" data-reveal-frame="90">Built by hand. Accelerated by AI.</p>
+          <div class="hero__cta" data-reveal-frame="100">
+            <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--primary">Begin <span aria-hidden="true">→</span></a>
+            <a href="#work" class="btn btn--ghost">See work</a>
           </div>
         </div>
+        <span class="scroll-cue" data-reveal-frame="110">Scroll <span aria-hidden="true">↓</span></span>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 2 — TRUST RIBBON (static, marquee) -->
-    <!-- ============================================ -->
-    <section class="section section--trust" id="trust" aria-label="Trusted clients">
-      <div class="section__inner">
-        <div class="trust-ribbon__head reveal-on-scroll">
-          <span class="eyebrow">Trusted by founders building real companies</span>
-        </div>
-      </div>
-      <div class="trust-ribbon" aria-hidden="false">
-        <div class="trust-row">
-          <span class="trust-name">Labaš</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Fresh Plus</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Mobilonline</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Gams</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Strategy1st</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Forbestclients</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Flowy</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-04</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-05</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-06</span><span class="trust-sep">✦</span>
+    <!-- 2. TRUST RIBBON ============================================== -->
+    <section class="section section--trust" aria-label="Clients">
+      <span class="eyebrow trust__eyebrow">Trusted by founders building real companies</span>
+      <div class="marquee" aria-hidden="false">
+        <div class="marquee__track">
+          <span class="marquee__item">Labaš</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Fresh Plus</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Mobilonline</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Gams</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Strategy1st</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Forbestclients</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Flowy</span><span class="marquee__sep">✦</span>
           <!-- duplicate for seamless loop -->
-          <span class="trust-name">Labaš</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Fresh Plus</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Mobilonline</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Gams</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Strategy1st</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Forbestclients</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Flowy</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-04</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-05</span><span class="trust-sep">✦</span>
-          <span class="trust-name">TBD-06</span><span class="trust-sep">✦</span>
-        </div>
-        <div class="trust-row trust-row--reverse">
-          <span class="trust-name">Identity</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Web</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Campaign</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Packaging</span><span class="trust-sep">✦</span>
-          <span class="trust-name">AI Workflow</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Strategy</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Art Direction</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Motion</span><span class="trust-sep">✦</span>
-          <!-- duplicate -->
-          <span class="trust-name">Identity</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Web</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Campaign</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Packaging</span><span class="trust-sep">✦</span>
-          <span class="trust-name">AI Workflow</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Strategy</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Art Direction</span><span class="trust-sep">✦</span>
-          <span class="trust-name">Motion</span><span class="trust-sep">✦</span>
+          <span class="marquee__item">Labaš</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Fresh Plus</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Mobilonline</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Gams</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Strategy1st</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Forbestclients</span><span class="marquee__sep">✦</span>
+          <span class="marquee__item">Flowy</span><span class="marquee__sep">✦</span>
         </div>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 3 — MANIFESTO -->
-    <!-- ============================================ -->
-    <section class="section section--manifesto section--has-canvas" id="manifesto" data-sequence="02_act1_pullback" data-frame-count="151">
-      <div class="section__pin">
-        <canvas
-          class="canvas-sequence"
-          data-canvas-id="manifesto"
-          aria-label="Anonymous figure standing in an architectural white space"
-          width="1600"
-          height="900"
-        ></canvas>
-        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
-        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
-
-        <div class="manifesto-overlay">
+    <!-- 3. MANIFESTO ================================================= -->
+    <section class="section section--canvas section--manifesto" id="manifesto" data-sequence="02_act2" data-frame-count="121">
+      <canvas class="scroll-canvas" aria-label="Figure rising arm in offering gesture"></canvas>
+      <div class="manifesto__overlay">
+        <div class="manifesto__copy">
           <span class="eyebrow">Manifesto · 01</span>
-          <p class="manifesto__lead">
-            Most companies hit a moment when the brand stops keeping up.
-            The product evolves. The team grows. The customers change.
-            The identity stays the same — until it starts holding everything back.
+          <p class="manifesto__lead" data-reveal-frame="24">
+            Most companies hit a moment when the brand stops keeping up. The product evolves. The team grows. The customers change. The identity stays the same — until it starts holding everything back.
           </p>
-          <p class="manifesto__followup">
+          <p class="manifesto__followup" data-reveal-frame="60">
             That's where we come in. Two directors. AI in the studio. Six weeks. One brand built for the next five years.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 3 — PROOF / WORK INTRO -->
-    <!-- ============================================ -->
-    <section class="section section--proof section--has-canvas" id="proof" data-sequence="03_act1_pointing" data-frame-count="151">
-      <div class="section__pin">
-        <canvas
-          class="canvas-sequence"
-          data-canvas-id="proof"
-          aria-label="Figure pointing toward an artwork in a vast gallery space"
-          width="1600"
-          height="900"
-        ></canvas>
-        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
-        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
-
-        <div class="proof-overlay">
-          <span class="eyebrow eyebrow--right">Selected ↓</span>
-          <h2 class="proof__heading">Recent work.</h2>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- SECTION 4 — SELECTED WORK (STATIC) -->
-    <!-- ============================================ -->
-    <section class="section section--work" id="work">
-      <div class="section__inner">
-        <div class="work-header reveal-on-scroll">
+    <!-- 4. SELECTED WORK ============================================= -->
+    <section class="section section--canvas section--work" id="work" data-sequence="03_act3" data-frame-count="121" data-pin-distance="130">
+      <canvas class="scroll-canvas" aria-label="Figure performing sweeping gesture revealing work"></canvas>
+      <div class="work__overlay">
+        <div class="work__header">
           <span class="eyebrow">Work · 2023—2026</span>
-          <h2 class="section__heading">Three projects. <em>Three problems solved.</em></h2>
+          <h2 class="work__heading">Recent work.</h2>
+          <p class="work__subheading">Three projects. <em>Three problems solved.</em></p>
         </div>
-
-        <ol class="work-grid reveal-stagger" role="list">
-          <li class="work-item">
-            <a href="mailto:house@woetive.com?subject=FORMA case study" class="work-item__link">
-              <div class="work-item__media">
-                <div class="work-item__placeholder" data-tone="charcoal">
-                  <span class="work-item__index">01</span>
-                  <span class="work-item__category">Architecture studio</span>
-                </div>
-              </div>
-              <div class="work-item__meta">
-                <h3 class="work-item__title">FORMA</h3>
-                <p class="work-item__brief">Architecture studio site that 3×'d the pipeline.</p>
-                <ul class="work-item__stats">
-                  <li><strong>+300%</strong> Leads / mo</li>
-                  <li><strong>1.2s</strong> LCP</li>
-                  <li><strong>4 wks</strong> Ship time</li>
-                </ul>
-                <span class="work-item__tag">Web · Brand refresh</span>
-              </div>
-            </a>
+        <ol class="work__cards" role="list">
+          <li class="work-card" data-card="1">
+            <div class="work-card__media work-card__media--charcoal">
+              <span class="work-card__index">01</span>
+              <span class="work-card__category">Architecture studio</span>
+              <div class="work-card__lime-line" aria-hidden="true"></div>
+            </div>
+            <div class="work-card__body">
+              <span class="work-card__meta">Project 01 · 2024 Q4 · 4 weeks</span>
+              <h3 class="work-card__title">FORMA</h3>
+              <p class="work-card__brief">Architecture studio site that 3×'d the pipeline.</p>
+              <ul class="work-card__stats">
+                <li><strong>+300%</strong><span>Leads / mo</span></li>
+                <li><strong>1.2s</strong><span>LCP</span></li>
+                <li><strong>4 wks</strong><span>Ship time</span></li>
+              </ul>
+              <span class="work-card__tag">Web · Brand refresh</span>
+            </div>
           </li>
-
-          <li class="work-item">
-            <a href="mailto:house@woetive.com?subject=VELDT case study" class="work-item__link">
-              <div class="work-item__media">
-                <div class="work-item__placeholder" data-tone="black">
-                  <span class="work-item__index">02</span>
-                  <span class="work-item__category">Editorial campaign</span>
-                </div>
-              </div>
-              <div class="work-item__meta">
-                <h3 class="work-item__title">VELDT</h3>
-                <p class="work-item__brief">2.4M reach. Zero paid euros.</p>
-                <ul class="work-item__stats">
-                  <li><strong>2.4M</strong> Reach</li>
-                  <li><strong>18%</strong> Engagement</li>
-                  <li><strong>6 wks</strong> Live</li>
-                </ul>
-                <span class="work-item__tag">Art direction · Campaign</span>
-              </div>
-            </a>
+          <li class="work-card" data-card="2">
+            <div class="work-card__media work-card__media--black">
+              <span class="work-card__index">02</span>
+              <span class="work-card__category">Editorial campaign</span>
+              <div class="work-card__lime-line" aria-hidden="true"></div>
+            </div>
+            <div class="work-card__body">
+              <span class="work-card__meta">Project 02 · 2024 Q2 · 6 weeks</span>
+              <h3 class="work-card__title">VELDT</h3>
+              <p class="work-card__brief">2.4M reach. Zero paid euros.</p>
+              <ul class="work-card__stats">
+                <li><strong>2.4M</strong><span>Reach</span></li>
+                <li><strong>18%</strong><span>Engagement</span></li>
+                <li><strong>6 wks</strong><span>Live</span></li>
+              </ul>
+              <span class="work-card__tag">Art direction · Campaign</span>
+            </div>
           </li>
-
-          <li class="work-item">
-            <a href="mailto:house@woetive.com?subject=NOCTA case study" class="work-item__link">
-              <div class="work-item__media">
-                <div class="work-item__placeholder" data-tone="ink">
-                  <span class="work-item__index">03</span>
-                  <span class="work-item__category">Spirits brand</span>
-                </div>
-              </div>
-              <div class="work-item__meta">
-                <h3 class="work-item__title">NOCTA</h3>
-                <p class="work-item__brief">From zero to 3 design awards.</p>
-                <ul class="work-item__stats">
-                  <li><strong>3</strong> Awards</li>
-                  <li><strong>+210%</strong> Retail</li>
-                  <li><strong>12 wks</strong> Launch</li>
-                </ul>
-                <span class="work-item__tag">Brand identity · Packaging</span>
-              </div>
-            </a>
+          <li class="work-card" data-card="3">
+            <div class="work-card__media work-card__media--ink">
+              <span class="work-card__index">03</span>
+              <span class="work-card__category">Spirits brand</span>
+              <div class="work-card__lime-line" aria-hidden="true"></div>
+            </div>
+            <div class="work-card__body">
+              <span class="work-card__meta">Project 03 · 2023 Q4 · 12 weeks</span>
+              <h3 class="work-card__title">NOCTA</h3>
+              <p class="work-card__brief">From zero to 3 design awards.</p>
+              <ul class="work-card__stats">
+                <li><strong>3</strong><span>Awards</span></li>
+                <li><strong>+210%</strong><span>Retail</span></li>
+                <li><strong>12 wks</strong><span>Launch</span></li>
+              </ul>
+              <span class="work-card__tag">Brand identity · Packaging</span>
+            </div>
           </li>
         </ol>
-
-        <a href="mailto:house@woetive.com?subject=Send me your full case studies" class="work-archive-link">
-          See full archive (8 cases) <span aria-hidden="true">→</span>
-        </a>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 5 — METHOD -->
-    <!-- ============================================ -->
-    <section class="section section--method section--has-canvas" id="method" data-sequence="04_act2_compose" data-frame-count="151">
-      <div class="section__pin">
-        <canvas
-          class="canvas-sequence canvas-sequence--method"
-          data-canvas-id="method"
-          aria-label="Top-down view of a figure composing brand artifacts on a concrete floor"
-          width="1600"
-          height="900"
-        ></canvas>
-        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
-        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
-
-        <div class="method-overlay">
+    <!-- 5. METHOD ==================================================== -->
+    <section class="section section--canvas section--method" id="method" data-sequence="04_act4" data-frame-count="121" data-pin-distance="130">
+      <canvas class="scroll-canvas" aria-label="Camera orbiting figure examining brand artifact"></canvas>
+      <div class="method__overlay">
+        <div class="method__copy">
           <span class="eyebrow">Method · 04</span>
           <h2 class="method__heading">How we direct.</h2>
-
           <ol class="method-steps" role="list">
-            <li class="method-step" data-step="1">
-              <span class="method-step__index">01</span>
+            <li class="method-step" data-step="1" data-step-progress="0.20">
+              <span class="method-step__num">01</span>
               <h3 class="method-step__title">Listen for two weeks.</h3>
               <p class="method-step__copy">Most agencies skip this. It's why their work could belong to anyone.</p>
             </li>
-            <li class="method-step" data-step="2">
-              <span class="method-step__index">02</span>
+            <li class="method-step" data-step="2" data-step-progress="0.40">
+              <span class="method-step__num">02</span>
               <h3 class="method-step__title">Position.</h3>
               <p class="method-step__copy">Before any visual decision, we know what your brand stands for — and against.</p>
             </li>
-            <li class="method-step" data-step="3">
-              <span class="method-step__index">03</span>
+            <li class="method-step" data-step="3" data-step-progress="0.60">
+              <span class="method-step__num">03</span>
               <h3 class="method-step__title">Design.</h3>
               <p class="method-step__copy">Two directors, AI as a third hand. Thirty directions explored, three presented.</p>
             </li>
-            <li class="method-step" data-step="4">
-              <span class="method-step__index">04</span>
+            <li class="method-step" data-step="4" data-step-progress="0.80">
+              <span class="method-step__num">04</span>
               <h3 class="method-step__title">Ship in six weeks.</h3>
               <p class="method-step__copy">Full system, documented. No retainer trap.</p>
             </li>
@@ -333,192 +208,147 @@
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 7 — WHY WOETIVE (static differentiators) -->
-    <!-- ============================================ -->
+    <!-- 6. WHY WOETIVE =============================================== -->
     <section class="section section--why" id="why">
-      <div class="section__inner">
-        <div class="why-header reveal-on-scroll">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
           <span class="eyebrow">Why Woetive · 06 differentiators</span>
-          <h2 class="section__heading">Not an agency. <em>Your creative team.</em></h2>
+          <h2 class="section-heading">Not an agency. <em>Your creative team.</em></h2>
         </div>
-        <ol class="why-grid reveal-stagger" role="list">
-          <li class="why-card">
-            <span class="why-card__index">01 · Team</span>
+        <div class="why__grid reveal-stagger">
+          <article class="why-card">
+            <span class="why-card__num">01 · Team</span>
             <h3 class="why-card__title">Two people, one AI stack.</h3>
             <p class="why-card__copy">No middle management. No juniors. Your brief gets read by a director, not parsed by a project manager.</p>
-            <ul class="why-card__tags">
-              <li>Strategy</li><li>Craft</li><li>AI Workflow</li>
-            </ul>
-          </li>
-          <li class="why-card">
-            <span class="why-card__index">02 · Communication</span>
+            <ul class="why-card__tags"><li>Strategy</li><li>Craft</li><li>AI Workflow</li></ul>
+          </article>
+          <article class="why-card">
+            <span class="why-card__num">02 · Communication</span>
             <h3 class="why-card__title">Direct line. No PMs.</h3>
             <p class="why-card__copy">Slack and email replies in hours, not days. The brothers who own your project answer their own DMs.</p>
-          </li>
-          <li class="why-card">
-            <span class="why-card__index">03 · Mindset</span>
+          </article>
+          <article class="why-card">
+            <span class="why-card__num">03 · Mindset</span>
             <h3 class="why-card__title">Strategic + executional.</h3>
             <p class="why-card__copy">Joshua leads strategy and AD. Daniel leads craft and code. One room, one decision.</p>
-          </li>
-          <li class="why-card">
-            <span class="why-card__index">04 · Trust</span>
+          </article>
+          <article class="why-card">
+            <span class="why-card__num">04 · Trust</span>
             <h3 class="why-card__title">100% in-house.</h3>
             <p class="why-card__copy">Every hour billed is worked by Joshua or Daniel. No subcontractors. No outsourced asset farms.</p>
-          </li>
-          <li class="why-card">
-            <span class="why-card__index">05 · Process</span>
+          </article>
+          <article class="why-card">
+            <span class="why-card__num">05 · Process</span>
             <h3 class="why-card__title">Brainstorm at the dinner table.</h3>
             <p class="why-card__copy">We live together. Your brief continues in our heads after 6pm. Decisions compound faster when there's no wall between us.</p>
-          </li>
-          <li class="why-card">
-            <span class="why-card__index">06 · Speed</span>
+          </article>
+          <article class="why-card">
+            <span class="why-card__num">06 · Speed</span>
             <h3 class="why-card__title">Weeks, not quarters.</h3>
             <p class="why-card__copy">AI iterates. We finalize. Brand identity in 6–10 weeks. Web in 4–8.</p>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 8 — TESTIMONIALS (off-white bg) -->
-    <!-- ============================================ -->
+    <!-- 7. TESTIMONIALS ============================================== -->
     <section class="section section--testimonials" id="testimonials">
-      <div class="section__inner">
-        <div class="testimonials-header reveal-on-scroll">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
           <span class="eyebrow">Testimonials · 4.8 / 5</span>
-          <h2 class="section__heading">Trust <em>that returns.</em></h2>
+          <h2 class="section-heading">Trust <em>that returns.</em></h2>
         </div>
-        <ol class="testimonials-grid reveal-stagger" role="list">
-          <li class="tcard">
-            <p class="tcard__quote">Strategically, visually, humanly — everything fits. A level we hadn't seen from local studios.</p>
-            <div class="tcard__divider" aria-hidden="true"></div>
-            <div class="tcard__attr">
-              <div class="tcard__avatar">ML</div>
-              <div>
-                <div class="tcard__name">Ing. Miroslav Labaš</div>
-                <div class="tcard__role">Co-owner · Labaš</div>
-                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <div class="testimonials__grid reveal-stagger">
+          <article class="testimonial-card">
+            <p class="testimonial-card__quote">"Strategically, visually, humanly — everything fits. A level we hadn't seen from local studios."</p>
+            <div class="testimonial-card__author">
+              <div class="testimonial-card__avatar">ML</div>
+              <div class="testimonial-card__meta">
+                <span class="testimonial-card__name">Ing. Miroslav Labaš</span>
+                <span class="testimonial-card__role">Co-owner · Labaš</span>
+                <span class="testimonial-card__rating" aria-label="5 out of 5 stars">★★★★★</span>
               </div>
             </div>
-          </li>
-          <li class="tcard">
-            <p class="tcard__quote">Fast, precise, no sales talk. A brand the customer understands — and the competition notices.</p>
-            <div class="tcard__divider" aria-hidden="true"></div>
-            <div class="tcard__attr">
-              <div class="tcard__avatar">MK</div>
-              <div>
-                <div class="tcard__name">Ing. Milan Kovalančík</div>
-                <div class="tcard__role">Owner · Mobilonline</div>
-                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          </article>
+          <article class="testimonial-card">
+            <p class="testimonial-card__quote">"Fast, precise, no sales talk. A brand the customer understands — and the competition notices."</p>
+            <div class="testimonial-card__author">
+              <div class="testimonial-card__avatar">MK</div>
+              <div class="testimonial-card__meta">
+                <span class="testimonial-card__name">Ing. Milan Kovalančík</span>
+                <span class="testimonial-card__role">Owner · Mobilonline</span>
+                <span class="testimonial-card__rating" aria-label="5 out of 5 stars">★★★★★</span>
               </div>
             </div>
-          </li>
-          <li class="tcard">
-            <p class="tcard__quote">Two brothers, one head. Communication at the level of big agencies — without their inertia.</p>
-            <div class="tcard__divider" aria-hidden="true"></div>
-            <div class="tcard__attr">
-              <div class="tcard__avatar">IK</div>
-              <div>
-                <div class="tcard__name">Ivan Kopčík</div>
-                <div class="tcard__role">CEO · Forbestclients</div>
-                <div class="tcard__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          </article>
+          <article class="testimonial-card">
+            <p class="testimonial-card__quote">"Two brothers, one head. Communication at the level of big agencies — without their inertia."</p>
+            <div class="testimonial-card__author">
+              <div class="testimonial-card__avatar">IK</div>
+              <div class="testimonial-card__meta">
+                <span class="testimonial-card__name">Ivan Kopčík</span>
+                <span class="testimonial-card__role">CEO · Forbestclients</span>
+                <span class="testimonial-card__rating" aria-label="5 out of 5 stars">★★★★★</span>
               </div>
             </div>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 9 — FOUNDERS (STATIC) -->
-    <!-- ============================================ -->
-    <section class="section section--founders" id="founders">
-      <div class="section__inner">
-        <div class="reveal-on-scroll">
+    <!-- 8. FOUNDERS ================================================== -->
+    <section class="section section--founders" id="about">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
           <span class="eyebrow">About · The brothers</span>
-          <h2 class="founders__heading">Two brothers. <em>Same hand.</em></h2>
+          <h2 class="section-heading">Two brothers. <em>Same hand.</em></h2>
         </div>
-
-        <div class="founders__lead reveal-on-scroll">
-          <p>
-            Joshua leads strategy and art direction. Daniel leads craft and code. We live together. Brand decisions continue at the dinner table, not just in the studio. AI gives us the tempo of a ten-person agency. Hand finishes give us the integrity of a two-person one.
-          </p>
+        <p class="founders__lead reveal-on-scroll">
+          Joshua leads strategy and art direction. Daniel leads craft and code. We live together. Brand decisions continue at the dinner table, not just in the studio. AI gives us the tempo of a ten-person agency. Hand finishes give us the integrity of a two-person one.
+        </p>
+        <div class="founders__meta reveal-on-scroll">
+          <span>Live · since 2022</span><span aria-hidden="true">·</span>
+          <span>J.S.P / 001 + D.A.P / 002</span><span aria-hidden="true">·</span>
+          <span>Bratislava + Košice, SK</span>
         </div>
-
         <div class="founders__grid reveal-stagger">
           <article class="founder-card">
-            <div class="founder-card__id">J.S.P / 001</div>
-            <div class="founder-card__portrait" aria-hidden="true">
-              <div class="founder-card__placeholder">JSP</div>
-            </div>
+            <span class="founder-card__id">J.S.P / 001</span>
+            <div class="founder-card__portrait" aria-hidden="true"><span class="founder-card__initials">JSP</span></div>
             <h3 class="founder-card__name">Joshua Samuel Paquete</h3>
             <span class="founder-card__role">CEO · Art Director</span>
             <p class="founder-card__bio">Older brother · Strategy first. Builds the AI workflow that gives us ten-person tempo. Obsessed with detail, calm under pressure.</p>
-            <ul class="founder-card__tags">
-              <li>Strategy</li>
-              <li>Art Direction</li>
-              <li>Prompt Eng.</li>
-              <li>AI Workflow</li>
-            </ul>
+            <ul class="founder-card__tags"><li>Strategy</li><li>Art Direction</li><li>Prompt Eng.</li><li>AI Workflow</li></ul>
           </article>
-
           <article class="founder-card">
-            <div class="founder-card__id">D.A.P / 002</div>
-            <div class="founder-card__portrait" aria-hidden="true">
-              <div class="founder-card__placeholder">DAP</div>
-            </div>
+            <span class="founder-card__id">D.A.P / 002</span>
+            <div class="founder-card__portrait" aria-hidden="true"><span class="founder-card__initials">DAP</span></div>
             <h3 class="founder-card__name">Daniel Alexander Paquete</h3>
             <span class="founder-card__role">Creative Director</span>
             <p class="founder-card__bio">Younger brother · Craft first. Picks the one direction that stays in the client's head for ten years. Thinks like a designer, ships like a craftsman.</p>
-            <ul class="founder-card__tags">
-              <li>Web</li>
-              <li>Identity</li>
-              <li>Motion</li>
-              <li>AI Curation</li>
-            </ul>
+            <ul class="founder-card__tags"><li>Web</li><li>Identity</li><li>Motion</li><li>AI Curation</li></ul>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <!-- SECTION 7 — CONTACT -->
-    <!-- ============================================ -->
-    <section class="section section--contact section--has-canvas" id="contact" data-sequence="05_act3_invitation" data-frame-count="151">
-      <div class="section__pin">
-        <canvas
-          class="canvas-sequence"
-          data-canvas-id="contact"
-          aria-label="Figure raising an open hand toward the viewer in invitation"
-          width="1600"
-          height="900"
-        ></canvas>
-        <div class="canvas-edge canvas-edge--top" aria-hidden="true"></div>
-        <div class="canvas-edge canvas-edge--bottom" aria-hidden="true"></div>
-
-        <div class="contact-overlay">
-          <span class="eyebrow">Contact · Q3 2026</span>
-          <h2 class="contact__heading">Your <em class="lime-accent">turn.</em></h2>
-          <p class="contact__line">
-            One project at a time. Currently directing for Q3 2026. Two slots open.
-          </p>
-          <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--accent btn--large">
-            Begin <span aria-hidden="true">→</span>
-          </a>
-          <p class="contact__email">
-            Or write directly: <a href="mailto:house@woetive.com">house@woetive.com</a>
-          </p>
-        </div>
+    <!-- 9. CONTACT =================================================== -->
+    <section class="section section--canvas section--contact" id="contact" data-sequence="05_act5" data-frame-count="121">
+      <canvas class="scroll-canvas" aria-label="Figure raising open hand in invitation"></canvas>
+      <div class="contact__wash" aria-hidden="true"></div>
+      <div class="contact__overlay">
+        <span class="eyebrow">Contact · Q3 2026</span>
+        <h2 class="contact__heading">Your <span class="lime-accent">turn.</span></h2>
+        <p class="contact__line" data-reveal-frame="24">One project at a time. Currently directing for Q3 2026. Two slots open.</p>
+        <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--accent btn--large" data-reveal-frame="70">Begin <span aria-hidden="true">→</span></a>
+        <p class="contact__email" data-reveal-frame="70">Or write directly: <a href="mailto:house@woetive.com">house@woetive.com</a></p>
       </div>
     </section>
+
   </main>
 
-  <!-- ============================================ -->
-  <!-- FOOTER -->
-  <!-- ============================================ -->
-  <footer class="footer" role="contentinfo">
-    <div class="footer__inner">
+  <footer class="footer">
+    <div class="footer__inner container">
       <div class="footer__brand">
         <span class="footer__mark">WOETIVE</span>
         <span class="footer__tagline">Built by hand. Accelerated by AI.</span>
@@ -529,14 +359,13 @@
         <span>Built by the brothers</span>
       </div>
       <div class="footer__social">
-        <a href="https://instagram.com/woetive" rel="noopener noreferrer" target="_blank">IG</a>
-        <a href="https://linkedin.com/company/woetive" rel="noopener noreferrer" target="_blank">LI</a>
-        <a href="https://behance.net/woetive" rel="noopener noreferrer" target="_blank">BE</a>
+        <a href="https://instagram.com/woetive" target="_blank" rel="noopener noreferrer">IG</a>
+        <a href="https://linkedin.com/company/woetive" target="_blank" rel="noopener noreferrer">LI</a>
+        <a href="https://behance.net/woetive" target="_blank" rel="noopener noreferrer">BE</a>
       </div>
     </div>
   </footer>
 
-  <!-- Loading indicator (will be removed by JS once first sequence is ready) -->
   <div class="boot" aria-hidden="true">
     <div class="boot__bar"><div class="boot__fill"></div></div>
     <span class="boot__label">Loading</span>

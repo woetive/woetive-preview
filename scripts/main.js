@@ -1,292 +1,176 @@
 /* ============================================================
- * Woetive — v18.1: scroll-driven canvas sequences
+ * Woetive v20 — scroll-driven canvas with frame sequences
  *
- * Critical fixes over v18:
- *   - Lerp-based frame interpolation (no more visible step changes)
- *   - Bidirectional smooth scrub (forward + reverse identical feel)
- *   - Tighter Lenis params (less floaty, more grounded)
- *   - Resize-safe DPR + canvas re-measure
- *   - Eager preload of first 5 frames per sequence in parallel
- *   - Lookahead window (load ±30 around current target)
- *
- * Vanilla ES6+. Depends on globals: gsap, ScrollTrigger, Lenis.
+ * Vanilla. Globals: gsap, ScrollTrigger, Lenis.
+ * 9 sections, 5 with canvas + 4 static. Frame format: JPG, 4-digit padded.
  * ========================================================== */
 (() => {
   'use strict';
 
-  // ---------- 1. Capability + environment ---------------------
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isMobile = matchMedia('(max-width: 767px)').matches;
+  const isMobile = matchMedia('(max-width: 768px)').matches;
+  const FRAME_EXT = 'jpg';
   const FRAMES_BASE = '/frames';
-  const PRELOAD_AHEAD = '150% 0px';
-  const UNLOAD_BEHIND = '-100% 0px';
-  const PRELOAD_BATCH = 8;
-  const POSTER_BATCH = 30;
-  const LOOKAHEAD = 30;            // priority window around current frame
-  const LERP_FACTOR = 0.12;        // 0.08 silky, 0.2 snappy
+  const POSTER_BATCH = 12;            // count toward boot loader
 
   const padded = (n) => String(n + 1).padStart(4, '0');
-  const framePath = (seq, idx) => `${FRAMES_BASE}/${seq}/frame_${padded(idx)}.webp`;
+  const framePath = (seq, idx) => `${FRAMES_BASE}/${seq}/frame_${padded(idx)}.${FRAME_EXT}`;
 
-  // Sequences registry — keyed by section id
-  const sequences = Object.create(null);
-
-  // ---------- 2. ImageSequence controller ---------------------
-  class ImageSequence {
-    constructor(section) {
-      this.id = section.id;
-      this.section = section;
-      this.canvas = section.querySelector('canvas.canvas-sequence');
-      this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
-      this.seq = section.dataset.sequence;
-      this.frameCount = parseInt(section.dataset.frameCount, 10) || 151;
-
-      this.frames = new Array(this.frameCount);   // sparse array
-      this.loadedCount = 0;
-
-      // Lerp state
-      this.targetFrame = 0;
+  // ---------- FrameSequence ----------------------------------
+  class FrameSequence {
+    constructor(canvas, basePath, frameCount) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+      this.basePath = basePath;
+      this.frameCount = frameCount;
+      this.images = new Array(frameCount).fill(null);
       this.currentFrame = 0;
-      this.isAnimating = false;
+      this.targetFrame = 0;
+      this.lerpFactor = 0.15;
       this.rafId = null;
-
-      this.posterPromise = null;
-      this.fullPromise = null;
+      this.loaded = 0;
       this.disposed = false;
       this.dpr = 1;
-
-      this.resize();
-      this._renderBackground();
-      this._observePreload();
+      this.posterReady = false;
+      this.setupCanvas();
+      this.fillBackground();
     }
 
-    /**
-     * Re-measure canvas + DPR. Called on init, resize, and after layout settles.
-     */
-    resize() {
-      const rect = this.canvas.getBoundingClientRect();
+    setupCanvas() {
       const dprCap = isMobile ? 1.5 : 2;
-      const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+      this.dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+      const rect = this.canvas.getBoundingClientRect();
       const w = Math.max(1, Math.floor(rect.width));
       const h = Math.max(1, Math.floor(rect.height));
-      // Internal buffer at DPR scale
-      this.canvas.width = Math.floor(w * dpr);
-      this.canvas.height = Math.floor(h * dpr);
+      this.canvas.width = Math.floor(w * this.dpr);
+      this.canvas.height = Math.floor(h * this.dpr);
       this.intrinsic = { w, h };
-      this.dpr = dpr;
       this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-      this.ctx.scale(dpr, dpr);
+      this.ctx.scale(this.dpr, this.dpr);
       this.ctx.imageSmoothingEnabled = true;
       this.ctx.imageSmoothingQuality = 'high';
     }
 
-    _renderBackground() {
+    fillBackground() {
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.fillRect(0, 0, this.intrinsic.w, this.intrinsic.h);
     }
 
-    /**
-     * Cover-fit draw. Crops overflow centered.
-     */
-    drawImage(img) {
-      const cw = this.intrinsic.w;
-      const ch = this.intrinsic.h;
-      const iw = img.naturalWidth || cw;
-      const ih = img.naturalHeight || ch;
-      const scale = Math.max(cw / iw, ch / ih);
-      const dw = iw * scale;
-      const dh = ih * scale;
-      const dx = (cw - dw) * 0.5;
-      const dy = (ch - dh) * 0.5;
+    resize() {
+      this.setupCanvas();
+      this.fillBackground();
+      this.draw(Math.round(this.currentFrame));
+    }
+
+    /** Cover-fit draw, crop overflow centered. */
+    draw(idx) {
+      idx = Math.max(0, Math.min(this.frameCount - 1, idx | 0));
+      const img = this.images[idx];
+      if (!img || !img.complete) {
+        // Nearest-loaded fallback to avoid blank canvas
+        for (let d = 1; d <= 6; d++) {
+          const a = idx - d, b = idx + d;
+          if (a >= 0 && this.images[a] && this.images[a].complete) {
+            this._paintImg(this.images[a]); return;
+          }
+          if (b < this.frameCount && this.images[b] && this.images[b].complete) {
+            this._paintImg(this.images[b]); return;
+          }
+        }
+        return;
+      }
+      this._paintImg(img);
+    }
+
+    _paintImg(img) {
+      const w = this.intrinsic.w;
+      const h = this.intrinsic.h;
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      const imgRatio = iw / ih;
+      const canvasRatio = w / h;
+      let dw, dh, dx, dy;
+      if (imgRatio > canvasRatio) {
+        dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
+      } else {
+        dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
+      }
       this.ctx.fillStyle = '#FFFFFF';
-      this.ctx.fillRect(0, 0, cw, ch);
+      this.ctx.fillRect(0, 0, w, h);
       this.ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    /**
-     * Draw a specific frame index (rounded). Falls back to nearest loaded
-     * frame if requested isn't ready yet (no white-flash blink).
-     */
-    draw(frameIndex) {
-      const idx = Math.max(0, Math.min(this.frameCount - 1, Math.round(frameIndex)));
-      const img = this.frames[idx];
-      if (img && img.complete) {
-        this.drawImage(img);
-        return idx;
-      }
-      // Nearest fallback search (max 8 steps each way to limit cost)
-      for (let d = 1; d <= 8; d++) {
-        const a = idx - d, b = idx + d;
-        if (a >= 0 && this.frames[a] && this.frames[a].complete) {
-          this.drawImage(this.frames[a]);
-          return a;
-        }
-        if (b < this.frameCount && this.frames[b] && this.frames[b].complete) {
-          this.drawImage(this.frames[b]);
-          return b;
-        }
-      }
-      return -1;
-    }
-
-    /**
-     * Set the desired (scroll-driven) frame and start the lerp loop if idle.
-     */
-    setTargetFrame(progress) {
-      this.targetFrame = Math.max(0, Math.min(1, progress)) * (this.frameCount - 1);
-      // Prioritise loading the lookahead window around the target
-      this._priorityLoad(Math.round(this.targetFrame));
-      if (!this.isAnimating) this._startRenderLoop();
-    }
-
-    _startRenderLoop() {
-      this.isAnimating = true;
-      const loop = () => {
-        if (this.disposed) {
-          this.isAnimating = false;
-          return;
-        }
-        const diff = this.targetFrame - this.currentFrame;
-        if (Math.abs(diff) < 0.01) {
-          this.currentFrame = this.targetFrame;
-          this.draw(this.currentFrame);
-          this.isAnimating = false;
-          this.rafId = null;
-          return;
-        }
-        // Linear interpolation toward target
-        this.currentFrame += diff * LERP_FACTOR;
-        this.draw(this.currentFrame);
-        this.rafId = requestAnimationFrame(loop);
-      };
-      loop();
-    }
-
-    /**
-     * Load priority window: targetFrame ± LOOKAHEAD frames.
-     * Already-loaded indices are skipped.
-     */
-    _priorityLoad(centerIdx) {
-      const from = Math.max(0, centerIdx - LOOKAHEAD);
-      const to = Math.min(this.frameCount, centerIdx + LOOKAHEAD + 1);
-      // Fire-and-forget loads — don't block scroll
-      for (let i = from; i < to; i++) {
-        if (!this.frames[i]) this._loadOne(i);
-      }
-    }
-
-    _loadOne(idx) {
-      if (this.frames[idx]) return Promise.resolve(this.frames[idx]);
-      // Mark slot to prevent duplicate fetches
-      const placeholder = { complete: false };
-      this.frames[idx] = placeholder;
+    loadFrame(idx) {
+      if (this.images[idx]) return Promise.resolve();
+      const img = new Image();
+      img.decoding = 'async';
+      this.images[idx] = img; // reserve slot to avoid duplicate fetch
       return new Promise((resolve) => {
-        const img = new Image();
-        img.decoding = 'async';
         img.onload = () => {
-          if (this.disposed) return resolve(null);
-          this.frames[idx] = img;
-          this.loadedCount++;
-          // If this matches what scroll wants right now, repaint
-          if (Math.round(this.currentFrame) === idx) {
-            this.draw(this.currentFrame);
-          }
-          resolve(img);
+          if (this.disposed) return resolve();
+          this.loaded++;
+          if (idx === Math.round(this.currentFrame)) this.draw(idx);
+          resolve();
         };
-        img.onerror = () => {
-          this.frames[idx] = undefined;
-          resolve(null);
-        };
-        img.src = framePath(this.seq, idx);
+        img.onerror = () => { this.images[idx] = null; resolve(); };
+        img.src = framePath(this.basePath, idx);
       });
     }
 
-    /** Eagerly load frame 0 + first POSTER_BATCH frames. */
-    loadPoster() {
-      if (this.posterPromise) return this.posterPromise;
-      this.posterPromise = (async () => {
-        await this._loadOne(0);
-        this.canvas.classList.add('canvas-sequence--ready');
-        // Concurrent first-batch (don't await)
-        this._loadBatchedRange(1, POSTER_BATCH);
-        // Paint frame 0 immediately for posters
-        if (this.frames[0] && this.frames[0].complete) {
-          this.currentFrame = 0;
-          this.draw(0);
-        }
-      })();
-      return this.posterPromise;
-    }
+    async preload(onProgress) {
+      // Poster first
+      await this.loadFrame(0);
+      this.posterReady = true;
+      this.draw(0);
+      if (onProgress) onProgress(this);
 
-    async _loadBatchedRange(from, to) {
-      from = Math.max(0, from | 0);
-      to = Math.min(this.frameCount, to | 0);
-      for (let start = from; start < to; start += PRELOAD_BATCH) {
+      // Rest in batches of 8
+      const batchSize = 8;
+      for (let i = 1; i < this.frameCount; i += batchSize) {
         if (this.disposed) return;
         const batch = [];
-        for (let i = start; i < Math.min(start + PRELOAD_BATCH, to); i++) {
-          if (!this.frames[i] || !this.frames[i].complete) batch.push(this._loadOne(i));
+        for (let j = 0; j < batchSize && i + j < this.frameCount; j++) {
+          batch.push(this.loadFrame(i + j));
         }
-        if (batch.length) await Promise.all(batch);
+        await Promise.all(batch);
+        if (onProgress) onProgress(this);
       }
     }
 
-    loadAll() {
-      if (this.fullPromise) return this.fullPromise;
-      this.fullPromise = this._loadBatchedRange(0, this.frameCount);
-      return this.fullPromise;
+    setProgress(progress) {
+      this.targetFrame = Math.max(0, Math.min(1, progress)) * (this.frameCount - 1);
+      if (!this.rafId) this.startLoop();
     }
 
-    /** Free non-poster frames when section is far past viewport. */
-    free() {
-      if (this.disposed) return;
-      let kept = 0;
-      for (let i = 0; i < this.frameCount; i++) {
-        if (i === 0 && this.frames[0] && this.frames[0].complete) { kept++; continue; }
-        const f = this.frames[i];
-        if (f && f.src) f.src = '';
-        this.frames[i] = undefined;
-      }
-      this.loadedCount = kept;
-      this.fullPromise = null;
-      // Repaint poster so we never show black canvas
-      if (this.frames[0]) this.draw(0);
-    }
-
-    _observePreload() {
-      if (!('IntersectionObserver' in window)) {
-        this.loadPoster().then(() => this.loadAll());
-        return;
-      }
-      const enter = new IntersectionObserver((entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          this.loadPoster().then(() => this.loadAll());
-          enter.disconnect();
+    startLoop() {
+      const loop = () => {
+        if (this.disposed) { this.rafId = null; return; }
+        const diff = this.targetFrame - this.currentFrame;
+        if (Math.abs(diff) < 0.01) {
+          this.currentFrame = this.targetFrame;
+          this.draw(Math.round(this.currentFrame));
+          this.rafId = null;
+          return;
         }
-      }, { rootMargin: PRELOAD_AHEAD });
-      enter.observe(this.section);
-
-      const exit = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting && this.fullPromise) this.free();
-        }
-      }, { rootMargin: UNLOAD_BEHIND });
-      exit.observe(this.section);
+        this.currentFrame += diff * this.lerpFactor;
+        this.draw(Math.round(this.currentFrame));
+        this.rafId = requestAnimationFrame(loop);
+      };
+      this.rafId = requestAnimationFrame(loop);
     }
 
     dispose() {
       this.disposed = true;
       if (this.rafId) cancelAnimationFrame(this.rafId);
-      this.frames.length = 0;
+      this.images.length = 0;
     }
   }
 
-  // ---------- 3. Boot loader -----------------------------------
+  // ---------- Boot loader ------------------------------------
   function setupBootLoader(firstSeq) {
     const boot = document.querySelector('.boot');
     const fill = document.querySelector('.boot__fill');
     if (!boot) return;
-
     let dismissed = false;
     const dismiss = () => {
       if (dismissed) return;
@@ -294,15 +178,11 @@
       if (fill) fill.style.transform = 'scaleX(1)';
       boot.classList.add('boot--hidden');
       setTimeout(() => boot.remove(), 700);
-      // Notify animations.js to start page enter
       document.dispatchEvent(new CustomEvent('woetive:boot-done'));
     };
-
-    const total = POSTER_BATCH;
     let last = 0;
     const tick = () => {
-      const loaded = Math.min(firstSeq.loadedCount, total);
-      const pct = Math.min(1, loaded / total);
+      const pct = Math.min(1, firstSeq.loaded / POSTER_BATCH);
       if (pct !== last) {
         if (fill) fill.style.transform = `scaleX(${pct})`;
         last = pct;
@@ -310,11 +190,11 @@
       if (pct < 1 && !firstSeq.disposed && !dismissed) requestAnimationFrame(tick);
       else dismiss();
     };
-    setTimeout(dismiss, 4000);   // never block more than 4s
+    setTimeout(dismiss, 4500);
     requestAnimationFrame(tick);
   }
 
-  // ---------- 4. Lenis smooth scroll ---------------------------
+  // ---------- Lenis + GSAP ticker ----------------------------
   function setupScroll() {
     if (reduceMotion) return null;
     if (typeof Lenis === 'undefined') return null;
@@ -322,8 +202,7 @@
       duration: 1.0,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.95,
       syncTouch: true,
       syncTouchLerp: 0.075,
     });
@@ -335,12 +214,80 @@
     return lenis;
   }
 
-  // ---------- 5. Bind scroll-scrub to a section ----------------
-  function bindSectionScrub(seq, section, opts = {}) {
+  // ---------- Hero word reveal -------------------------------
+  function wrapHeadlineWords() {
+    const head = document.querySelector('.hero__headline');
+    if (!head) return null;
+    // Walk children: text nodes get split into <span class="word">; element
+    // children (e.g. .lime-accent) are kept as single word units.
+    const out = document.createDocumentFragment();
+    const wordsList = [];
+    head.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const parts = node.textContent.split(/(\s+)/);
+        parts.forEach((p) => {
+          if (!p) return;
+          if (/^\s+$/.test(p)) {
+            out.appendChild(document.createTextNode(p));
+          } else {
+            const w = document.createElement('span');
+            w.className = 'word';
+            w.textContent = p;
+            out.appendChild(w);
+            wordsList.push(w);
+          }
+        });
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const w = document.createElement('span');
+        w.className = 'word';
+        w.appendChild(node.cloneNode(true));
+        out.appendChild(w);
+        wordsList.push(w);
+      }
+    });
+    head.innerHTML = '';
+    head.appendChild(out);
+    // Stagger transition delays
+    wordsList.forEach((w, i) => { w.style.transitionDelay = `${i * 70}ms`; });
+    return { headline: head, words: wordsList };
+  }
+
+  // ---------- Reveal-on-scroll (static sections) -------------
+  function setupRevealObservers() {
+    if (reduceMotion) {
+      document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) =>
+        el.classList.add('is-visible')
+      );
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal-on-scroll, .reveal-stagger').forEach((el) => io.observe(el));
+  }
+
+  // ---------- Bind canvas section to ScrollTrigger -----------
+  function bindCanvasSection(section, sequence) {
     if (typeof ScrollTrigger === 'undefined') return null;
-    const isMethod = section.classList.contains('section--method');
-    const steps = isMethod ? section.querySelectorAll('.method-step') : null;
-    const pinDistance = opts.pinDistance || (isMethod ? '+=130%' : '+=100%');
+
+    const isHero = section.id === 'hero';
+    const heroData = isHero ? wrapHeadlineWords() : null;
+    const heroLime = section.querySelector('.lime-accent');
+    const contactLime = section.id === 'contact' ? section.querySelector('.lime-accent') : null;
+    const stepEls = section.querySelectorAll('.method-step');
+    const workCards = section.classList.contains('section--work')
+      ? section.querySelectorAll('.work-card')
+      : [];
+    const frameRevealEls = section.querySelectorAll('[data-reveal-frame]');
+
+    const pinDistance = section.dataset.pinDistance
+      ? `+=${section.dataset.pinDistance}%`
+      : '+=100%';
 
     return ScrollTrigger.create({
       trigger: section,
@@ -348,97 +295,162 @@
       end: pinDistance,
       scrub: 0.5,
       pin: true,
-      pinSpacing: true,
       anticipatePin: 1,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         const p = self.progress;
-        seq.setTargetFrame(p);
+        const frame = p * (sequence.frameCount - 1);
+        sequence.setProgress(p);
 
-        if (steps && steps.length) {
-          for (let i = 0; i < steps.length; i++) {
-            const threshold = (i + 1) * 0.22;
-            const fadeRange = 0.10;
-            const localProgress = (p - threshold) / fadeRange;
-            const opacity = Math.max(0, Math.min(1, localProgress));
-            const translate = (1 - opacity) * 12;
-            const el = steps[i];
-            el.style.opacity = opacity;
-            el.style.transform = `translateY(${translate}px)`;
-            // Toggle class for any CSS-driven side-effects
-            const visible = opacity > 0.5;
-            if (visible !== el.classList.contains('method-step--visible')) {
-              el.classList.toggle('method-step--visible', visible);
+        // Frame-indexed reveals
+        if (frameRevealEls.length) {
+          frameRevealEls.forEach((el) => {
+            const threshold = parseFloat(el.dataset.revealFrame);
+            const visible = frame >= threshold;
+            if (visible !== el.classList.contains('is-visible')) {
+              el.classList.toggle('is-visible', visible);
             }
+          });
+        }
+
+        // Hero: word stagger reveal at frame 40+; lime accent at 90+
+        if (isHero && heroData) {
+          const words = heroData.words;
+          // Per-word: word i becomes visible at frame >= 40 + i*8
+          words.forEach((w, i) => {
+            const threshold = 40 + i * 6;
+            const visible = frame >= threshold;
+            if (visible !== heroData.headline.classList.contains('is-revealed')) {
+              // toggle class on headline once all words pass — simpler approach
+            }
+          });
+          // Toggle headline.is-revealed when frame >= 40
+          const allVisible = frame >= 40;
+          heroData.headline.classList.toggle('is-revealed', allVisible);
+
+          if (heroLime) {
+            heroLime.classList.toggle('is-visible', frame >= 90);
           }
+        }
+
+        // Contact: lime accent appears at frame 70
+        if (contactLime) {
+          contactLime.classList.toggle('is-visible', frame >= 70);
+        }
+
+        // Work: card slide-ins at frames 40 / 70 / 100
+        if (workCards.length) {
+          workCards.forEach((card) => {
+            const cardN = parseInt(card.dataset.card, 10);
+            const threshold = cardN === 1 ? 40 : cardN === 2 ? 70 : 100;
+            const visible = frame >= threshold;
+            if (visible !== card.classList.contains('is-visible')) {
+              card.classList.toggle('is-visible', visible);
+            }
+          });
+        }
+
+        // Method: step fade-ins by progress thresholds
+        if (stepEls.length) {
+          stepEls.forEach((step) => {
+            const threshold = parseFloat(step.dataset.stepProgress) || 0.5;
+            const visible = p >= threshold;
+            if (visible !== step.classList.contains('is-visible')) {
+              step.classList.toggle('is-visible', visible);
+            }
+          });
         }
       },
     });
   }
 
-  // ---------- 6. Reduced-motion fallback -----------------------
-  function paintPosterOnly(seqs) {
-    seqs.forEach((seq) => seq.loadPoster().then(() => seq.draw(0)));
+  // ---------- Reduced-motion path ----------------------------
+  function paintPostersOnly(sections) {
+    sections.forEach(({ section, sequence }) => {
+      sequence.preload();
+      // Reveal all frame-keyed elements immediately
+      section.querySelectorAll('[data-reveal-frame]').forEach((el) =>
+        el.classList.add('is-visible')
+      );
+      section.querySelectorAll('.method-step, .work-card').forEach((el) =>
+        el.classList.add('is-visible')
+      );
+      const lime = section.querySelector('.lime-accent');
+      if (lime) lime.classList.add('is-visible');
+      const head = section.querySelector('.hero__headline');
+      if (head) head.classList.add('is-revealed');
+    });
   }
 
-  // ---------- 7. Bootstrap -------------------------------------
+  // ---------- Nav scroll state -------------------------------
+  function setupNavScroll() {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+    const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 40);
+    update();
+    addEventListener('scroll', update, { passive: true });
+  }
+
+  // ---------- Bootstrap --------------------------------------
   function init() {
-    const sections = Array.from(document.querySelectorAll('section[data-sequence]'));
+    setupNavScroll();
+    setupRevealObservers();
+
+    const canvasSections = Array.from(document.querySelectorAll('section[data-sequence]'));
+    const sections = canvasSections.map((section) => {
+      const canvas = section.querySelector('canvas.scroll-canvas');
+      const seq = section.dataset.sequence;
+      const count = parseInt(section.dataset.frameCount, 10) || 121;
+      const sequence = new FrameSequence(canvas, seq, count);
+      return { section, sequence };
+    });
+
     if (!sections.length) return;
 
-    const seqList = sections.map((s) => {
-      const seq = new ImageSequence(s);
-      sequences[s.id] = seq;
-      return seq;
-    });
+    // Boot loader gated on first section's poster batch
+    setupBootLoader(sections[0].sequence);
 
-    setupBootLoader(seqList[0]);
-    seqList[0].loadPoster();
-
-    // Eager preload: first 5 frames of EVERY sequence, in parallel
-    const eagerPromises = [];
-    seqList.forEach((seq) => {
-      for (let i = 0; i < 5; i++) eagerPromises.push(seq._loadOne(i));
-    });
-    Promise.all(eagerPromises);
+    // Eager-preload all sequences (start with hero, others go in parallel after)
+    sections[0].sequence.preload(() => {});
+    // Start preloading remaining sequences after a short delay so hero gets bandwidth first
+    setTimeout(() => {
+      for (let i = 1; i < sections.length; i++) {
+        sections[i].sequence.preload(() => {});
+      }
+    }, 600);
 
     if (reduceMotion) {
-      paintPosterOnly(seqList);
+      paintPostersOnly(sections);
       return;
     }
 
-    const start = () => {
+    // Wait for GSAP + ScrollTrigger
+    const waitAndInit = () => {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-        return setTimeout(start, 50);
+        return setTimeout(waitAndInit, 50);
       }
       gsap.registerPlugin(ScrollTrigger);
       setupScroll();
-      seqList.forEach((seq, i) => bindSectionScrub(seq, sections[i]));
-      // Refresh ScrollTrigger after layout settles
+
+      sections.forEach(({ section, sequence }) => bindCanvasSection(section, sequence));
+
+      // Refresh after layout settles
       requestAnimationFrame(() => {
-        seqList.forEach((s) => s.resize());
+        sections.forEach(({ sequence }) => sequence.resize());
         ScrollTrigger.refresh();
       });
-      // Notify animations.js — main is ready
-      document.dispatchEvent(new CustomEvent('woetive:scroll-ready'));
     };
-    start();
+    waitAndInit();
 
-    // Resize handling
+    // Resize handler
     let resizeTimer = 0;
     addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        seqList.forEach((seq) => {
-          seq.resize();
-          seq.draw(seq.currentFrame);
-        });
+        sections.forEach(({ sequence }) => sequence.resize());
         if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
       }, 150);
     }, { passive: true });
-
-    // Expose registry for animations.js
-    window.__woetiveSequences = sequences;
   }
 
   if (document.readyState === 'loading') {
