@@ -18,11 +18,12 @@
 
   // ---------- FrameSequence ----------------------------------
   class FrameSequence {
-    constructor(canvas, basePath, frameCount) {
+    constructor(canvas, basePath, frameCount, fitMode = 'cover') {
       this.canvas = canvas;
       this.ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
       this.basePath = basePath;
       this.frameCount = frameCount;
+      this.fitMode = fitMode;        // 'cover' | 'contain'
       this.images = new Array(frameCount).fill(null);
       this.currentFrame = 0;
       this.targetFrame = 0;
@@ -90,10 +91,20 @@
       const imgRatio = iw / ih;
       const canvasRatio = w / h;
       let dw, dh, dx, dy;
-      if (imgRatio > canvasRatio) {
-        dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
+      if (this.fitMode === 'contain') {
+        // Show whole image, leave breathing room (white bg fills it)
+        if (imgRatio > canvasRatio) {
+          dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
+        } else {
+          dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
+        }
       } else {
-        dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
+        // Cover — fill canvas, crop overflow centered
+        if (imgRatio > canvasRatio) {
+          dh = h; dw = h * imgRatio; dx = (w - dw) / 2; dy = 0;
+        } else {
+          dw = w; dh = w / imgRatio; dx = 0; dy = (h - dh) / 2;
+        }
       }
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.fillRect(0, 0, w, h);
@@ -118,10 +129,11 @@
     }
 
     async preload(onProgress) {
-      // Poster first
+      // Poster first — and mark canvas ready (CSS fades it in)
       await this.loadFrame(0);
       this.posterReady = true;
       this.draw(0);
+      this.canvas.classList.add('canvas-sequence--ready');
       if (onProgress) onProgress(this);
 
       // Rest in batches of 8
@@ -278,8 +290,7 @@
     if (typeof ScrollTrigger === 'undefined') return null;
 
     const isHero = section.id === 'hero';
-    const heroData = isHero ? wrapHeadlineWords() : null;
-    const heroLime = section.querySelector('.lime-accent');
+    const heroCanvas = isHero ? section.querySelector('canvas.scroll-canvas') : null;
     const contactLime = section.id === 'contact' ? section.querySelector('.lime-accent') : null;
     const stepEls = section.querySelectorAll('.method-step');
     const workCards = section.classList.contains('section--work')
@@ -315,23 +326,13 @@
           });
         }
 
-        // Hero: word stagger reveal at frame 40+; lime accent at 90+
-        if (isHero && heroData) {
-          const words = heroData.words;
-          // Per-word: word i becomes visible at frame >= 40 + i*8
-          words.forEach((w, i) => {
-            const threshold = 40 + i * 6;
-            const visible = frame >= threshold;
-            if (visible !== heroData.headline.classList.contains('is-revealed')) {
-              // toggle class on headline once all words pass — simpler approach
-            }
-          });
-          // Toggle headline.is-revealed when frame >= 40
-          const allVisible = frame >= 40;
-          heroData.headline.classList.toggle('is-revealed', allVisible);
-
-          if (heroLime) {
-            heroLime.classList.toggle('is-visible', frame >= 90);
+        // HERO: fade canvas in final 25% of scroll for soft handoff into trust ribbon
+        if (heroCanvas) {
+          if (p > 0.75) {
+            const fadeProgress = (p - 0.75) / 0.25;     // 0 → 1
+            heroCanvas.style.opacity = String(1 - fadeProgress * 0.7); // → 0.3
+          } else {
+            heroCanvas.style.opacity = '1';
           }
         }
 
@@ -362,6 +363,74 @@
             }
           });
         }
+      },
+    });
+  }
+
+  // ---------- Hero copy stagger reveal + lime accent draw-in --
+  function heroEntranceAnimations() {
+    if (reduceMotion || typeof gsap === 'undefined') {
+      // Still trigger lime accent in reduced motion
+      const lime = document.querySelector('.hero__headline .lime-accent');
+      if (lime) lime.classList.add('is-visible');
+      return;
+    }
+
+    // Wait for hero canvas to be ready (poster painted) before starting reveals
+    const heroCanvas = document.querySelector('#hero-canvas');
+    const start = () => {
+      // Set initial state to avoid flash before timeline runs
+      const eyebrows = document.querySelectorAll('.hero__top .eyebrow');
+      const headline = document.querySelector('.hero__headline');
+      const subhead = document.querySelector('.hero__subhead');
+      const ctaButtons = document.querySelectorAll('.hero__cta .btn');
+
+      gsap.set([eyebrows, headline, subhead, ctaButtons], { opacity: 0, y: 12 });
+
+      const tl = gsap.timeline();
+      tl.to(eyebrows, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' })
+        .to(headline, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.3')
+        .to(subhead, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.5')
+        .to(ctaButtons, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, '-=0.3');
+
+      // Lime accent draws in 1.4s after page load
+      setTimeout(() => {
+        const lime = document.querySelector('.hero__headline .lime-accent');
+        if (lime) lime.classList.add('is-visible');
+      }, 1400);
+    };
+
+    if (heroCanvas && heroCanvas.classList.contains('canvas-sequence--ready')) {
+      start();
+    } else if (heroCanvas) {
+      // Poll briefly until canvas is ready (poster painted)
+      const id = setInterval(() => {
+        if (heroCanvas.classList.contains('canvas-sequence--ready')) {
+          clearInterval(id);
+          start();
+        }
+      }, 80);
+      // Failsafe — start anyway after 1.5s
+      setTimeout(() => { clearInterval(id); start(); }, 1500);
+    } else {
+      start();
+    }
+  }
+
+  // ---------- Trust ribbon fade-up entrance -------------------
+  function trustRibbonEntrance() {
+    if (reduceMotion || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    const ribbon = document.querySelector('.section--trust');
+    if (!ribbon) return;
+    gsap.from(ribbon, {
+      opacity: 0,
+      y: 40,
+      duration: 1.2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: ribbon,
+        start: 'top 90%',
+        toggleActions: 'play none none reverse',
       },
     });
   }
@@ -403,7 +472,8 @@
       const canvas = section.querySelector('canvas.scroll-canvas');
       const seq = section.dataset.sequence;
       const count = parseInt(section.dataset.frameCount, 10) || 121;
-      const sequence = new FrameSequence(canvas, seq, count);
+      const fit = section.dataset.canvasFit || 'cover';   // hero uses 'contain'
+      const sequence = new FrameSequence(canvas, seq, count, fit);
       return { section, sequence };
     });
 
@@ -435,6 +505,11 @@
       setupScroll();
 
       sections.forEach(({ section, sequence }) => bindCanvasSection(section, sequence));
+
+      // Hero copy stagger + lime accent draw-in
+      heroEntranceAnimations();
+      // Trust ribbon fade-up entrance (scroll-triggered)
+      trustRibbonEntrance();
 
       // Refresh after layout settles
       requestAnimationFrame(() => {

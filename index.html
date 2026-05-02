@@ -46,25 +46,27 @@
   <main id="main">
 
     <!-- 1. HERO ====================================================== -->
-    <section class="section section--canvas section--hero" id="hero" data-sequence="01_act1" data-frame-count="121">
-      <canvas class="scroll-canvas" aria-label="Anonymous figure rotating to face the viewer"></canvas>
-      <div class="hero__overlay">
-        <div class="hero__top">
-          <span class="eyebrow">Woetive ✦ Issue 02 / 2026</span>
-          <span class="eyebrow eyebrow--right">Q3 2026 · Two slots open</span>
-        </div>
-        <div class="hero__center">
-          <h1 class="hero__headline" data-reveal-words>
+    <section class="section section--hero" id="hero" data-sequence="01_act1" data-frame-count="121" data-canvas-fit="contain">
+      <div class="hero__grid">
+        <div class="hero__copy">
+          <div class="hero__top">
+            <span class="eyebrow">Woetive ✦ Issue 02 / 2026</span>
+            <span class="eyebrow">Q3 2026 · Two slots open</span>
+          </div>
+          <h1 class="hero__headline">
             Brands for companies that <span class="lime-accent">outgrew</span> their first one.
           </h1>
-          <p class="hero__subhead" data-reveal-frame="90">Built by hand. Accelerated by AI.</p>
-          <div class="hero__cta" data-reveal-frame="100">
+          <p class="hero__subhead">Built by hand. Accelerated by AI.</p>
+          <div class="hero__cta">
             <a href="mailto:house@woetive.com?subject=New project brief" class="btn btn--primary">Begin <span aria-hidden="true">→</span></a>
             <a href="#work" class="btn btn--ghost">See work</a>
           </div>
         </div>
-        <span class="scroll-cue" data-reveal-frame="110">Scroll <span aria-hidden="true">↓</span></span>
+        <div class="hero__media">
+          <canvas class="scroll-canvas" id="hero-canvas" aria-label="Anonymous figure rotating to face the viewer"></canvas>
+        </div>
       </div>
+      <span class="scroll-cue">Scroll <span aria-hidden="true">↓</span></span>
     </section>
 
     <!-- 2. TRUST RIBBON ============================================== -->
