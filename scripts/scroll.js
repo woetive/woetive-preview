@@ -4,7 +4,7 @@
 // rough waypoints until each one is dialled in section-by-section.
 
 const W = {
-  // Hero — dark, figure right, headline left, liquid behind
+  // Hero — dark, figure right, headline left, particle cloud behind
   heroStart:       { pos: [ 0.50, 1.55, 4.50], look: [-0.40, 1.40, 0], fov: 32 },
   heroEnd:         { pos: [ 0.20, 1.65, 3.30], look: [-0.30, 1.45, 0], fov: 30 },
 
@@ -69,11 +69,7 @@ const SECTIONS = {
       if (ctx?.limeMaterial) {
         ctx.limeMaterial.emissiveIntensity = 1.4 + t * 0.6;
       }
-      // Liquid stays put — minor scale breathe with scroll
-      if (ctx?.liquid) {
-        const s = 1 + t * 0.04;
-        ctx.liquid.mesh.scale.set(2.6 * s, 1.05 * s, 0.65);
-      }
+      // Particle cloud stays anchored — its own update handles motion
     },
   },
 
@@ -108,8 +104,8 @@ const SECTIONS = {
       spans[1]?.classList.toggle('is-visible', t > 0.50);
       el.querySelector('.manifesto__body')?.classList.toggle('is-visible', t > 0.72);
       el.querySelector('.manifesto__meta')?.classList.toggle('is-visible', t > 0.84);
-      // Liquid fades down as we leave hero
-      if (ctx?.liquid) ctx.liquid.setOpacity(1 - t * 0.85);
+      // Particle cloud fades down as we leave hero
+      if (ctx?.particles) ctx.particles.setOpacity(1 - t * 0.85);
     },
   },
 
@@ -227,12 +223,12 @@ const SECTIONS = {
   },
 };
 
-export function initScroll({ canvas, camera, liquid, limeMaterial }) {
+export function initScroll({ canvas, camera, particles, limeMaterial }) {
   const ScrollTrigger = window.ScrollTrigger;
   if (!ScrollTrigger) { console.warn('[scroll] ScrollTrigger not loaded'); return; }
   window.gsap?.registerPlugin(ScrollTrigger);
 
-  const ctx = { liquid, limeMaterial };
+  const ctx = { particles, limeMaterial };
   applyCamera(camera, SECTIONS.hero.cameraAt(0));
 
   document.querySelectorAll('.sec--3d').forEach((el) => {

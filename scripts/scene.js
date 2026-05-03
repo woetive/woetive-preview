@@ -48,7 +48,7 @@ export function createScene(canvas) {
   const ambient = new THREE.AmbientLight(0xffffff, 0.07);
   scene.add(ambient);
 
-  // ---- Mouse-driven point light — warm-white, picks out humanoid + liquid ----
+  // ---- Mouse-driven point light — warm-white, picks out humanoid + particles ----
   const mouseLight = new THREE.PointLight(0xfff0d6, 1.2, 6, 1.4);
   mouseLight.position.set(2, 1.8, 2);
   scene.add(mouseLight);
@@ -59,7 +59,7 @@ export function createScene(canvas) {
   camera.add(camRim);
   scene.add(camera);
 
-  // ---- PMREM environment for PBR reflections (the liquid object lives on this) ----
+  // ---- PMREM environment for PBR reflections on the humanoid ----
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 

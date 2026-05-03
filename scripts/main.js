@@ -1,6 +1,6 @@
 import { createScene } from './scene.js';
 import { loadFigure } from './figure.js';
-import { createLiquid } from './liquid.js';
+import { createParticles } from './particles.js';
 import { initScroll } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -9,7 +9,7 @@ const isMobile = matchMedia('(max-width: 767px)').matches;
 const canvas = document.getElementById('stage');
 const { renderer, scene, camera, mouseLight } = createScene(canvas);
 
-const liquid = createLiquid(scene);
+const particles = createParticles(scene);
 
 let figureGroup = null;
 let limeMaterial = null;
@@ -29,7 +29,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     }
 
     waitForGSAP(() => {
-      if (!reduceMotion) initScroll({ canvas, camera, liquid, limeMaterial });
+      if (!reduceMotion) initScroll({ canvas, camera, particles, limeMaterial });
       else canvas.style.opacity = '1';
       window.ScrollTrigger?.refresh();
     });
@@ -110,8 +110,8 @@ function tick() {
     mouseLight.position.set(mouse.x * 3.0, 1.7 + mouse.y * 1.2, 2.0);
   }
 
-  liquid.setMouse(mouse.x, mouse.y);
-  liquid.update();
+  particles.setMouse(mouse.x, mouse.y);
+  particles.update();
 
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
