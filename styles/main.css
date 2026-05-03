@@ -220,6 +220,10 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   grid-template-rows: auto 1fr auto;
   height: 100%;
   gap: 1rem;
+  /* Driven by scroll.js — drift up & scale slightly as camera dollies in */
+  transform: translateY(var(--ovl-y, 0)) scale(var(--ovl-s, 1));
+  transform-origin: left center;
+  will-change: transform;
 }
 .overlay--hero .overlay__top {
   display: flex; flex-direction: column; gap: 0.5rem;
@@ -256,6 +260,9 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   grid-template-columns: 1fr minmax(0, 1.05fr);
   gap: 2rem; height: 100%;
   align-items: center;
+  /* Floats slightly with the orbiting camera */
+  transform: translateX(var(--ovl-x, 0));
+  will-change: transform;
 }
 .overlay--manifesto > * {
   grid-column: 2; max-width: 50ch;
@@ -279,7 +286,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   margin-top: 1.5rem;
   color: var(--ink-soft);
   font-size: var(--t-body-l);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
+.overlay--manifesto .manifesto__body.is-visible { opacity: 1; transform: translateY(0); }
 .overlay--manifesto .manifesto__meta {
   display: flex; gap: 0.5rem; flex-wrap: wrap;
   font-family: var(--font-mono);
@@ -287,7 +298,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   color: var(--ink-faint);
   margin-top: 2.5rem;
   align-self: end;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
+.overlay--manifesto .manifesto__meta.is-visible { opacity: 1; transform: translateY(0); }
 @media (max-width: 900px) {
   .overlay--manifesto { grid-template-columns: 1fr; }
   .overlay--manifesto > * { grid-column: 1; }
@@ -302,6 +317,7 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   gap: 0.5rem;
   padding-bottom: clamp(2rem, 6vw, 4rem);
 }
+.overlay--closeup .eyebrow { opacity: 0; transform: translateY(8px); will-change: opacity, transform; }
 .overlay--closeup .closeup__line {
   font-family: var(--font-serif);
   font-size: clamp(2.25rem, 5vw, 4rem);
@@ -309,6 +325,9 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   line-height: 1.05; letter-spacing: -0.02em;
   max-width: 18ch;
   margin-top: 1rem;
+  opacity: 0;
+  transform-origin: left bottom;
+  will-change: opacity, transform;
 }
 .overlay--closeup .closeup__sub {
   font-family: var(--font-mono);
@@ -317,6 +336,8 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   text-transform: uppercase;
   color: var(--ink-faint);
   margin-top: 1rem;
+  opacity: 0;
+  will-change: opacity, transform;
 }
 
 /* ---------- Work ---------- */
@@ -327,7 +348,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   height: 100%;
   padding-top: calc(var(--nav-height) + 3rem);
 }
-.overlay--work .overlay__header { max-width: 36ch; align-self: start; }
+.overlay--work .overlay__header {
+  max-width: 36ch; align-self: start;
+  transform: translateX(var(--ovl-x, 0));
+  will-change: transform;
+}
 .work-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -341,10 +366,15 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.75rem;
-  opacity: 0; transform: translateX(40px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  will-change: opacity, transform;
 }
-.work-card.is-visible { opacity: 1; transform: translateX(0); }
+/* Cards slide in from the right with a diagonal stagger — cascade from card 1 → 3 */
+.work-card:nth-child(1) { transform: translate3d(80px,  20px, 0); }
+.work-card:nth-child(2) { transform: translate3d(80px, -10px, 0); }
+.work-card:nth-child(3) { transform: translate3d(80px,  10px, 0); }
+.work-card.is-visible   { opacity: 1; transform: translate3d(0, 0, 0); }
 .work-card__media {
   position: relative;
   aspect-ratio: 4 / 5;
@@ -404,8 +434,9 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   gap: 1.25rem;
   padding: 1.25rem 0;
   border-top: 1px solid var(--line);
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  opacity: 0; transform: translateY(36px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  will-change: opacity, transform;
 }
 .method-steps > li.is-visible { opacity: 1; transform: translateY(0); }
 .method-steps .step__num {
@@ -413,6 +444,10 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   font-size: 0.875rem; font-weight: 500;
   letter-spacing: 0.08em; color: var(--accent);
   padding-top: 0.4rem;
+  display: inline-block;
+  transform: scale(var(--num-s, 1));
+  transform-origin: left center;
+  will-change: transform;
 }
 .method-steps h3 { font-size: var(--t-h-m); font-weight: 700; letter-spacing: -0.03em; }
 .method-steps p  { color: var(--ink-soft); margin-top: 0.4rem; max-width: 40ch; }
@@ -557,6 +592,9 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   grid-column: 2;
   display: flex; flex-direction: column; gap: 0.75rem;
   max-width: 50ch;
+  transform: scale(var(--ovl-s, 1));
+  transform-origin: left center;
+  will-change: transform;
 }
 .founders__lead { color: var(--ink-soft); font-size: var(--t-body-l); margin-top: 0.5rem; max-width: 60ch; }
 .founders__meta {
@@ -581,7 +619,10 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--bg);
+  opacity: 0; transform: translateX(40px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
+.founder-card.is-visible { opacity: 1; transform: translateX(0); }
 .founder-card__id {
   font-family: var(--font-mono);
   font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase;
@@ -628,6 +669,13 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   height: 100%;
   gap: 1rem;
   padding-top: calc(var(--nav-height) + 2rem);
+  transform: scale(var(--ovl-s, 1));
+  transform-origin: center;
+  will-change: transform;
+}
+.overlay--contact .contact__cta {
+  opacity: 0;
+  will-change: opacity, transform;
 }
 .contact__headline {
   font-size: var(--t-display);

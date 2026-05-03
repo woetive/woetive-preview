@@ -27,7 +27,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     }
 
     waitForGSAP(() => {
-      if (!reduceMotion) initScroll({ canvas, camera, figureGroup });
+      if (!reduceMotion) initScroll({ canvas, camera });
       else canvas.style.opacity = '1';
       window.ScrollTrigger?.refresh();
     });
@@ -72,8 +72,12 @@ function tick() {
   mouse.y += (mouse.ty - mouse.y) * 0.06;
 
   if (figureGroup) {
-    figureGroup.rotation.y = mouse.x * 0.18;     // turntable follow
-    figureGroup.rotation.x = mouse.y * 0.04;     // very slight tilt
+    // Continuous slow breath rotation — figure feels alive even with no cursor
+    const t = performance.now() * 0.0001;
+    const breathY = Math.sin(t) * 0.025;        // ±1.4°
+    const breathX = Math.cos(t * 0.6) * 0.012;  // ±0.7°
+    figureGroup.rotation.y = breathY + mouse.x * 0.22;
+    figureGroup.rotation.x = breathX + mouse.y * 0.05;
   }
 
   fluid.setMouse(mouse.x, mouse.y);
