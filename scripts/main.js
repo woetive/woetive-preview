@@ -1,23 +1,25 @@
 import { createScene } from './scene.js';
 import { loadFigure } from './figure.js';
-import { createLiquidBackground } from './bg-shader.js';
+import { createLiquid } from './liquid.js';
 import { initScroll } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = matchMedia('(max-width: 767px)').matches;
 
 const canvas = document.getElementById('stage');
-const { renderer, scene, camera } = createScene(canvas);
+const { renderer, scene, camera, mouseLight } = createScene(canvas);
 
-const fluid = createLiquidBackground(scene);
+const liquid = createLiquid(scene);
 
 let figureGroup = null;
+let limeMaterial = null;
 const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
 
 (async () => {
   try {
-    const { figureGroup: fg } = await loadFigure(scene);
-    figureGroup = fg;
+    const result = await loadFigure(scene);
+    figureGroup = result.figureGroup;
+    limeMaterial = result.limeMaterial;
     document.body.classList.add('figure-ready');
 
     const boot = document.querySelector('.boot');
@@ -27,7 +29,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     }
 
     waitForGSAP(() => {
-      if (!reduceMotion) initScroll({ canvas, camera, fluid });
+      if (!reduceMotion) initScroll({ canvas, camera, liquid, limeMaterial });
       else canvas.style.opacity = '1';
       window.ScrollTrigger?.refresh();
     });
@@ -36,8 +38,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
   } catch (err) {
     console.error('[main] figure load failed', err);
     document.body.classList.add('figure-failed');
-    const boot = document.querySelector('.boot');
-    boot?.classList.add('boot--hidden');
+    document.querySelector('.boot')?.classList.add('boot--hidden');
   }
 })();
 
@@ -53,19 +54,42 @@ function waitForGSAP(fn) {
 function runHeroEntry() {
   const gsap = window.gsap;
   if (!gsap) return;
-  // The hero overlay's enter motion is driven by scroll.js textMotion at t=0 already;
-  // we only animate the inline children for a one-time intro micro-stagger.
   gsap.timeline()
-    .from('.overlay--hero .eyebrow', { opacity: 0, y: 8, duration: 0.6, stagger: 0.12 })
-    .from('.hero__claim',            { opacity: 0, y: 16, duration: 0.9 }, '-=0.3')
-    .from('.hero__subhead',          { opacity: 0, y: 8, duration: 0.6 }, '-=0.5')
-    .from('.overlay--hero .btn',     { opacity: 0, y: 8, duration: 0.6, stagger: 0.1 }, '-=0.3');
+    .from('.nav__brand', { opacity: 0, y: -8, duration: 0.6 })
+    .from('.nav__menu a', { opacity: 0, y: -6, duration: 0.5, stagger: 0.06 }, '-=0.4')
+    .from('.nav__status > *', { opacity: 0, y: -6, duration: 0.5, stagger: 0.06 }, '-=0.4')
+    .from('.hero__line', { opacity: 0, y: 24, duration: 0.9, stagger: 0.10 }, '-=0.2')
+    .from('.hero__actions > *', { opacity: 0, y: 8, duration: 0.5, stagger: 0.08 }, '-=0.3')
+    .from('.hero__editorial', { opacity: 0, y: 6, duration: 0.5 }, '-=0.3')
+    .from('.hero__scroll', { opacity: 0, y: 6, duration: 0.5 }, '-=0.4')
+    .from('.hero__glass', { opacity: 0, y: 24, duration: 0.8, ease: 'power2.out' }, '-=0.5');
 }
 
-// Mouse — drives both the fluid background and the figure's gentle Y rotation.
 addEventListener('mousemove', (e) => {
-  mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;   // -1..1
+  mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.ty = (e.clientY / window.innerHeight) * 2 - 1;
+}, { passive: true });
+
+// Glass card mouse-tracked shimmer
+const glass = document.querySelector('.hero__glass');
+if (glass) {
+  addEventListener('mousemove', (e) => {
+    const r = glass.getBoundingClientRect();
+    const mx = ((e.clientX - r.left) / r.width) * 100;
+    const my = ((e.clientY - r.top) / r.height) * 100;
+    glass.style.setProperty('--mx', `${mx}%`);
+    glass.style.setProperty('--my', `${my}%`);
+  }, { passive: true });
+}
+
+// Site-wide scroll progress bar (lives in hero scroll cue)
+const scrollFill = document.querySelector('.hero__scroll-fill');
+addEventListener('scroll', () => {
+  if (scrollFill) {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+    scrollFill.style.width = `${(p * 100).toFixed(2)}%`;
+  }
 }, { passive: true });
 
 // Render loop
@@ -74,23 +98,27 @@ function tick() {
   mouse.y += (mouse.ty - mouse.y) * 0.06;
 
   if (figureGroup) {
-    // Continuous slow breath rotation — figure feels alive even with no cursor
     const t = performance.now() * 0.0001;
-    const breathY = Math.sin(t) * 0.025;        // ±1.4°
-    const breathX = Math.cos(t * 0.6) * 0.012;  // ±0.7°
-    figureGroup.rotation.y = breathY + mouse.x * 0.22;
-    figureGroup.rotation.x = breathX + mouse.y * 0.05;
+    const breathY = Math.sin(t) * 0.020;
+    const breathX = Math.cos(t * 0.6) * 0.010;
+    figureGroup.rotation.y = breathY + mouse.x * 0.18;
+    figureGroup.rotation.x = breathX + mouse.y * 0.04;
   }
 
-  fluid.setMouse(mouse.x, mouse.y);
-  fluid.update();
+  if (mouseLight) {
+    // Map mouse to a soft warm light circling above-front of the figure
+    mouseLight.position.set(mouse.x * 3.0, 1.7 + mouse.y * 1.2, 2.0);
+  }
+
+  liquid.setMouse(mouse.x, mouse.y);
+  liquid.update();
 
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
 tick();
 
-// Lenis smooth scroll on desktop only
+// Lenis smooth scroll
 waitForLenis(() => {
   if (reduceMotion || isMobile) return;
   const lenis = new window.Lenis({

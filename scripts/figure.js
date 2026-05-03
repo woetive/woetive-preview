@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const DRACO_DECODER_PATH = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/';
+const ACCENT = new THREE.Color(0xD0EF00);
 
 export async function loadFigure(scene) {
   const loader = new GLTFLoader();
@@ -14,7 +15,7 @@ export async function loadFigure(scene) {
   const gltf = await loader.loadAsync('/models/woetive-figure.glb');
   const model = gltf.scene;
 
-  // Auto-fit: target 1.85m tall standing figure with feet on y=0
+  // Auto-fit to ~1.85m tall, feet on y=0
   model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
   const size = new THREE.Vector3(); box.getSize(size);
@@ -27,25 +28,52 @@ export async function loadFigure(scene) {
   model.position.y -= box2.min.y;
   model.position.z -= (box2.max.z + box2.min.z) / 2;
 
-  // Enable shadows + keep the original Tripo PBR material; just ensure env intensity is sane
+  // Override material — matte black per brief: roughness 0.82, metalness 0.04
+  // We KEEP the original PBR map for normal/roughness detail though, by extending
+  // rather than replacing entirely.
   model.traverse((obj) => {
     if (!obj.isMesh) return;
     obj.castShadow = true;
     obj.receiveShadow = true;
-    if (obj.material && 'envMapIntensity' in obj.material) {
-      obj.material.envMapIntensity = 1.0;
-    }
+    const orig = obj.material;
+    const replaced = new THREE.MeshStandardMaterial({
+      color: 0x080808,
+      roughness: 0.82,
+      metalness: 0.04,
+      envMapIntensity: 0.6,
+      // Inherit normal/baseMap if present so the surface keeps its anatomical detail
+      normalMap: orig?.normalMap || null,
+      map: null,    // override base color — texture was too saturated for our matte look
+    });
+    obj.material = replaced;
   });
 
-  // Wrap in a parent group so we can rotate the entire figure for mouse-follow
-  // without disturbing the auto-fit transform on the model itself.
+  // Wrap in parent group so we can rotate/translate the entire figure independently
   const group = new THREE.Group();
   group.add(model);
   group.position.y = 0;
-  scene.add(group);
 
-  // Release the worker that decoded Draco — we don't need it after first load.
+  // ---- Lime chest line — separate emissive mesh, parented to group ----
+  // Thin vertical strip running from upper chest to belly. Sits slightly forward
+  // of the body so it always reads against the matte surface.
+  const limeGeo = new THREE.PlaneGeometry(0.018, 0.62);
+  const limeMat = new THREE.MeshStandardMaterial({
+    color: 0xD0EF00,
+    emissive: 0xD0EF00,
+    emissiveIntensity: 1.6,
+    roughness: 0.35,
+    metalness: 0,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.95,
+  });
+  const limeLine = new THREE.Mesh(limeGeo, limeMat);
+  limeLine.position.set(0, 1.10, 0.13);  // chest center, just in front of body
+  group.add(limeLine);
+  group.userData.limeMaterial = limeMat;
+
+  scene.add(group);
   draco.dispose();
 
-  return { figureGroup: group, figureModel: model };
+  return { figureGroup: group, figureModel: model, limeMaterial: limeMat };
 }
