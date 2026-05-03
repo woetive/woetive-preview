@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#FFFFFF" />
 
   <title>Woetive — Brands for companies that outgrew their first one.</title>
@@ -11,7 +11,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Woetive — Brands for companies that outgrew their first one." />
   <meta property="og:description" content="Two brothers. AI in the studio. Six weeks per brand." />
-  <meta property="og:image" content="/frames/01_act1/frame_0001.webp" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 
   <link rel="preload" as="fetch" href="/models/woetive-figure.glb" crossorigin />
-  <link rel="stylesheet" href="/styles/main.css?v=22" />
+  <link rel="stylesheet" href="/styles/main.css" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
@@ -33,13 +32,12 @@
     }
   }
   </script>
-  <script type="module" src="/scripts/main.js?v=22" defer></script>
+  <script type="module" src="/scripts/main.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Persistent 3D canvas — fixed to viewport, faded in/out by conductor -->
-  <canvas id="stage-canvas" aria-hidden="true"></canvas>
+  <canvas id="stage" aria-hidden="true"></canvas>
 
   <header class="nav" role="banner">
     <div class="nav__inner">
@@ -58,7 +56,7 @@
   <main id="main">
 
     <!-- 01 — HERO -->
-    <section class="section section--3d" id="hero">
+    <section class="sec sec--3d" id="hero" data-cam="hero">
       <div class="overlay overlay--hero">
         <div class="overlay__top">
           <span class="eyebrow">WOETIVE · ISSUE 02 / 2026</span>
@@ -75,48 +73,46 @@
       </div>
     </section>
 
-    <!-- 02 — MANIFESTO -->
-    <section class="section section--3d" id="manifesto">
+    <!-- 02 — MANIFESTO (slow orbit) -->
+    <section class="sec sec--3d" id="manifesto" data-cam="manifesto">
       <div class="overlay overlay--manifesto">
         <span class="eyebrow">MANIFESTO · 01</span>
         <h2 class="manifesto__headline">
-          <span data-reveal="0">We don't redesign.</span>
-          <span data-reveal="1">We <em class="lime">re-direct</em>.</span>
+          <span data-reveal>We don't redesign.</span>
+          <span data-reveal>We <em class="lime">re-direct</em>.</span>
         </h2>
         <p class="manifesto__body">
-          Most brands lose their grip when the company outgrows them. We rebuild the system before that happens — strategy, identity, and AI workflow that scales with you.
+          Most brands lose their grip when the company outgrows them. We rebuild the system before that happens — strategy, identity, and an AI workflow that scales with you.
         </p>
         <div class="manifesto__meta">
-          <span>TWO DIRECTORS</span>
-          <span aria-hidden="true">·</span>
-          <span>AI IN STUDIO</span>
-          <span aria-hidden="true">·</span>
+          <span>TWO DIRECTORS</span><span aria-hidden="true">·</span>
+          <span>AI IN STUDIO</span><span aria-hidden="true">·</span>
           <span>SIX WEEKS PER BRAND</span>
         </div>
       </div>
     </section>
 
-    <!-- 03 — INTERLUDE 01 -->
-    <section class="section section--interlude" id="interlude-01">
-      <video class="interlude__video" muted playsinline preload="auto" poster="/frames/01_act1/frame_0001.webp">
-        <source src="/assets/interlude-01.mp4" type="video/mp4">
-      </video>
-      <div class="interlude__overlay">
-        <span class="eyebrow eyebrow--top-left">INTERLUDE — 01</span>
-        <span class="eyebrow eyebrow--bottom-right" data-reveal>THIS IS WHO YOU'LL WORK WITH.</span>
+    <!-- 03 — CLOSE-UP -->
+    <section class="sec sec--3d" id="closeup" data-cam="closeup">
+      <div class="overlay overlay--closeup">
+        <span class="eyebrow">INTERLUDE — 01</span>
+        <h2 class="closeup__line">
+          This is who you'll <em>work with.</em>
+        </h2>
+        <p class="closeup__sub">Move your cursor. The figure follows.</p>
       </div>
     </section>
 
     <!-- 04 — WORK -->
-    <section class="section section--3d" id="work">
+    <section class="sec sec--3d sec--tall" id="work" data-cam="work">
       <div class="overlay overlay--work">
         <div class="overlay__header">
           <span class="eyebrow">WORK · 2023—2026</span>
-          <h2 class="section__heading">Recent work.</h2>
-          <p class="section__lead">Three projects. <em>Three problems solved.</em></p>
+          <h2 class="sec__heading">Recent work.</h2>
+          <p class="sec__lead">Three projects. <em>Three problems solved.</em></p>
         </div>
         <ol class="work-cards">
-          <li class="work-card" data-card="1">
+          <li class="work-card" data-card>
             <div class="work-card__media work-card__media--charcoal">
               <span class="work-card__mono">01 / ARCHITECTURE STUDIO</span>
               <span class="work-card__limeline" aria-hidden="true"></span>
@@ -133,7 +129,7 @@
               <span class="work-card__tag">Web · Brand refresh</span>
             </div>
           </li>
-          <li class="work-card" data-card="2">
+          <li class="work-card" data-card>
             <div class="work-card__media work-card__media--black">
               <span class="work-card__mono">02 / EDITORIAL CAMPAIGN</span>
               <span class="work-card__limeline" aria-hidden="true"></span>
@@ -150,7 +146,7 @@
               <span class="work-card__tag">Art direction · Campaign</span>
             </div>
           </li>
-          <li class="work-card" data-card="3">
+          <li class="work-card" data-card>
             <div class="work-card__media work-card__media--ink">
               <span class="work-card__mono">03 / SPIRITS BRAND</span>
               <span class="work-card__limeline" aria-hidden="true"></span>
@@ -168,43 +164,33 @@
             </div>
           </li>
         </ol>
-        <a href="#contact" class="archive-link">See full archive (8 cases) <span aria-hidden="true">→</span></a>
       </div>
     </section>
 
-    <!-- 05 — INTERLUDE 02 -->
-    <section class="section section--interlude" id="interlude-02">
-      <video class="interlude__video" muted playsinline preload="auto" poster="/frames/02_act2/frame_0001.webp">
-        <source src="/assets/interlude-02.mp4" type="video/mp4">
-      </video>
-      <div class="interlude__overlay">
-        <span class="eyebrow eyebrow--top-right">INTERLUDE — 02</span>
-        <span class="eyebrow eyebrow--bottom-left" data-reveal>EVERY DECISION HAS WEIGHT.</span>
-      </div>
-    </section>
-
-    <!-- 06 — METHOD -->
-    <section class="section section--3d" id="method">
+    <!-- 05 — METHOD -->
+    <section class="sec sec--3d sec--tall" id="method" data-cam="method">
       <div class="overlay overlay--method">
-        <span class="eyebrow">METHOD · 04</span>
-        <h2 class="section__heading">How we direct.</h2>
+        <div class="overlay__header">
+          <span class="eyebrow">METHOD · 04</span>
+          <h2 class="sec__heading">How we direct.</h2>
+        </div>
         <ol class="method-steps">
-          <li data-step="1">
+          <li data-step>
             <span class="step__num">01</span>
             <h3>Listen for two weeks.</h3>
             <p>Most agencies skip this. It's why their work could belong to anyone.</p>
           </li>
-          <li data-step="2">
+          <li data-step>
             <span class="step__num">02</span>
             <h3>Position.</h3>
             <p>Before any visual decision, we know what your brand stands for — and against.</p>
           </li>
-          <li data-step="3">
+          <li data-step>
             <span class="step__num">03</span>
             <h3>Design.</h3>
             <p>Two directors, AI as a third hand. Thirty directions explored, three presented.</p>
           </li>
-          <li data-step="4">
+          <li data-step>
             <span class="step__num">04</span>
             <h3>Ship in six weeks.</h3>
             <p>Full system, documented. No retainer trap.</p>
@@ -213,10 +199,10 @@
       </div>
     </section>
 
-    <!-- 07 — TRUST RIBBON -->
-    <section class="section section--trust" id="trust">
+    <!-- 06 — TRUST -->
+    <section class="sec sec--trust" id="trust">
       <span class="eyebrow trust__eyebrow">TRUSTED BY FOUNDERS BUILDING REAL COMPANIES</span>
-      <div class="marquee" aria-hidden="false">
+      <div class="marquee">
         <div class="marquee__track">
           <span class="marquee__item">Labaš</span><span class="marquee__sep">✦</span>
           <span class="marquee__item">Fresh Plus</span><span class="marquee__sep">✦</span>
@@ -236,12 +222,12 @@
       </div>
     </section>
 
-    <!-- 08 — WHY WOETIVE -->
-    <section class="section section--why" id="why">
+    <!-- 07 — WHY BENTO -->
+    <section class="sec sec--why" id="why">
       <div class="container">
-        <div class="section-header">
+        <div class="sec-header">
           <span class="eyebrow">WHY WOETIVE · 06 DIFFERENTIATORS</span>
-          <h2 class="section__heading">Not an agency. <em>Your creative team.</em></h2>
+          <h2 class="sec__heading">Not an agency. <em>Your creative team.</em></h2>
         </div>
         <div class="why-bento">
           <article class="why-card why-card--01">
@@ -279,12 +265,12 @@
       </div>
     </section>
 
-    <!-- 09 — TESTIMONIALS -->
-    <section class="section section--testimonials" id="testimonials">
+    <!-- 08 — TESTIMONIALS -->
+    <section class="sec sec--testimonials" id="testimonials">
       <div class="container">
-        <div class="section-header">
+        <div class="sec-header">
           <span class="eyebrow">TESTIMONIALS · 4.8 / 5</span>
-          <h2 class="section__heading">Trust <em>that returns.</em></h2>
+          <h2 class="sec__heading">Trust <em>that returns.</em></h2>
         </div>
         <div class="testimonials__grid">
           <article class="testimonial-card">
@@ -327,20 +313,18 @@
       </div>
     </section>
 
-    <!-- 10 — FOUNDERS -->
-    <section class="section section--3d" id="founders">
+    <!-- 09 — FOUNDERS -->
+    <section class="sec sec--3d sec--tall" id="founders" data-cam="founders">
       <div class="overlay overlay--founders">
         <div class="overlay__header">
           <span class="eyebrow">ABOUT · THE BROTHERS</span>
-          <h2 class="section__heading">Two brothers. <em>Same hand.</em></h2>
+          <h2 class="sec__heading">Two brothers. <em>Same hand.</em></h2>
           <p class="founders__lead">
             Joshua leads strategy and art direction. Daniel leads craft and code. We live together. Brand decisions continue at the dinner table, not just in the studio. AI gives us the tempo of a ten-person agency. Hand finishes give us the integrity of a two-person one.
           </p>
           <div class="founders__meta">
-            <span>LIVE · SINCE 2022</span>
-            <span aria-hidden="true">·</span>
-            <span>J.S.P / 001 + D.A.P / 002</span>
-            <span aria-hidden="true">·</span>
+            <span>LIVE · SINCE 2022</span><span aria-hidden="true">·</span>
+            <span>J.S.P / 001 + D.A.P / 002</span><span aria-hidden="true">·</span>
             <span>BRATISLAVA + KOŠICE, SK</span>
           </div>
         </div>
@@ -365,8 +349,8 @@
       </div>
     </section>
 
-    <!-- 11 — CONTACT -->
-    <section class="section section--3d" id="contact">
+    <!-- 10 — CONTACT -->
+    <section class="sec sec--3d" id="contact" data-cam="contact">
       <div class="overlay overlay--contact">
         <span class="eyebrow">READY WHEN YOU ARE</span>
         <h2 class="contact__headline">Your <em class="lime">turn.</em></h2>
@@ -380,7 +364,7 @@
 
   </main>
 
-  <!-- 12 — FOOTER -->
+  <!-- 11 — FOOTER -->
   <footer class="footer">
     <div class="footer__inner container">
       <div class="footer__brand">

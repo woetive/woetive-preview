@@ -1,22 +1,23 @@
-import * as THREE from 'three';
 import { createScene } from './scene.js';
-import { loadFigure, applyIdleBreathing } from './figure.js';
-import { initScrollConductor } from './scroll-conductor.js';
+import { loadFigure } from './figure.js';
+import { createFluidBackground } from './bg-fluid.js';
+import { initScroll } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = matchMedia('(max-width: 767px)').matches;
 
-const canvas = document.getElementById('stage-canvas');
+const canvas = document.getElementById('stage');
 const { renderer, scene, camera } = createScene(canvas);
 
-let bones = {};
-let figureMaterial = null;
+const fluid = createFluidBackground(scene);
+
+let figureGroup = null;
+const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
 
 (async () => {
   try {
-    const result = await loadFigure(scene);
-    bones = result.bones;
-    figureMaterial = result.figureMaterial;
+    const { figureGroup: fg } = await loadFigure(scene);
+    figureGroup = fg;
     document.body.classList.add('figure-ready');
 
     const boot = document.querySelector('.boot');
@@ -26,11 +27,8 @@ let figureMaterial = null;
     }
 
     waitForGSAP(() => {
-      if (!reduceMotion) {
-        initScrollConductor({ canvas, camera, bones, figureMaterial });
-      } else {
-        canvas.style.opacity = '1';
-      }
+      if (!reduceMotion) initScroll({ canvas, camera, figureGroup });
+      else canvas.style.opacity = '1';
       window.ScrollTrigger?.refresh();
     });
 
@@ -38,6 +36,8 @@ let figureMaterial = null;
   } catch (err) {
     console.error('[main] figure load failed', err);
     document.body.classList.add('figure-failed');
+    const boot = document.querySelector('.boot');
+    boot?.classList.add('boot--hidden');
   }
 })();
 
@@ -46,28 +46,45 @@ function waitForGSAP(fn) {
   const t = setInterval(() => {
     waited += 50;
     if (window.gsap && window.ScrollTrigger) { clearInterval(t); fn(); }
-    else if (waited > 4000) { clearInterval(t); console.warn('[main] GSAP not available'); fn(); }
+    else if (waited > 4000) { clearInterval(t); fn(); }
   }, 50);
 }
 
 function runHeroEntry() {
   const gsap = window.gsap;
   if (!gsap) return;
-  const tl = gsap.timeline();
-  tl.from('.overlay--hero .eyebrow', { opacity: 0, y: 8, duration: 0.6, stagger: 0.12 })
+  gsap.timeline()
+    .from('.overlay--hero .eyebrow', { opacity: 0, y: 8, duration: 0.6, stagger: 0.12 })
     .from('.hero__headline',         { opacity: 0, y: 16, duration: 0.9 }, '-=0.3')
     .from('.hero__subhead',          { opacity: 0, y: 8, duration: 0.6 }, '-=0.5')
     .from('.overlay--hero .btn',     { opacity: 0, y: 8, duration: 0.6, stagger: 0.1 }, '-=0.3');
-  // Lime accent reveals are wired in scroll-conductor (triggers when each enters view)
 }
 
+// Mouse — drives both the fluid background and the figure's gentle Y rotation.
+addEventListener('mousemove', (e) => {
+  mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;   // -1..1
+  mouse.ty = (e.clientY / window.innerHeight) * 2 - 1;
+}, { passive: true });
+
+// Render loop
 function tick() {
-  applyIdleBreathing(bones);
+  mouse.x += (mouse.tx - mouse.x) * 0.06;
+  mouse.y += (mouse.ty - mouse.y) * 0.06;
+
+  if (figureGroup) {
+    figureGroup.rotation.y = mouse.x * 0.18;     // turntable follow
+    figureGroup.rotation.x = mouse.y * 0.04;     // very slight tilt
+  }
+
+  fluid.setMouse(mouse.x, mouse.y);
+  fluid.update();
+
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
 tick();
 
+// Lenis smooth scroll on desktop only
 waitForLenis(() => {
   if (reduceMotion || isMobile) return;
   const lenis = new window.Lenis({
@@ -95,9 +112,4 @@ addEventListener('scroll', () => {
   nav.classList.toggle('is-scrolled', window.scrollY > 8);
 }, { passive: true });
 
-if (isMobile) {
-  document.querySelectorAll('.interlude__video').forEach(v => v.pause());
-}
-if (reduceMotion) {
-  document.documentElement.classList.add('reduced-motion');
-}
+if (reduceMotion) document.documentElement.classList.add('reduced-motion');
