@@ -15,8 +15,12 @@ export async function loadFigure(scene) {
   const gltf = await loader.loadAsync('/models/woetive-figure.glb');
   const model = gltf.scene;
 
-  // Auto-fit to ~1.85m tall, feet on y=0
+  // Rotate model -90° on Y so its frontal face points toward camera (model
+  // exports facing +X by default; we want it facing +Z toward viewer).
+  model.rotation.y = -Math.PI / 2;
   model.updateMatrixWorld(true);
+
+  // Auto-fit to ~1.85m tall, feet on y=0 (after rotation so bbox is correct)
   const box = new THREE.Box3().setFromObject(model);
   const size = new THREE.Vector3(); box.getSize(size);
   const targetHeight = 1.85;
