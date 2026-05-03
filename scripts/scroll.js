@@ -1,61 +1,86 @@
-// Continuous camera path. Each section's start state EXACTLY matches the
-// previous section's end state, so transitions feel like one continuous take
-// rather than cinematic cuts.
-//
-// Master waypoints — read top-to-bottom as the camera flies through space:
+// Continuous camera path (each section's t=0 == previous's t=1) + parallax
+// text motion. Text enters opposite to where the camera arrived from and
+// exits opposite to where the camera is leaving — so it always feels like
+// the world is fixed and we're flying past it.
 
 const W = {
-  heroStart:        { pos: [ 0.6, 1.50, 4.5 ], look: [ 0,    1.00, 0 ], fov: 35 },
-  heroEnd:          { pos: [ 0.3, 1.50, 4.0 ], look: [ 0,    1.05, 0 ], fov: 35 },
+  // CLOSE portrait of head — figure on RIGHT side of frame
+  heroStart:       { pos: [ 0,    1.65, 2.20], look: [-0.40, 1.65, 0], fov: 28 },
+  heroEnd:         { pos: [ 0.05, 1.65, 2.05], look: [-0.42, 1.65, 0], fov: 28 },
 
-  manifestoEnd:     { pos: [-2.40, 1.42, 3.0 ], look: [ 0,    1.10, 0 ], fov: 38 },
+  // Pull back into a left-side orbit, mid-body framing
+  manifestoEnd:    { pos: [-2.40, 1.50, 2.50], look: [ 0,    1.45, 0], fov: 35 },
 
-  closeupOrbitIn:   { pos: [-1.60, 1.55, 1.0 ], look: [ 0,    1.50, 0 ], fov: 28 },
-  closeupOrbitOut:  { pos: [-1.60, 1.55, 1.0 ], look: [ 0,    1.50, 0 ], fov: 28 },
-  closeupExit:      { pos: [-1.70, 1.50, 4.4 ], look: [-0.50, 1.05, 0 ], fov: 34 },
+  // Spiral inward to close orbit point — head/upper body level
+  closeupOrbitIn:  { pos: [-1.70, 1.55, 0.90], look: [ 0,    1.55, 0], fov: 30 },
+  closeupOrbitOut: { pos: [-1.70, 1.55, 0.90], look: [ 0,    1.55, 0], fov: 30 },
+  closeupExit:    { pos: [-1.50, 1.50, 3.60],  look: [-0.50, 1.30, 0], fov: 33 },
 
-  workEnd:          { pos: [-1.85, 1.45, 5.4 ], look: [-0.70, 1.05, 0 ], fov: 35 },
+  // Wide pull-back, full body left
+  workEnd:         { pos: [-1.85, 1.40, 5.40], look: [-0.70, 1.10, 0], fov: 36 },
 
-  methodInterEnd:   { pos: [-0.40, 1.05, 2.1 ], look: [ 0,    0.85, 0 ], fov: 30 },
+  // Push back IN to close upper-body shot (NOT legs — looking at chest/head)
+  methodInterEnd:  { pos: [ 0.50, 1.65, 1.90], look: [-0.20, 1.55, 0], fov: 30 },
 
-  methodEnd:        { pos: [-0.30, 2.55, 4.0 ], look: [ 0.10, 0.55, 0 ], fov: 32 },
+  // High overhead, looks DOWN at full figure
+  methodEnd:       { pos: [-0.40, 2.50, 4.20], look: [ 0.30, 0.95, 0], fov: 35 },
 
-  foundersEnd:      { pos: [ 1.20, 0.95, 3.6 ], look: [ 0.30, 1.20, 0 ], fov: 38 },
+  // Low-right angle, upper body emphasis
+  foundersEnd:     { pos: [ 1.50, 1.10, 3.40], look: [ 0.20, 1.30, 0], fov: 38 },
 
-  contactEnd:       { pos: [ 0,    1.45, 2.5 ], look: [ 0,    1.25, 0 ], fov: 30 },
+  // Final centered close portrait
+  contactEnd:      { pos: [ 0,    1.55, 2.40], look: [ 0,    1.55, 0], fov: 28 },
 };
 
-// ---------- helpers ----------
 const lerp = (a, b, t) => a + (b - a) * t;
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut   = (t) => 1 - Math.pow(1 - t, 3);
 
 function lerpKf(from, to, t) {
   return {
-    position: {
-      x: lerp(from.pos[0],  to.pos[0],  t),
-      y: lerp(from.pos[1],  to.pos[1],  t),
-      z: lerp(from.pos[2],  to.pos[2],  t),
-    },
-    lookAt: {
-      x: lerp(from.look[0], to.look[0], t),
-      y: lerp(from.look[1], to.look[1], t),
-      z: lerp(from.look[2], to.look[2], t),
-    },
-    fov: lerp(from.fov, to.fov, t),
+    position: { x: lerp(from.pos[0], to.pos[0], t), y: lerp(from.pos[1], to.pos[1], t), z: lerp(from.pos[2], to.pos[2], t) },
+    lookAt:   { x: lerp(from.look[0], to.look[0], t), y: lerp(from.look[1], to.look[1], t), z: lerp(from.look[2], to.look[2], t) },
+    fov:      lerp(from.fov, to.fov, t),
   };
 }
 
-// ---------- section camera + overlay choreography ----------
+// ---------- text directional motion helper ----------
+// enter & exit: { x, y } pixel offsets the text travels from / to
+function textMotion(t, enter, exit) {
+  const ENTER_END = 0.30;
+  const EXIT_START = 0.70;
+  const enterT = Math.min(1, t / ENTER_END);
+  const exitT  = Math.max(0, (t - EXIT_START) / (1 - EXIT_START));
+  const eIn  = 1 - Math.pow(1 - enterT, 3);
+  const eOut = exitT * exitT;
+  return {
+    x: lerp(enter.x, 0, eIn) + lerp(0, exit.x, eOut),
+    y: lerp(enter.y, 0, eIn) + lerp(0, exit.y, eOut),
+    opacity: Math.max(0, eIn - eOut),
+  };
+}
 
+function applyText(el, m) {
+  if (!el) return;
+  el.style.transform = `translate3d(${m.x.toFixed(1)}px, ${m.y.toFixed(1)}px, 0)`;
+  el.style.opacity = m.opacity.toFixed(3);
+}
+
+// ---------- per-section choreography ----------
+// Each section: cameraAt(t) returns camera state, overlay(el, t) drives text motion + reveals.
 const SECTIONS = {
   hero: {
     cameraAt(t) { return lerpKf(W.heroStart, W.heroEnd, easeOut(t)); },
     overlay(el, t) {
+      // Hero is visible from page load (gsap intro stagger handles enter).
+      // Apply only EXIT motion: as user scrolls away, text slides RIGHT-up
+      // (opposite of camera departing leftward toward manifesto).
       const ol = el.querySelector('.overlay--hero');
       if (ol) {
-        ol.style.setProperty('--ovl-y', `${-t * 12}px`);
-        ol.style.setProperty('--ovl-s', `${(1 - t * 0.04).toFixed(4)}`);
+        const exitT = Math.max(0, (t - 0.55) / 0.45);
+        const e = exitT * exitT;
+        ol.style.transform = `translate3d(${(e * 60).toFixed(1)}px, ${(e * -20).toFixed(1)}px, 0)`;
+        ol.style.opacity = (1 - e).toFixed(3);
       }
       const cue = el.querySelector('.scroll-cue');
       if (cue) cue.style.opacity = String(Math.max(0, 1 - t * 2.4));
@@ -63,10 +88,8 @@ const SECTIONS = {
   },
 
   manifesto: {
-    // Camera arcs around the figure on a smooth circular path from hero-end to manifestoEnd.
     cameraAt(t) {
       const e = easeInOut(t);
-      // Use polar interpolation in XZ plane around origin (figure stands at 0,0,0)
       const aFrom = Math.atan2(W.heroEnd.pos[0],  W.heroEnd.pos[2]);
       const aTo   = Math.atan2(W.manifestoEnd.pos[0], W.manifestoEnd.pos[2]);
       const rFrom = Math.hypot(W.heroEnd.pos[0],  W.heroEnd.pos[2]);
@@ -88,98 +111,95 @@ const SECTIONS = {
       };
     },
     overlay(el, t) {
-      const ol = el.querySelector('.overlay--manifesto');
-      if (ol) ol.style.setProperty('--ovl-x', `${t * 14}px`);
+      // Camera came from right (was at hero), text enters from LEFT.
+      // Camera leaves left-down (into closeup orbit), text exits RIGHT.
+      applyText(el.querySelector('.overlay--manifesto'),
+                textMotion(t, { x: -60, y: 0 }, { x: 50, y: 20 }));
       const spans = el.querySelectorAll('.manifesto__headline span');
-      spans[0]?.classList.toggle('is-visible', t > 0.22);
-      spans[1]?.classList.toggle('is-visible', t > 0.55);
-      el.querySelector('.manifesto__body')?.classList.toggle('is-visible', t > 0.78);
-      el.querySelector('.manifesto__meta')?.classList.toggle('is-visible', t > 0.88);
+      spans[0]?.classList.toggle('is-visible', t > 0.20);
+      spans[1]?.classList.toggle('is-visible', t > 0.50);
+      el.querySelector('.manifesto__body')?.classList.toggle('is-visible', t > 0.72);
+      el.querySelector('.manifesto__meta')?.classList.toggle('is-visible', t > 0.84);
     },
   },
 
   closeup: {
-    // 3 phases: spiral inward (continues the orbit), full 360° body orbit, spiral out.
     cameraAt(t) {
-      // Phase 1 — spiral in (0..0.18)
-      if (t < 0.18) {
-        const u = easeInOut(t / 0.18);
-        return lerpKf(W.manifestoEnd, W.closeupOrbitIn, u);
+      // Phase 1 — spiral in
+      if (t < 0.16) {
+        return lerpKf(W.manifestoEnd, W.closeupOrbitIn, easeInOut(t / 0.16));
       }
-      // Phase 2 — full 360° orbit at orbit-radius (0.18..0.82)
-      if (t < 0.82) {
-        const u = (t - 0.18) / 0.64;        // 0..1
+      // Phase 2 — full 360° orbit
+      if (t < 0.84) {
+        const u = (t - 0.16) / 0.68;
         const startA = Math.atan2(W.closeupOrbitIn.pos[0], W.closeupOrbitIn.pos[2]);
         const r      = Math.hypot(W.closeupOrbitIn.pos[0], W.closeupOrbitIn.pos[2]);
-        // Sweep clockwise (negative angular delta) for natural left-to-back-to-right motion
         const angle  = startA - u * Math.PI * 2;
-        const yBob   = Math.sin(u * Math.PI * 2) * 0.04; // tiny vertical breath during orbit
+        const yBob   = Math.sin(u * Math.PI * 2) * 0.04;
         return {
-          position: {
-            x: Math.sin(angle) * r,
-            y: W.closeupOrbitIn.pos[1] + yBob,
-            z: Math.cos(angle) * r,
-          },
-          lookAt: { x: 0, y: W.closeupOrbitIn.look[1], z: 0 },
-          fov:    W.closeupOrbitIn.fov,
+          position: { x: Math.sin(angle) * r, y: W.closeupOrbitIn.pos[1] + yBob, z: Math.cos(angle) * r },
+          lookAt:   { x: 0, y: W.closeupOrbitIn.look[1], z: 0 },
+          fov:      W.closeupOrbitIn.fov,
         };
       }
-      // Phase 3 — spiral out (0.82..1.0)
-      const u = easeOut((t - 0.82) / 0.18);
-      return lerpKf(W.closeupOrbitOut, W.closeupExit, u);
+      // Phase 3 — spiral out
+      return lerpKf(W.closeupOrbitOut, W.closeupExit, easeOut((t - 0.84) / 0.16));
     },
     overlay(el, t) {
+      // Top-left eyebrow appears early, bottom-right at 70% per brief
       const top = el.querySelector('.eye--top-left');
-      const bot = el.querySelector('.eye--bottom-right');
       if (top) {
         const v = Math.max(0, Math.min(1, (t - 0.04) / 0.18));
-        top.style.opacity = v;
-        top.style.transform = `translateY(${(1 - v) * 8}px)`;
+        top.style.opacity = String(v);
+        top.style.transform = `translate3d(${(1 - v) * -20}px, 0, 0)`;
       }
+      const bot = el.querySelector('.eye--bottom-right');
       if (bot) {
         const v = Math.max(0, Math.min(1, (t - 0.70) / 0.20));
         const e = easeOut(v);
-        bot.style.opacity = e;
-        bot.style.transform = `translateY(${(1 - e) * 12}px)`;
+        bot.style.opacity = String(e);
+        bot.style.transform = `translate3d(${(1 - e) * 30}px, 0, 0)`;
       }
     },
   },
 
   work: {
-    // Continues the pull-out from closeup-exit to a wide left-side framing.
     cameraAt(t) { return lerpKf(W.closeupExit, W.workEnd, easeInOut(t)); },
     overlay(el, t) {
-      const head = el.querySelector('.overlay--work .overlay__header');
-      if (head) head.style.setProperty('--ovl-x', `${t * 10}px`);
+      // Camera came from in-left (closeup-exit), heading further out-left.
+      // Header text enters from below, exits LEFT (camera departs right-IN).
+      applyText(el.querySelector('.overlay--work .overlay__header'),
+                textMotion(t, { x: 0, y: 40 }, { x: -50, y: 0 }));
       const cards = el.querySelectorAll('.work-card');
-      [0.30, 0.52, 0.74].forEach((th, i) => cards[i]?.classList.toggle('is-visible', t >= th));
+      [0.30, 0.50, 0.70].forEach((th, i) => cards[i]?.classList.toggle('is-visible', t >= th));
     },
   },
 
   methodInterlude: {
-    // Push back IN from the wide work shot to a tight detail on the lower body / hand area.
     cameraAt(t) { return lerpKf(W.workEnd, W.methodInterEnd, easeInOut(t)); },
     overlay(el, t) {
       const top = el.querySelector('.eye--top-right');
-      const bot = el.querySelector('.eye--bottom-left');
       if (top) {
         const v = Math.max(0, Math.min(1, (t - 0.04) / 0.18));
-        top.style.opacity = v;
-        top.style.transform = `translateY(${(1 - v) * 8}px)`;
+        top.style.opacity = String(v);
+        top.style.transform = `translate3d(${(1 - v) * 20}px, 0, 0)`;
       }
+      const bot = el.querySelector('.eye--bottom-left');
       if (bot) {
         const v = Math.max(0, Math.min(1, (t - 0.70) / 0.20));
         const e = easeOut(v);
-        bot.style.opacity = e;
-        bot.style.transform = `translateY(${(1 - e) * 12}px)`;
+        bot.style.opacity = String(e);
+        bot.style.transform = `translate3d(${(1 - e) * -30}px, 0, 0)`;
       }
     },
   },
 
   method: {
-    // Crane up — continues from the close low position to a high overhead.
     cameraAt(t) { return lerpKf(W.methodInterEnd, W.methodEnd, easeInOut(t)); },
     overlay(el, t) {
+      // Camera cranes UP — text enters from BELOW (where camera was), exits UP-LEFT.
+      applyText(el.querySelector('.overlay--method'),
+                textMotion(t, { x: 0, y: 50 }, { x: -30, y: -30 }));
       const steps = el.querySelectorAll('.method-steps > li');
       [0.18, 0.42, 0.66, 0.88].forEach((th, i) => steps[i]?.classList.toggle('is-visible', t >= th));
       el.querySelectorAll('.method-steps .step__num').forEach((num) => {
@@ -189,26 +209,23 @@ const SECTIONS = {
   },
 
   founders: {
-    // Long graceful descend from method-high to a low-angle right-side framing.
     cameraAt(t) { return lerpKf(W.methodEnd, W.foundersEnd, easeInOut(t)); },
     overlay(el, t) {
-      const head = el.querySelector('.overlay--founders .overlay__header');
-      if (head) head.style.setProperty('--ovl-s', `${(1 + t * 0.04).toFixed(4)}`);
+      // Camera DESCENDS — text enters from ABOVE (where camera was), exits RIGHT.
+      applyText(el.querySelector('.overlay--founders .overlay__header'),
+                textMotion(t, { x: 0, y: -50 }, { x: 40, y: 0 }));
       const cards = el.querySelectorAll('.founder-card');
       cards.forEach((c, i) => c.classList.toggle('is-visible', t >= 0.45 + i * 0.18));
     },
   },
 
   contact: {
-    // Settle to centered push-in. Last 20% adds a small ±5° orbit so the
-    // figure visually "turns to face you" at the climax.
     cameraAt(t) {
       if (t < 0.80) {
-        const u = easeInOut(t / 0.80);
-        return lerpKf(W.foundersEnd, W.contactEnd, u);
+        return lerpKf(W.foundersEnd, W.contactEnd, easeInOut(t / 0.80));
       }
       const u = (t - 0.80) / 0.20;
-      const a = Math.sin(u * Math.PI) * 0.09;          // tiny ±5°
+      const a = Math.sin(u * Math.PI) * 0.09;
       const r = Math.hypot(W.contactEnd.pos[0], W.contactEnd.pos[2]);
       return {
         position: { x: Math.sin(a) * r, y: W.contactEnd.pos[1], z: Math.cos(a) * r },
@@ -217,14 +234,15 @@ const SECTIONS = {
       };
     },
     overlay(el, t) {
-      const ol = el.querySelector('.overlay--contact');
-      if (ol) ol.style.setProperty('--ovl-s', `${(0.96 + t * 0.04).toFixed(4)}`);
+      // Camera came from far-right, text enters from LEFT, no exit (last 3D section).
+      applyText(el.querySelector('.overlay--contact'),
+                textMotion(t, { x: -50, y: 0 }, { x: 0, y: 0 }));
       const cta = el.querySelector('.contact__cta');
       if (cta) {
         const v = Math.max(0, Math.min(1, (t - 0.55) / 0.30));
         const e = easeOut(v);
-        cta.style.opacity = e;
-        cta.style.transform = `translateY(${(1 - e) * 16}px)`;
+        cta.style.opacity = String(e);
+        cta.style.transform = `translate3d(0, ${(1 - e) * 16}px, 0)`;
       }
     },
   },
@@ -232,7 +250,7 @@ const SECTIONS = {
 
 // ---------- ScrollTrigger wiring ----------
 
-export function initScroll({ canvas, camera }) {
+export function initScroll({ canvas, camera, fluid }) {
   const ScrollTrigger = window.ScrollTrigger;
   if (!ScrollTrigger) { console.warn('[scroll] ScrollTrigger not loaded'); return; }
   window.gsap?.registerPlugin(ScrollTrigger);
@@ -267,10 +285,10 @@ export function initScroll({ canvas, camera }) {
       trigger: el,
       start: 'top 60%',
       end: 'bottom 40%',
-      onEnter:     () => fadeCanvas(canvas, 0),
-      onLeave:     () => fadeCanvas(canvas, 1),
-      onEnterBack: () => fadeCanvas(canvas, 0),
-      onLeaveBack: () => fadeCanvas(canvas, 1),
+      onEnter:     () => { fadeCanvas(canvas, 0); fluid?.setIntensity(0.4); },
+      onLeave:     () => { fadeCanvas(canvas, 1); fluid?.setIntensity(1.0); },
+      onEnterBack: () => { fadeCanvas(canvas, 0); fluid?.setIntensity(0.4); },
+      onLeaveBack: () => { fadeCanvas(canvas, 1); fluid?.setIntensity(1.0); },
     });
   });
 

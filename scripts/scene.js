@@ -21,11 +21,11 @@ export function createScene(canvas) {
   scene.fog = new THREE.Fog('#FFFFFF', 8, 20);
 
   const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-  camera.position.set(0, 1.5, 4.5);
-  camera.lookAt(0, 1.0, 0);
+  camera.position.set(0, 1.65, 2.0);
+  camera.lookAt(0, 1.65, 0);
 
-  // Three-point studio lighting — soft, editorial, white seamless
-  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  // ---- Static studio key + ambient (world space) ----
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
   key.position.set(-3, 5, 4);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -38,18 +38,24 @@ export function createScene(canvas) {
   key.shadow.camera.far = 14;
   scene.add(key);
 
-  const fill = new THREE.DirectionalLight(0xffffff, 0.6);
-  fill.position.set(3, 2, 3);
-  scene.add(fill);
-
-  const rim = new THREE.DirectionalLight(0xfdf9e8, 0.55);
-  rim.position.set(-2, 3, -3);
-  scene.add(rim);
-
-  const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.30);
   scene.add(ambient);
 
-  // PMREM RoomEnvironment — adds subtle real-world reflections to PBR materials
+  // ---- Camera-attached lights — keep figure properly lit at every angle ----
+  // These ride with the camera (added as children) so the figure is never
+  // unlit during 360° orbits or wide pull-backs.
+  const camFill = new THREE.DirectionalLight(0xffffff, 0.55);
+  camFill.position.set(0.5, 0.5, 1.5);    // slightly off-center toward camera POV
+  camera.add(camFill);
+
+  const camRim = new THREE.DirectionalLight(0xfafff0, 0.45);
+  camRim.position.set(-1.2, 0.8, -0.5);   // rim from camera's upper-left back
+  camera.add(camRim);
+
+  // Camera must be in scene graph for its child lights to render
+  scene.add(camera);
+
+  // PMREM env for subtle PBR reflections
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 

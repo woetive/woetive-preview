@@ -1,6 +1,6 @@
 import { createScene } from './scene.js';
 import { loadFigure } from './figure.js';
-import { createFluidBackground } from './bg-fluid.js';
+import { createLiquidBackground } from './bg-shader.js';
 import { initScroll } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -9,7 +9,7 @@ const isMobile = matchMedia('(max-width: 767px)').matches;
 const canvas = document.getElementById('stage');
 const { renderer, scene, camera } = createScene(canvas);
 
-const fluid = createFluidBackground(scene);
+const fluid = createLiquidBackground(scene);
 
 let figureGroup = null;
 const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -27,7 +27,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     }
 
     waitForGSAP(() => {
-      if (!reduceMotion) initScroll({ canvas, camera });
+      if (!reduceMotion) initScroll({ canvas, camera, fluid });
       else canvas.style.opacity = '1';
       window.ScrollTrigger?.refresh();
     });
@@ -53,9 +53,11 @@ function waitForGSAP(fn) {
 function runHeroEntry() {
   const gsap = window.gsap;
   if (!gsap) return;
+  // The hero overlay's enter motion is driven by scroll.js textMotion at t=0 already;
+  // we only animate the inline children for a one-time intro micro-stagger.
   gsap.timeline()
     .from('.overlay--hero .eyebrow', { opacity: 0, y: 8, duration: 0.6, stagger: 0.12 })
-    .from('.hero__headline',         { opacity: 0, y: 16, duration: 0.9 }, '-=0.3')
+    .from('.hero__claim',            { opacity: 0, y: 16, duration: 0.9 }, '-=0.3')
     .from('.hero__subhead',          { opacity: 0, y: 8, duration: 0.6 }, '-=0.5')
     .from('.overlay--hero .btn',     { opacity: 0, y: 8, duration: 0.6, stagger: 0.1 }, '-=0.3');
 }
