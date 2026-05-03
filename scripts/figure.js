@@ -1,8 +1,16 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const DRACO_DECODER_PATH = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/';
 
 export async function loadFigure(scene) {
   const loader = new GLTFLoader();
+  const draco = new DRACOLoader();
+  draco.setDecoderPath(DRACO_DECODER_PATH);
+  draco.setDecoderConfig({ type: 'js' });
+  loader.setDRACOLoader(draco);
+
   const gltf = await loader.loadAsync('/models/woetive-figure.glb');
   const model = gltf.scene;
 
@@ -35,6 +43,9 @@ export async function loadFigure(scene) {
   group.add(model);
   group.position.y = 0;
   scene.add(group);
+
+  // Release the worker that decoded Draco — we don't need it after first load.
+  draco.dispose();
 
   return { figureGroup: group, figureModel: model };
 }
