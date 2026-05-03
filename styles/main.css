@@ -51,13 +51,12 @@
 * { margin: 0; padding: 0; }
 
 html {
-  background: #000;
+  background: #000;             /* the outer 24px frame area */
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
-  scroll-behavior: smooth;
 }
 body {
-  background: var(--bg);
+  background: transparent;      /* lets the rounded canvas show through */
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: var(--t-body);
@@ -66,6 +65,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   min-height: 100vh;
+  transition: color 0.5s var(--ease-out);
+}
+
+/* Theme inversion driven by JS based on canvas bg luminance.
+   Default is dark; flips to light tokens when [data-theme=light]. */
+html[data-theme="light"] {
+  --ink: var(--charcoal);
+  --ink-soft: rgba(11, 11, 10, 0.66);
+  --ink-faint: rgba(11, 11, 10, 0.40);
+  --line: rgba(11, 11, 10, 0.10);
+  --line-strong: rgba(11, 11, 10, 0.18);
 }
 
 /* Rounded viewport frame — 1px border drawn over fixed canvas */
@@ -256,7 +266,10 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 }
 .lime.is-visible::after { transform: scaleX(1); }
 
-/* ---------- Section base ---------- */
+/* ---------- Section base — non-pinned, normal flow.
+   Camera moves with global scroll (handled in scroll.js).
+   Each section is a "camera station" — its height defines how long
+   the user dwells in that camera state. ---------- */
 .sec { position: relative; }
 .sec--3d {
   height: 100vh; height: 100dvh;
@@ -264,6 +277,7 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   z-index: 2;
 }
 .sec--tall { height: 130vh; height: 130dvh; }
+.sec--short { height: 70vh; height: 70dvh; }
 .sec--3d .overlay {
   position: relative; z-index: 3;
   width: 100%; max-width: var(--container-max);

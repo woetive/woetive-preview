@@ -1,288 +1,167 @@
-// Continuous camera path. Each section's t=0 must equal previous t=1.
-// Per camera-directed brief — Hero is the only section fully aligned to brief
-// values right now; other sections inherit from previous and use existing
-// rough waypoints until each one is dialled in section-by-section.
+import * as THREE from 'three';
 
-const W = {
-  // Hero — dark, figure right, headline left, particle cloud behind
-  heroStart:       { pos: [ 0.50, 1.55, 4.50], look: [-0.40, 1.40, 0], fov: 32 },
-  heroEnd:         { pos: [ 0.20, 1.65, 3.30], look: [-0.30, 1.45, 0], fov: 30 },
+// ONE continuous camera path. The user scrolls the page = the camera flies
+// through a 3D world from z=0 to z=-122. Each waypoint defines camera +
+// model + particles + lighting + bg state. Everything interpolates smoothly.
 
-  manifestoEnd:    { pos: [-0.25, 1.78, 2.30], look: [ 0.18, 1.45, 0], fov: 32 },
+const PATH = [
+  // p, camera pos, lookAt, fov, bg, model {pos, rot.y, scale}, particle opacity, lime intensity
+  { p: 0.000, pos: [ 0.55, 1.25,   4.80], look: [ 0.05, 0.85,  -2.00], fov: 38, bg: '#050505', mp: [ 1.05, -0.95,  -2.20], mr: -0.18, ms: 1.95, pa: 0.38, li: 1.15 },
+  { p: 0.075, pos: [ 0.10, 1.45,   3.15], look: [ 0.35, 1.10,  -2.15], fov: 34, bg: '#050505', mp: [ 0.85, -0.85,  -2.20], mr: -0.10, ms: 2.05, pa: 0.32, li: 1.20 },
 
-  closeupOrbitIn:  { pos: [-1.70, 1.55, 0.95], look: [ 0,    1.55, 0], fov: 30 },
-  closeupOrbitOut: { pos: [-1.70, 1.55, 0.95], look: [ 0,    1.55, 0], fov: 30 },
-  closeupExit:     { pos: [-1.50, 1.50, 3.60], look: [-0.50, 1.30, 0], fov: 33 },
+  { p: 0.170, pos: [-0.25, 1.75,  -9.65], look: [ 0.15, 1.30, -12.10], fov: 30, bg: '#050505', mp: [ 0.78, -0.90, -12.00], mr: -0.04, ms: 2.55, pa: 0.12, li: 1.35 },
 
-  workEnd:         { pos: [-1.85, 1.40, 5.40], look: [-0.70, 1.10, 0], fov: 36 },
-  methodInterEnd:  { pos: [ 0.50, 1.65, 1.90], look: [-0.20, 1.55, 0], fov: 30 },
-  methodEnd:       { pos: [-0.40, 2.50, 4.20], look: [ 0.30, 0.95, 0], fov: 35 },
-  foundersEnd:     { pos: [ 1.50, 1.10, 3.40], look: [ 0.20, 1.30, 0], fov: 38 },
-  contactEnd:      { pos: [ 0,    1.55, 2.40], look: [ 0,    1.55, 0], fov: 28 },
-};
+  { p: 0.250, pos: [ 0.12, 1.42, -20.65], look: [ 0.28, 0.95, -22.00], fov: 26, bg: '#050505', mp: [ 0.58, -0.80, -22.00], mr:  0.02, ms: 3.20, pa: 0.03, li: 1.55 },
+
+  // Camera enters off-white "gallery room" — bg lerps over this segment
+  { p: 0.330, pos: [ 0.40, 1.25, -27.60], look: [ 0.25, 0.85, -31.50], fov: 36, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
+  { p: 0.420, pos: [ 0.20, 1.05, -29.00], look: [ 0.20, 0.70, -31.80], fov: 40, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
+
+  // Back to dark for method interlude
+  { p: 0.500, pos: [ 0.65, 1.25, -42.90], look: [ 0.45, 0.85, -45.20], fov: 29, bg: '#050505', mp: [ 0.85, -0.95, -45.20], mr: -0.35, ms: 2.65, pa: 0.10, li: 1.20 },
+
+  // Off-white method steps
+  { p: 0.620, pos: [-0.65, 1.35, -53.00], look: [ 0.35, 0.55, -57.00], fov: 36, bg: '#F4F3EE', mp: [ 1.45, -1.00, -55.50], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.85 },
+
+  // Trust ribbon (no model, fade out lime)
+  { p: 0.700, pos: [ 0,    1.00, -64.50], look: [ 0,    0.25, -67.00], fov: 42, bg: '#F4F3EE', mp: [ 1.45, -1.00, -75.00], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.00 },
+
+  // Why bento
+  { p: 0.780, pos: [ 0.15, 1.05, -73.50], look: [ 0.10, 0.05, -76.80], fov: 38, bg: '#F4F3EE', mp: [ 2.55, -1.10, -78.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.35 },
+
+  // Testimonials (warm white, no model in frame)
+  { p: 0.850, pos: [ 0,    0.95, -88.80], look: [ 0,    0.05, -91.40], fov: 40, bg: '#FAF9F4', mp: [ 3.50, -1.10, -90.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.00 },
+
+  // Founders return
+  { p: 0.920, pos: [ 0.50, 1.25, -99.40], look: [ 0.55, 0.65,-102.00], fov: 36, bg: '#F4F3EE', mp: [ 1.40, -1.00,-102.50], mr: -0.18, ms: 2.10, pa: 0.10, li: 0.85 },
+
+  // Contact climax — back to dark, lime peak
+  { p: 0.970, pos: [ 0,    1.45,-111.65], look: [ 0.22, 1.05,-114.00], fov: 31, bg: '#050505', mp: [ 0.75, -0.95,-114.00], mr: -0.05, ms: 2.45, pa: 0.22, li: 1.65 },
+
+  // Footer
+  { p: 1.000, pos: [ 0,    0.85,-122.50], look: [ 0,    0.35,-124.50], fov: 42, bg: '#050505', mp: [ 3.50, -1.00,-130.00], mr: -0.05, ms: 1.00, pa: 0.00, li: 0.00 },
+];
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const easeOut   = (t) => 1 - Math.pow(1 - t, 3);
 
-function lerpKf(from, to, t) {
+function lerpHex(a, b, t) {
+  const ar = parseInt(a.slice(1, 3), 16), ag = parseInt(a.slice(3, 5), 16), ab = parseInt(a.slice(5, 7), 16);
+  const br = parseInt(b.slice(1, 3), 16), bg = parseInt(b.slice(3, 5), 16), bb = parseInt(b.slice(5, 7), 16);
+  return '#'
+    + Math.round(lerp(ar, br, t)).toString(16).padStart(2, '0')
+    + Math.round(lerp(ag, bg, t)).toString(16).padStart(2, '0')
+    + Math.round(lerp(ab, bb, t)).toString(16).padStart(2, '0');
+}
+
+function stateAt(p) {
+  if (p <= 0) return PATH[0];
+  if (p >= 1) return PATH[PATH.length - 1];
+  let i = 0;
+  while (i < PATH.length - 1 && PATH[i + 1].p < p) i++;
+  const a = PATH[i], b = PATH[i + 1];
+  if (!b) return a;
+  const u = (p - a.p) / (b.p - a.p);
+  const e = easeInOut(u);
   return {
-    position: { x: lerp(from.pos[0], to.pos[0], t), y: lerp(from.pos[1], to.pos[1], t), z: lerp(from.pos[2], to.pos[2], t) },
-    lookAt:   { x: lerp(from.look[0], to.look[0], t), y: lerp(from.look[1], to.look[1], t), z: lerp(from.look[2], to.look[2], t) },
-    fov:      lerp(from.fov, to.fov, t),
+    pos:  [lerp(a.pos[0],  b.pos[0],  e), lerp(a.pos[1],  b.pos[1],  e), lerp(a.pos[2],  b.pos[2],  e)],
+    look: [lerp(a.look[0], b.look[0], e), lerp(a.look[1], b.look[1], e), lerp(a.look[2], b.look[2], e)],
+    fov:  lerp(a.fov, b.fov, e),
+    bg:   lerpHex(a.bg, b.bg, e),
+    mp:   [lerp(a.mp[0],   b.mp[0],   e), lerp(a.mp[1],   b.mp[1],   e), lerp(a.mp[2],   b.mp[2],   e)],
+    mr:   lerp(a.mr, b.mr, e),
+    ms:   lerp(a.ms, b.ms, e),
+    pa:   lerp(a.pa, b.pa, e),
+    li:   lerp(a.li, b.li, e),
   };
 }
 
-function applyText(el, m) {
-  if (!el) return;
-  el.style.transform = `translate3d(${m.x.toFixed(1)}px, ${m.y.toFixed(1)}px, 0)`;
-  el.style.opacity = m.opacity.toFixed(3);
-}
+export function initInfiniteCamera({ scene, camera, figureGroup, particles, limeMaterial, renderer }) {
+  // Damped state — actual values lerp toward target each frame to feel cinematic
+  const target = { pos: [0, 0, 0], look: [0, 0, 0], fov: 35, bg: '#050505', mp: [0, 0, 0], mr: 0, ms: 1, pa: 0.4, li: 1.15 };
+  const cur    = { pos: [0, 0, 0], look: [0, 0, 0], fov: 35,                  mp: [0, 0, 0], mr: 0, ms: 1, pa: 0.4, li: 1.15 };
 
-function textMotion(t, enter, exit) {
-  const ENTER_END = 0.30;
-  const EXIT_START = 0.70;
-  const enterT = Math.min(1, t / ENTER_END);
-  const exitT  = Math.max(0, (t - EXIT_START) / (1 - EXIT_START));
-  const eIn  = 1 - Math.pow(1 - enterT, 3);
-  const eOut = exitT * exitT;
-  return {
-    x: lerp(enter.x, 0, eIn) + lerp(0, exit.x, eOut),
-    y: lerp(enter.y, 0, eIn) + lerp(0, exit.y, eOut),
-    opacity: Math.max(0, eIn - eOut),
-  };
-}
+  const sceneBgColor = new THREE.Color('#050505');
+  const tmpColor = new THREE.Color();
 
-const SECTIONS = {
-  hero: {
-    cameraAt(t) { return lerpKf(W.heroStart, W.heroEnd, easeOut(t)); },
-    overlay(el, t, ctx) {
-      // Hero overlay is visible at page load; only EXIT motion driven on scroll-out.
-      const ol = el.querySelector('.overlay--hero');
-      if (ol) {
-        const exitT = Math.max(0, (t - 0.55) / 0.45);
-        const e = exitT * exitT;
-        ol.style.transform = `translate3d(${(e * 50).toFixed(1)}px, ${(e * -20).toFixed(1)}px, 0)`;
-        ol.style.opacity = (1 - e * 0.95).toFixed(3);
-      }
-      // Lime chest-line ramps up gently as user scrolls
-      if (ctx?.limeMaterial) {
-        ctx.limeMaterial.emissiveIntensity = 1.4 + t * 0.6;
-      }
-      // Particle cloud stays anchored — its own update handles motion
-    },
-  },
-
-  manifesto: {
-    cameraAt(t) {
-      const e = easeInOut(t);
-      const aFrom = Math.atan2(W.heroEnd.pos[0],  W.heroEnd.pos[2]);
-      const aTo   = Math.atan2(W.manifestoEnd.pos[0], W.manifestoEnd.pos[2]);
-      const rFrom = Math.hypot(W.heroEnd.pos[0],  W.heroEnd.pos[2]);
-      const rTo   = Math.hypot(W.manifestoEnd.pos[0], W.manifestoEnd.pos[2]);
-      const angle = lerp(aFrom, aTo, e);
-      const radius = lerp(rFrom, rTo, e);
-      return {
-        position: {
-          x: Math.sin(angle) * radius,
-          y: lerp(W.heroEnd.pos[1], W.manifestoEnd.pos[1], e),
-          z: Math.cos(angle) * radius,
-        },
-        lookAt: {
-          x: lerp(W.heroEnd.look[0], W.manifestoEnd.look[0], e),
-          y: lerp(W.heroEnd.look[1], W.manifestoEnd.look[1], e),
-          z: lerp(W.heroEnd.look[2], W.manifestoEnd.look[2], e),
-        },
-        fov: lerp(W.heroEnd.fov, W.manifestoEnd.fov, e),
-      };
-    },
-    overlay(el, t, ctx) {
-      applyText(el.querySelector('.overlay--manifesto'),
-                textMotion(t, { x: -60, y: 0 }, { x: 50, y: 20 }));
-      const spans = el.querySelectorAll('.manifesto__headline span');
-      spans[0]?.classList.toggle('is-visible', t > 0.20);
-      spans[1]?.classList.toggle('is-visible', t > 0.50);
-      el.querySelector('.manifesto__body')?.classList.toggle('is-visible', t > 0.72);
-      el.querySelector('.manifesto__meta')?.classList.toggle('is-visible', t > 0.84);
-      // Particle cloud fades down as we leave hero
-      if (ctx?.particles) ctx.particles.setOpacity(1 - t * 0.85);
-    },
-  },
-
-  closeup: {
-    cameraAt(t) {
-      if (t < 0.16) return lerpKf(W.manifestoEnd, W.closeupOrbitIn, easeInOut(t / 0.16));
-      if (t < 0.84) {
-        const u = (t - 0.16) / 0.68;
-        const startA = Math.atan2(W.closeupOrbitIn.pos[0], W.closeupOrbitIn.pos[2]);
-        const r      = Math.hypot(W.closeupOrbitIn.pos[0], W.closeupOrbitIn.pos[2]);
-        const angle  = startA - u * Math.PI * 2;
-        const yBob   = Math.sin(u * Math.PI * 2) * 0.04;
-        return {
-          position: { x: Math.sin(angle) * r, y: W.closeupOrbitIn.pos[1] + yBob, z: Math.cos(angle) * r },
-          lookAt:   { x: 0, y: W.closeupOrbitIn.look[1], z: 0 },
-          fov:      W.closeupOrbitIn.fov,
-        };
-      }
-      return lerpKf(W.closeupOrbitOut, W.closeupExit, easeOut((t - 0.84) / 0.16));
-    },
-    overlay(el, t) {
-      const top = el.querySelector('.eye--top-left');
-      if (top) {
-        const v = Math.max(0, Math.min(1, (t - 0.04) / 0.18));
-        top.style.opacity = String(v);
-        top.style.transform = `translate3d(${(1 - v) * -20}px, 0, 0)`;
-      }
-      const bot = el.querySelector('.eye--bottom-right');
-      if (bot) {
-        const v = Math.max(0, Math.min(1, (t - 0.70) / 0.20));
-        const e = easeOut(v);
-        bot.style.opacity = String(e);
-        bot.style.transform = `translate3d(${(1 - e) * 30}px, 0, 0)`;
-      }
-    },
-  },
-
-  work: {
-    cameraAt(t) { return lerpKf(W.closeupExit, W.workEnd, easeInOut(t)); },
-    overlay(el, t) {
-      applyText(el.querySelector('.overlay--work .overlay__header'),
-                textMotion(t, { x: 0, y: 40 }, { x: -50, y: 0 }));
-      const cards = el.querySelectorAll('.work-card');
-      [0.30, 0.50, 0.70].forEach((th, i) => cards[i]?.classList.toggle('is-visible', t >= th));
-    },
-  },
-
-  methodInterlude: {
-    cameraAt(t) { return lerpKf(W.workEnd, W.methodInterEnd, easeInOut(t)); },
-    overlay(el, t) {
-      const top = el.querySelector('.eye--top-right');
-      if (top) {
-        const v = Math.max(0, Math.min(1, (t - 0.04) / 0.18));
-        top.style.opacity = String(v);
-        top.style.transform = `translate3d(${(1 - v) * 20}px, 0, 0)`;
-      }
-      const bot = el.querySelector('.eye--bottom-left');
-      if (bot) {
-        const v = Math.max(0, Math.min(1, (t - 0.70) / 0.20));
-        const e = easeOut(v);
-        bot.style.opacity = String(e);
-        bot.style.transform = `translate3d(${(1 - e) * -30}px, 0, 0)`;
-      }
-    },
-  },
-
-  method: {
-    cameraAt(t) { return lerpKf(W.methodInterEnd, W.methodEnd, easeInOut(t)); },
-    overlay(el, t) {
-      applyText(el.querySelector('.overlay--method'),
-                textMotion(t, { x: 0, y: 50 }, { x: -30, y: -30 }));
-      const steps = el.querySelectorAll('.method-steps > li');
-      [0.18, 0.42, 0.66, 0.88].forEach((th, i) => steps[i]?.classList.toggle('is-visible', t >= th));
-      el.querySelectorAll('.method-steps .step__num').forEach((num) => {
-        num.style.setProperty('--num-s', `${(1 + t * 0.10).toFixed(3)}`);
-      });
-    },
-  },
-
-  founders: {
-    cameraAt(t) { return lerpKf(W.methodEnd, W.foundersEnd, easeInOut(t)); },
-    overlay(el, t) {
-      applyText(el.querySelector('.overlay--founders .overlay__header'),
-                textMotion(t, { x: 0, y: -50 }, { x: 40, y: 0 }));
-      const cards = el.querySelectorAll('.founder-card');
-      cards.forEach((c, i) => c.classList.toggle('is-visible', t >= 0.45 + i * 0.18));
-    },
-  },
-
-  contact: {
-    cameraAt(t) {
-      if (t < 0.80) return lerpKf(W.foundersEnd, W.contactEnd, easeInOut(t / 0.80));
-      const u = (t - 0.80) / 0.20;
-      const a = Math.sin(u * Math.PI) * 0.09;
-      const r = Math.hypot(W.contactEnd.pos[0], W.contactEnd.pos[2]);
-      return {
-        position: { x: Math.sin(a) * r, y: W.contactEnd.pos[1], z: Math.cos(a) * r },
-        lookAt:   { x: W.contactEnd.look[0], y: W.contactEnd.look[1], z: W.contactEnd.look[2] },
-        fov:      W.contactEnd.fov,
-      };
-    },
-    overlay(el, t, ctx) {
-      applyText(el.querySelector('.overlay--contact'),
-                textMotion(t, { x: -50, y: 0 }, { x: 0, y: 0 }));
-      const cta = el.querySelector('.contact__cta');
-      if (cta) {
-        const v = Math.max(0, Math.min(1, (t - 0.55) / 0.30));
-        const e = easeOut(v);
-        cta.style.opacity = String(e);
-        cta.style.transform = `translate3d(0, ${(1 - e) * 16}px, 0)`;
-      }
-      // Lime line climax flash
-      if (ctx?.limeMaterial) ctx.limeMaterial.emissiveIntensity = 1.5 + Math.max(0, t - 0.7) / 0.3 * 1.4;
-    },
-  },
-};
-
-export function initScroll({ canvas, camera, particles, limeMaterial }) {
-  const ScrollTrigger = window.ScrollTrigger;
-  if (!ScrollTrigger) { console.warn('[scroll] ScrollTrigger not loaded'); return; }
-  window.gsap?.registerPlugin(ScrollTrigger);
-
-  const ctx = { particles, limeMaterial };
-  applyCamera(camera, SECTIONS.hero.cameraAt(0));
-
-  document.querySelectorAll('.sec--3d').forEach((el) => {
-    const cfg = SECTIONS[el.dataset.cam];
-    if (!cfg) return;
-    ScrollTrigger.create({
-      trigger: el,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 0.6,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-      onEnter:     () => fadeCanvas(canvas, 1),
-      onEnterBack: () => fadeCanvas(canvas, 1),
-      onUpdate: (self) => {
-        const p = self.progress;
-        applyCamera(camera, cfg.cameraAt(p));
-        cfg.overlay?.(el, p, ctx);
-      },
-    });
-  });
-
-  ['#trust', '#why', '#testimonials'].forEach((sel) => {
-    const el = document.querySelector(sel);
-    if (!el) return;
-    ScrollTrigger.create({
-      trigger: el,
-      start: 'top 60%',
-      end: 'bottom 40%',
-      onEnter:     () => fadeCanvas(canvas, 0),
-      onLeave:     () => fadeCanvas(canvas, 1),
-      onEnterBack: () => fadeCanvas(canvas, 0),
-      onLeaveBack: () => fadeCanvas(canvas, 1),
-    });
-  });
-
-  document.querySelectorAll('.lime').forEach((el) => {
-    ScrollTrigger.create({
-      trigger: el, start: 'top 85%', once: true,
-      onEnter: () => el.classList.add('is-visible'),
-    });
-  });
-}
-
-function applyCamera(camera, kf) {
-  camera.position.set(kf.position.x, kf.position.y, kf.position.z);
-  camera.lookAt(kf.lookAt.x, kf.lookAt.y, kf.lookAt.z);
-  if (Math.abs(camera.fov - kf.fov) > 0.01) {
-    camera.fov = kf.fov;
-    camera.updateProjectionMatrix();
+  function read() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    return max > 0 ? Math.max(0, Math.min(1, window.scrollY / max)) : 0;
   }
-}
 
-function fadeCanvas(canvas, opacity) {
-  if (canvas) canvas.style.opacity = String(opacity);
+  function poll() {
+    const s = stateAt(read());
+    target.pos[0] = s.pos[0]; target.pos[1] = s.pos[1]; target.pos[2] = s.pos[2];
+    target.look[0] = s.look[0]; target.look[1] = s.look[1]; target.look[2] = s.look[2];
+    target.fov = s.fov; target.bg = s.bg;
+    target.mp[0] = s.mp[0]; target.mp[1] = s.mp[1]; target.mp[2] = s.mp[2];
+    target.mr = s.mr; target.ms = s.ms; target.pa = s.pa; target.li = s.li;
+  }
+
+  // Damping factors (per brief recommendation)
+  const D_CAM = 0.085;
+  const D_LOOK = 0.10;
+  const D_MODEL = 0.09;
+  const D_PARTICLE = 0.06;
+
+  function tick() {
+    poll();
+
+    // Camera position + look + fov
+    cur.pos[0]  += (target.pos[0]  - cur.pos[0])  * D_CAM;
+    cur.pos[1]  += (target.pos[1]  - cur.pos[1])  * D_CAM;
+    cur.pos[2]  += (target.pos[2]  - cur.pos[2])  * D_CAM;
+    cur.look[0] += (target.look[0] - cur.look[0]) * D_LOOK;
+    cur.look[1] += (target.look[1] - cur.look[1]) * D_LOOK;
+    cur.look[2] += (target.look[2] - cur.look[2]) * D_LOOK;
+    cur.fov     += (target.fov     - cur.fov)     * 0.1;
+    camera.position.set(cur.pos[0], cur.pos[1], cur.pos[2]);
+    camera.lookAt(cur.look[0], cur.look[1], cur.look[2]);
+    if (Math.abs(cur.fov - camera.fov) > 0.01) {
+      camera.fov = cur.fov;
+      camera.updateProjectionMatrix();
+    }
+
+    // Model position/rot/scale (mouse rotation is added in main.js render loop on top of this base rotation)
+    if (figureGroup) {
+      cur.mp[0] += (target.mp[0] - cur.mp[0]) * D_MODEL;
+      cur.mp[1] += (target.mp[1] - cur.mp[1]) * D_MODEL;
+      cur.mp[2] += (target.mp[2] - cur.mp[2]) * D_MODEL;
+      cur.mr    += (target.mr    - cur.mr)    * D_MODEL;
+      cur.ms    += (target.ms    - cur.ms)    * D_MODEL;
+      figureGroup.position.set(cur.mp[0], cur.mp[1], cur.mp[2]);
+      figureGroup.userData.baseRotY = cur.mr;     // main.js reads this for breath/mouse rot offset
+      figureGroup.scale.setScalar(cur.ms);
+    }
+
+    // Particles
+    if (particles) {
+      cur.pa += (target.pa - cur.pa) * D_PARTICLE;
+      particles.setOpacity(cur.pa);
+      // Move the particle cloud with the figure (slight z-back offset)
+      particles.setPosition(cur.mp[0] - 1.0, cur.mp[1] + 1.4, cur.mp[2] - 1.2);
+    }
+
+    // Lime emissive
+    if (limeMaterial) {
+      cur.li += (target.li - cur.li) * 0.08;
+      limeMaterial.emissiveIntensity = cur.li;
+    }
+
+    // Background color (scene + body bg sync)
+    tmpColor.set(target.bg);
+    sceneBgColor.lerp(tmpColor, 0.06);
+    scene.background = sceneBgColor;
+    document.body.style.backgroundColor = `rgb(${Math.round(sceneBgColor.r * 255)}, ${Math.round(sceneBgColor.g * 255)}, ${Math.round(sceneBgColor.b * 255)})`;
+    if (renderer) renderer.setClearColor(sceneBgColor, 1);
+
+    // Theme inversion — when bg luminance crosses a threshold, flip text color tokens
+    const lum = sceneBgColor.r * 0.299 + sceneBgColor.g * 0.587 + sceneBgColor.b * 0.114;
+    document.documentElement.dataset.theme = lum > 0.5 ? 'light' : 'dark';
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  return { stateAt, read };
 }

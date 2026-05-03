@@ -1,7 +1,7 @@
 import { createScene } from './scene.js';
 import { loadFigure } from './figure.js';
 import { createParticles } from './particles.js';
-import { initScroll } from './scroll.js';
+import { initInfiniteCamera } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = matchMedia('(max-width: 767px)').matches;
@@ -28,11 +28,12 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
       setTimeout(() => boot.remove(), 800);
     }
 
-    waitForGSAP(() => {
-      if (!reduceMotion) initScroll({ canvas, camera, particles, limeMaterial });
-      else canvas.style.opacity = '1';
-      window.ScrollTrigger?.refresh();
-    });
+    // Wire global continuous camera path (scroll-driven)
+    if (!reduceMotion) {
+      initInfiniteCamera({ scene, camera, figureGroup, particles, limeMaterial, renderer });
+    } else {
+      canvas.style.opacity = '1';
+    }
 
     runHeroEntry();
   } catch (err) {
@@ -41,15 +42,6 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     document.querySelector('.boot')?.classList.add('boot--hidden');
   }
 })();
-
-function waitForGSAP(fn) {
-  let waited = 0;
-  const t = setInterval(() => {
-    waited += 50;
-    if (window.gsap && window.ScrollTrigger) { clearInterval(t); fn(); }
-    else if (waited > 4000) { clearInterval(t); fn(); }
-  }, 50);
-}
 
 function runHeroEntry() {
   const gsap = window.gsap;
@@ -63,6 +55,26 @@ function runHeroEntry() {
     .from('.hero__editorial', { opacity: 0, y: 6, duration: 0.5 }, '-=0.3')
     .from('.hero__scroll', { opacity: 0, y: 6, duration: 0.5 }, '-=0.4')
     .from('.hero__glass', { opacity: 0, y: 24, duration: 0.8, ease: 'power2.out' }, '-=0.5');
+
+  // Lime accents reveal once when their section enters viewport
+  const limeObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.lime').forEach((el) => limeObs.observe(el));
+
+  // Section reveals (work cards, method steps, manifesto lines, founder cards)
+  // Uses IntersectionObserver — kicks in once each enters view
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll(
+    '.work-card, .method-steps > li, .manifesto__headline span, .manifesto__body, .manifesto__meta, .founder-card, .testimonial-card, .why-card'
+  ).forEach((el) => revealObs.observe(el));
 }
 
 addEventListener('mousemove', (e) => {
@@ -82,7 +94,7 @@ if (glass) {
   }, { passive: true });
 }
 
-// Site-wide scroll progress bar (lives in hero scroll cue)
+// Scroll progress bar
 const scrollFill = document.querySelector('.hero__scroll-fill');
 addEventListener('scroll', () => {
   if (scrollFill) {
@@ -92,7 +104,8 @@ addEventListener('scroll', () => {
   }
 }, { passive: true });
 
-// Render loop
+// Render loop — only handles per-frame mouse + particle update + render.
+// Camera path animation runs on its own rAF loop inside scroll.js.
 function tick() {
   mouse.x += (mouse.tx - mouse.x) * 0.06;
   mouse.y += (mouse.ty - mouse.y) * 0.06;
@@ -101,13 +114,13 @@ function tick() {
     const t = performance.now() * 0.0001;
     const breathY = Math.sin(t) * 0.020;
     const breathX = Math.cos(t * 0.6) * 0.010;
-    figureGroup.rotation.y = breathY + mouse.x * 0.18;
+    const baseRot = figureGroup.userData.baseRotY ?? 0;
+    figureGroup.rotation.y = baseRot + breathY + mouse.x * 0.18;
     figureGroup.rotation.x = breathX + mouse.y * 0.04;
   }
 
   if (mouseLight) {
-    // Map mouse to a soft warm light circling above-front of the figure
-    mouseLight.position.set(mouse.x * 3.0, 1.7 + mouse.y * 1.2, 2.0);
+    mouseLight.position.set(camera.position.x + mouse.x * 2.5, camera.position.y + 0.4 + mouse.y * 1.0, camera.position.z - 1.5);
   }
 
   particles.setMouse(mouse.x, mouse.y);
@@ -122,13 +135,12 @@ tick();
 waitForLenis(() => {
   if (reduceMotion || isMobile) return;
   const lenis = new window.Lenis({
-    duration: 1.1,
+    duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
   });
   function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
   requestAnimationFrame(raf);
-  lenis.on('scroll', () => window.ScrollTrigger?.update());
 });
 
 function waitForLenis(fn) {
