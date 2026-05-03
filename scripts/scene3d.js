@@ -14,6 +14,10 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+// Draco decoder must match the three.js version pinned in index.html's importmap
+const DRACO_DECODER_PATH = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = matchMedia('(max-width: 900px)').matches;
@@ -96,6 +100,11 @@ class ManifestoScene {
 
   loadModel() {
     const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath(DRACO_DECODER_PATH);
+    draco.setDecoderConfig({ type: 'js' });
+    loader.setDRACOLoader(draco);
+    this.dracoLoader = draco;
     loader.load(
       '/models/figure.glb',
       (gltf) => {
@@ -277,6 +286,7 @@ class ManifestoScene {
     if (this.viewportObserver) this.viewportObserver.disconnect();
     removeEventListener('resize', this.onResize);
     removeEventListener('mousemove', this.onMouseMove);
+    if (this.dracoLoader) this.dracoLoader.dispose();
     this.renderer.dispose();
   }
 }
