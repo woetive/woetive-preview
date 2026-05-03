@@ -250,6 +250,30 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   display: flex; gap: 0.75rem;
   margin-bottom: 1rem;
 }
+.scroll-cue {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out);
+}
+.scroll-cue span {
+  animation: scrollCue 1.8s var(--ease-out) infinite;
+  display: inline-block;
+}
+@keyframes scrollCue {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
 @media (max-width: 900px) {
   .overlay--hero .hero__headline { font-size: clamp(2.5rem, 9vw, 4rem); }
 }
@@ -308,37 +332,21 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   .overlay--manifesto > * { grid-column: 1; }
 }
 
-/* ---------- Close-up ---------- */
-.overlay--closeup {
-  display: flex; flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
+/* ---------- Interlude overlays (close-up + method-interlude) ---------- */
+.overlay--interlude {
+  position: relative;
   height: 100%;
-  gap: 0.5rem;
-  padding-bottom: clamp(2rem, 6vw, 4rem);
+  pointer-events: none;
 }
-.overlay--closeup .eyebrow { opacity: 0; transform: translateY(8px); will-change: opacity, transform; }
-.overlay--closeup .closeup__line {
-  font-family: var(--font-serif);
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  font-style: italic; font-weight: 400;
-  line-height: 1.05; letter-spacing: -0.02em;
-  max-width: 18ch;
-  margin-top: 1rem;
-  opacity: 0;
-  transform-origin: left bottom;
-  will-change: opacity, transform;
-}
-.overlay--closeup .closeup__sub {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-top: 1rem;
+.overlay--interlude .eyebrow {
+  position: absolute;
   opacity: 0;
   will-change: opacity, transform;
 }
+.eye--top-left     { top: calc(var(--nav-height) + 1rem); left: 0; }
+.eye--top-right    { top: calc(var(--nav-height) + 1rem); right: 0; }
+.eye--bottom-left  { bottom: 1.5rem; left: 0; }
+.eye--bottom-right { bottom: 1.5rem; right: 0; }
 
 /* ---------- Work ---------- */
 .overlay--work {
@@ -413,6 +421,16 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
 @media (max-width: 900px) {
   .work-cards { grid-template-columns: 1fr; }
 }
+.archive-link {
+  align-self: start;
+  margin-top: 1rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--ink);
+  font-size: var(--t-body-s); font-weight: 500;
+  display: inline-flex; gap: 0.4em;
+  transition: color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+.archive-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 /* ---------- Method ---------- */
 .overlay--method {
@@ -678,9 +696,11 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   will-change: opacity, transform;
 }
 .contact__headline {
+  font-family: var(--font-serif);
+  font-style: italic;
   font-size: var(--t-display);
-  font-weight: 600;
-  letter-spacing: -0.04em; line-height: 0.98;
+  font-weight: 400;
+  letter-spacing: -0.02em; line-height: 0.98;
   margin-top: 0.5rem;
 }
 .contact__line { color: var(--ink-soft); font-size: var(--t-body-l); }
