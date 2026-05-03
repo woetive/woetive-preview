@@ -23,7 +23,7 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = matchMedia('(max-width: 900px)').matches;
 
 const ACCENT = new THREE.Color('#D0EF00');
-const BG = new THREE.Color('#0A0A09');
+const BG = new THREE.Color('#F0EFEC');
 
 class ManifestoScene {
   constructor(canvas, container) {
@@ -57,45 +57,48 @@ class ManifestoScene {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.0;
+    this.renderer.toneMappingExposure = 0.95;
     this.resize();
   }
 
   setupScene() {
     this.scene = new THREE.Scene();
     this.scene.background = BG;
-    this.scene.fog = new THREE.Fog(BG, 4, 14);
+    // Soft atmospheric fade — pushes figure forward against bright studio backdrop
+    this.scene.fog = new THREE.Fog(BG, 6, 18);
   }
 
   setupLights() {
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x222222, 0.4);
+    // White studio sky → cool floor bounce
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b6b0, 0.85);
     this.scene.add(hemi);
 
-    // Key light — top-front, soft
-    const key = new THREE.DirectionalLight(0xffffff, 1.4);
-    key.position.set(2, 5, 4);
+    // Key — soft top-front diffuse, gives the form
+    const key = new THREE.DirectionalLight(0xffffff, 1.1);
+    key.position.set(2.2, 4.5, 3.5);
     this.scene.add(key);
 
-    // Rim light — back, slight lime tint, picks out figure silhouette
-    const rim = new THREE.DirectionalLight(0xc4d870, 0.6);
-    rim.position.set(-3, 2, -4);
-    this.scene.add(rim);
-
-    // Fill — front-bottom, cool, very subtle
-    const fill = new THREE.DirectionalLight(0x6688aa, 0.2);
-    fill.position.set(0, -1, 3);
+    // Side fill — cool, lifts the shadow side just slightly
+    const fill = new THREE.DirectionalLight(0xe8ecf2, 0.45);
+    fill.position.set(-3, 1.2, 2);
     this.scene.add(fill);
 
-    // Lime accent point light positioned on chest area — drives interactive glow
-    this.limePoint = new THREE.PointLight(ACCENT, 0, 1.8, 2);
-    this.limePoint.position.set(0, 0.9, 0.3);
+    // Subtle warm bounce from below to match editorial studio feel
+    const bounce = new THREE.DirectionalLight(0xfff4e6, 0.2);
+    bounce.position.set(0, -1.5, 2);
+    this.scene.add(bounce);
+
+    // Lime accent point light — drives the chest-line interactive glow
+    this.limePoint = new THREE.PointLight(ACCENT, 0, 1.6, 2);
+    this.limePoint.position.set(0.35, 0.95, 0.3);
     this.scene.add(this.limePoint);
   }
 
   setupCamera() {
-    this.camera = new THREE.PerspectiveCamera(32, this.aspect, 0.1, 50);
-    this.camera.position.set(0, 1.0, 4.4);
-    this.camera.lookAt(0, 1.0, 0);
+    this.camera = new THREE.PerspectiveCamera(28, this.aspect, 0.1, 50);
+    // Figure framed right-of-center — leaves negative space on the left for copy
+    this.camera.position.set(-0.55, 1.05, 4.6);
+    this.camera.lookAt(0.35, 1.05, 0);
   }
 
   loadModel() {
@@ -124,17 +127,18 @@ class ManifestoScene {
         const center2 = new THREE.Vector3(); box2.getCenter(center2);
         model.position.set(-center2.x, -box2.min.y, -center2.z);
 
-        // Material pass — boost contrast, prep for emissive driving
+        // Material pass — matte studio-mannequin look + emissive driver
+        // emissiveMap = diffuse map: black body stays black under tint, lime line glows
         model.traverse((child) => {
           if (!child.isMesh) return;
           const mat = child.material;
           if (mat && mat.isMeshStandardMaterial) {
-            mat.envMapIntensity = 0.8;
-            mat.roughness = Math.min(0.9, (mat.roughness ?? 0.6) + 0.05);
-            // Emissive pinned to the texture's lime channel — we boost with intensity
+            mat.envMapIntensity = 0.55;
+            mat.roughness = Math.min(0.95, (mat.roughness ?? 0.6) + 0.15);
+            mat.metalness = 0.0;
             mat.emissive = ACCENT.clone();
             mat.emissiveMap = mat.map;
-            mat.emissiveIntensity = 0;
+            mat.emissiveIntensity = 0.35; // baseline — line is visible even before scroll
             mat.needsUpdate = true;
           }
           this.figureMaterial = mat;
@@ -235,39 +239,39 @@ class ManifestoScene {
     }
 
     // ----- Camera choreography -----
-    // 0.0 → wide shot (full body), 0.5 → chest close-up, 1.0 → slight pullback
+    // Figure stays right-of-center the whole way; we dolly in slightly on chest line.
     const p = this.scrollProgress;
     const dolly = easeInOutCubic(p < 0.6 ? p / 0.6 : 1 - (p - 0.6) / 0.4 * 0.3);
-    // dolly: 0 wide → 1 close → 0.7 slight pullback
-    const camZ = lerp(4.4, 1.55, dolly);
-    const camY = lerp(1.05, 1.18, dolly);
+    const camZ = lerp(4.6, 2.4, dolly);
+    const camY = lerp(1.05, 1.12, dolly);
+    const camX = lerp(-0.55, -0.25, dolly); // pulls in toward center as we close in
 
-    // Mouse parallax — interpolate toward target for smoothness
+    // Mouse parallax — subtle, editorial (not flashy)
     this.mouseX += (this.targetMouseX - this.mouseX) * 0.08;
     this.mouseY += (this.targetMouseY - this.mouseY) * 0.08;
-    const parallaxX = this.mouseX * 0.18;
-    const parallaxY = -this.mouseY * 0.10;
+    const parallaxX = this.mouseX * 0.10;
+    const parallaxY = -this.mouseY * 0.06;
 
-    this.camera.position.set(parallaxX, camY + parallaxY, camZ);
-    this.camera.lookAt(0, lerp(1.0, 1.18, dolly), 0);
+    this.camera.position.set(camX + parallaxX, camY + parallaxY, camZ);
+    this.camera.lookAt(0.35, lerp(1.05, 1.12, dolly), 0);
 
-    // Subtle figure rotation — drives slight orbit feel
+    // Very subtle figure orientation drift
     if (this.model) {
-      const baseRot = -0.08 + (this.scrollProgress * 0.16); // -0.08 → +0.08
-      this.model.rotation.y = baseRot + this.mouseX * 0.04;
+      const baseRot = -0.04 + (p * 0.08);
+      this.model.rotation.y = baseRot + this.mouseX * 0.025;
     }
 
-    // ----- Lime emissive choreography -----
-    // Dim until 0.35, ramps up, peaks at 0.85, holds
-    const limeT = clamp((p - 0.30) / 0.55, 0, 1);
-    const limeIntensity = easeInOutCubic(limeT) * 1.6;
+    // ----- Lime line choreography -----
+    // Baseline 0.35 (line always visible), ramps to ~1.4 at peak — no overblown bloom
+    const limeT = clamp((p - 0.25) / 0.55, 0, 1);
+    const limeIntensity = 0.35 + easeInOutCubic(limeT) * 1.05;
     if (this.figureMaterial) {
       this.figureMaterial.emissiveIntensity = limeIntensity;
     }
-    this.limePoint.intensity = limeIntensity * 1.4;
+    this.limePoint.intensity = easeInOutCubic(limeT) * 0.9;
 
-    // Tone mapping exposure — slight fade toward end
-    this.renderer.toneMappingExposure = 1.0 + Math.sin(p * Math.PI) * 0.08;
+    // Hold exposure stable for clean editorial whites
+    this.renderer.toneMappingExposure = 0.95;
 
     this.renderer.render(this.scene, this.camera);
 
