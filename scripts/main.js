@@ -46,15 +46,22 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
   }
 })();
 
-// Drive the big-number plane's digit text from which .method__step block is
-// most visible in the viewport. Uses ratio tracking so the active step is
-// the one with the highest intersectionRatio at any moment.
+// Drive the big-number plane's digit text + bottom step indicator from
+// whichever .method__step block is most visible in the viewport.
 function bindMethodStepNumber() {
   const blocks = document.querySelectorAll('.method__step');
-  if (!blocks.length || !bigNumber) return;
+  const indicators = document.querySelectorAll('.method__indicator-step');
+  if (!blocks.length) return;
   const ratios = new Map();
   const labels = ['01', '02', '03', '04'];
   let lastIdx = -1;
+
+  const apply = (idx) => {
+    if (idx === lastIdx) return;
+    lastIdx = idx;
+    if (bigNumber) bigNumber.setNumber(labels[idx]);
+    indicators.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+  };
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => ratios.set(e.target, e.intersectionRatio));
@@ -62,10 +69,7 @@ function bindMethodStepNumber() {
     ratios.forEach((r, el) => { if (r > bestR) { bestR = r; best = el; } });
     if (!best || bestR < 0.05) return;
     const idx = Math.max(0, Math.min(3, parseInt(best.dataset.step, 10) - 1));
-    if (idx !== lastIdx) {
-      lastIdx = idx;
-      bigNumber.setNumber(labels[idx]);
-    }
+    apply(idx);
   }, { threshold: [0, 0.15, 0.35, 0.55, 0.75, 0.95] });
 
   blocks.forEach(el => io.observe(el));

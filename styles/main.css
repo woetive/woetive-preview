@@ -672,95 +672,198 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   width: min(54ch, 100%);
   align-self: center;
 }
-/* ---------- METHOD section: big claim + 4 step blocks (title left, body right,
-   humanoid in centre via canvas, big lime "01..04" rendered as 3D plane behind
-   the figure). ---------- */
+/* ---------- METHOD section ----------
+   Header (white) → 4 step blocks (dark) → sticky bottom indicator.
+   Each step: marker top-left, BIG single-word headline + lime divider on
+   left, glass card on right, humanoid centred via canvas, 3D big lime
+   number behind. ----------------------------------------------- */
 .sec--method {
   position: relative;
   z-index: 2;
-  /* No bg — canvas (z-index 1) shows through with the figure on dark scene */
 }
 .method__header {
-  height: 60vh;
+  min-height: 60vh;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 1rem;
   padding: 0 var(--container-pad);
   text-align: center;
+  background: var(--off-white);
+  color: var(--charcoal);
 }
+.method__header .eyebrow { color: rgba(11, 11, 10, 0.65); }
 .method__claim {
   font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.0;
-  color: var(--ink);
+  color: var(--charcoal);
   max-width: 14ch;
 }
+
 .method__step {
   height: 100vh; height: 100dvh;
   display: grid;
-  grid-template-columns: 1fr minmax(0, 1.2fr) 1fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto auto;
   align-items: center;
-  padding: 0 calc(var(--container-pad) + var(--frame-inset));
+  padding: calc(var(--nav-height) + var(--frame-inset) + 2rem) calc(var(--container-pad) + var(--frame-inset)) calc(var(--frame-inset) + 4.5rem);
   position: relative;
   pointer-events: none;
+  color: #FFFFFF;
 }
 .method__step > * { pointer-events: auto; }
-.method__step-title {
-  grid-column: 1;
-  font-size: clamp(2rem, 4.5vw, 3.5rem);
+
+.method__step-marker {
+  grid-column: 1; grid-row: 1;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  align-self: start;
+}
+.method__step-headline {
+  grid-column: 1; grid-row: 2;
+  align-self: center;
+  font-size: clamp(3rem, 7vw, 6.5rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  color: var(--ink);
-  max-width: 14ch;
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+  color: #FFFFFF;
+  max-width: 9ch;
   justify-self: start;
 }
+.method__step-divider {
+  grid-column: 1; grid-row: 3;
+  align-self: start;
+  width: clamp(60px, 6vw, 100px);
+  height: 2px;
+  background: var(--lime);
+  margin-top: 0.5rem;
+}
+
+/* Glass card — right column, vertically centred */
 .method__step-card {
-  grid-column: 3;
+  grid-column: 3; grid-row: 2;
   justify-self: end;
-  width: clamp(280px, 28vw, 380px);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem 1.4rem;
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+  width: clamp(280px, 26vw, 360px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.75rem 1rem;
+  padding: 1.5rem 1.6rem;
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
   backdrop-filter: blur(24px) saturate(1.2);
   -webkit-backdrop-filter: blur(24px) saturate(1.2);
-  border: 1px solid rgba(255,255,255,0.16);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.20),
-    inset 0 -1px 0 rgba(255,255,255,0.04),
-    0 18px 48px rgba(0,0,0,0.40);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 24px 64px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
 }
 .method__step-card::before {
   content: ""; position: absolute; inset: -40%;
-  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 55%);
-  opacity: 0.6;
+  background: radial-gradient(circle at 25% 18%, rgba(255,255,255,0.14), transparent 55%);
+  opacity: 0.55;
   pointer-events: none;
 }
-.method__step-card p {
+.method__step-card-eye {
+  grid-column: 1 / -1; grid-row: 1;
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+.method__step-card-eye em {
+  font-style: normal;
+  color: var(--lime);
+  font-weight: 500;
+}
+.method__step-card-line {
+  grid-column: 1 / -1; grid-row: 2;
   position: relative;
   font-size: var(--t-body-l);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.4;
+  color: #FFFFFF;
+  font-weight: 500;
 }
-.method__step-icon {
+.method__step-card-detail {
+  grid-column: 1; grid-row: 3;
   position: relative;
-  display: grid; place-items: center;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--lime);
-  flex-shrink: 0;
+  font-size: var(--t-body-s);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
 }
+.method__step-card-arrow {
+  grid-column: 2; grid-row: 3;
+  position: relative;
+  align-self: end;
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: var(--lime);
+}
+
+/* Sticky bottom indicator — visible during whole method scroll */
+.method__indicator {
+  position: sticky;
+  bottom: calc(var(--frame-inset) + 1.25rem);
+  z-index: 6;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 0 calc(var(--container-pad) + var(--frame-inset)) 0;
+  padding: 0;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.method__indicator-step {
+  position: relative;
+  color: rgba(255, 255, 255, 0.40);
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  transition: color 0.4s var(--ease-out);
+}
+.method__indicator-step em {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.55);
+}
+.method__indicator-step.is-active {
+  color: #FFFFFF;
+  border-bottom-color: var(--lime);
+}
+.method__indicator-step.is-active em { color: var(--lime); }
+
 @media (max-width: 900px) {
-  .method__step { grid-template-columns: 1fr; gap: 1.5rem; padding-top: 8vh; padding-bottom: 8vh; }
-  .method__step-title, .method__step-card { grid-column: 1; justify-self: start; }
+  .method__step {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 1.25rem;
+    padding-top: calc(var(--nav-height) + 4rem);
+    padding-bottom: 6rem;
+  }
+  .method__step-marker, .method__step-headline, .method__step-divider, .method__step-card {
+    grid-column: 1; justify-self: start;
+  }
   .method__step-card { width: 100%; }
+  .method__indicator {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
 }
 
 .method-steps {
