@@ -6,8 +6,9 @@ import * as THREE from 'three';
 
 const PATH = [
   // p, camera pos, lookAt, fov, bg, model {pos, rot.y, scale}, particle opacity, lime intensity
-  { p: 0.000, pos: [ 0.55, 1.25,   4.80], look: [ 0.05, 0.85,  -2.00], fov: 38, bg: '#050505', mp: [ 1.05, -0.95,  -2.20], mr: -0.18, ms: 1.95, pa: 0.38, li: 1.15 },
-  { p: 0.075, pos: [ 0.10, 1.45,   3.15], look: [ 0.35, 1.10,  -2.15], fov: 34, bg: '#050505', mp: [ 0.85, -0.85,  -2.20], mr: -0.10, ms: 2.05, pa: 0.32, li: 1.20 },
+  // Hero — close portrait: face + chest, figure right side. ~65% closer than before.
+  { p: 0.000, pos: [ 0.85, 1.85,   0.50], look: [ 0.45, 2.00,  -2.20], fov: 32, bg: '#050505', mp: [ 1.05, -0.95,  -2.20], mr: -0.18, ms: 1.95, pa: 0.38, li: 1.15 },
+  { p: 0.075, pos: [ 0.70, 1.95,   0.10], look: [ 0.50, 2.10,  -2.20], fov: 30, bg: '#050505', mp: [ 0.85, -0.85,  -2.20], mr: -0.10, ms: 2.05, pa: 0.32, li: 1.20 },
 
   { p: 0.170, pos: [-0.25, 1.75,  -9.65], look: [ 0.15, 1.30, -12.10], fov: 30, bg: '#050505', mp: [ 0.78, -0.90, -12.00], mr: -0.04, ms: 2.55, pa: 0.12, li: 1.35 },
 
