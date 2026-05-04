@@ -1,29 +1,53 @@
-import { SceneText, SceneMono } from '../SceneText';
-import { FounderCard } from '../SceneCard';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
 export function FoundersSection() {
-  return (
-    <group>
-      <mesh position={[0, 0, -104]}>
-        <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#F4F3EE" roughness={0.95} />
-      </mesh>
-      <SceneMono position={[-2.55, 1.45, -100.2]} fontSize={0.075} color="#5C5C57">
-        {copy.founders.eyebrow}
-      </SceneMono>
-      <SceneText position={[-2.55, 0.95, -100.2]} fontSize={0.42} color="#0B0B0A" letterSpacing={-0.03}>
-        {copy.founders.heading}
-      </SceneText>
-      <SceneText position={[-2.55, 0.20, -100.2]} fontSize={0.085} color="#5C5C57" maxWidth={3.5} letterSpacing={-0.005} lineHeight={1.4}>
-        {copy.founders.lead}
-      </SceneText>
-      <SceneMono position={[-2.55, -1.45, -100.2]} fontSize={0.04} color="#5C5C57" maxWidth={4.5}>
-        {copy.founders.meta}
-      </SceneMono>
+  const root = useRef<HTMLElement>(null);
 
-      <FounderCard position={[ 0.35, -0.75, -100.8]} {...copy.founders.cards[0]} />
-      <FounderCard position={[ 1.55, -0.75, -101.2]} {...copy.founders.cards[1]} />
-    </group>
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section className="sec sec--founders sec--light" id="founders" ref={root}>
+      <div className="sec__inner">
+        <header className="sec__header" data-reveal>
+          <span className="eyebrow">{copy.founders.eyebrow}</span>
+          <h2 className="sec__heading">{copy.founders.heading}</h2>
+          <p className="founders__lead">{copy.founders.lead}</p>
+          <div className="founders__meta">{copy.founders.meta}</div>
+        </header>
+        <div className="founders__grid">
+          {copy.founders.cards.map((c) => {
+            const initials = c.id.split(' / ')[0];
+            return (
+              <article className="founder-card" data-reveal key={c.id}>
+                <span className="founder-card__id">{c.id}</span>
+                <div className="founder-card__portrait" aria-hidden="true">
+                  <span className="founder-card__initials">{initials}</span>
+                </div>
+                <h3 className="founder-card__name">{c.name}</h3>
+                <span className="founder-card__role">{c.role}</span>
+                <p className="founder-card__bio">{c.bio}</p>
+                <ul className="founder-card__tags">
+                  {c.tags.map((t) => <li key={t}>{t}</li>)}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }

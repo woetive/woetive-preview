@@ -1,47 +1,55 @@
-import { SceneText, SceneMono } from '../SceneText';
-import { WorkCard } from '../SceneCard';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
+const cardTones = ['charcoal', 'black', 'ink'];
+
 export function WorkSection() {
-  const z = -30.5;
-  const x = -2.75;
+  const root = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <group>
-      {/* Off-white wall plane behind */}
-      <mesh position={[0, 0, -32]}>
-        <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#F4F3EE" roughness={0.95} />
-      </mesh>
+    <section className="sec sec--work sec--light" id="work" ref={root}>
+      <div className="sec__inner">
+        <header className="sec__header" data-reveal>
+          <span className="eyebrow">{copy.work.eyebrow}</span>
+          <h2 className="sec__heading">{copy.work.heading}</h2>
+          <p className="sec__lead">{copy.work.sub}</p>
+        </header>
 
-      <SceneMono position={[x, 1.85, z]} fontSize={0.075} color="#5C5C57">
-        {copy.work.eyebrow}
-      </SceneMono>
-      <SceneText position={[x, 1.25, z]} fontSize={0.46} color="#0B0B0A" letterSpacing={-0.03}>
-        {copy.work.heading}
-      </SceneText>
-      <SceneText position={[x, 0.65, z]} fontSize={0.10} color="#5C5C57" maxWidth={3.4} letterSpacing={-0.005}>
-        {copy.work.sub}
-      </SceneText>
+        <ol className="work-cards">
+          {copy.work.cards.map((c, i) => (
+            <li className="work-card" data-reveal key={c.title}>
+              <div className={`work-card__media work-card__media--${cardTones[i]}`}>
+                <span className="work-card__mono">{`0${i + 1} / ${c.tag}`}</span>
+                <span className="work-card__limeline" aria-hidden="true" />
+              </div>
+              <div className="work-card__body">
+                <span className="work-card__meta">{c.meta}</span>
+                <h3 className="work-card__title">{c.title}</h3>
+                <p className="work-card__brief">{c.brief}</p>
+                <p className="work-card__stats">{c.stats}</p>
+                <span className="work-card__tag">{c.category}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
 
-      {/* 3 cards in a row in front of wall */}
-      <WorkCard
-        position={[-1.55, -0.45, -29.9]}
-        rotation={[0, 0.03, 0]}
-        {...copy.work.cards[0]}
-      />
-      <WorkCard
-        position={[ 0.05, -0.45, -30.15]}
-        {...copy.work.cards[1]}
-      />
-      <WorkCard
-        position={[ 1.65, -0.45, -30.4]}
-        rotation={[0, -0.03, 0]}
-        {...copy.work.cards[2]}
-      />
-
-      <SceneMono position={[x, -1.55, z]} fontSize={0.06} color="#0B0B0A">
-        {copy.work.archive}
-      </SceneMono>
-    </group>
+        <a href="#contact" className="archive-link" data-reveal>{copy.work.archive}</a>
+      </div>
+    </section>
   );
 }

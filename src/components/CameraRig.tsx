@@ -10,29 +10,25 @@ type Props = {
   limeMatRef: React.MutableRefObject<THREE.MeshStandardMaterial | null>;
 };
 
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-// Drives camera + model + particles + bg + lime intensity from scroll progress.
-// All updates are damped so fast scrolling still looks cinematic.
+// Drives camera + model + particles + lime intensity from scroll progress.
+// All updates damped so fast scrolling stays cinematic. Hero zone only —
+// HTML sections below take over for the rest of the page.
 export function CameraRig({ scrollRef, figureGroupRef, particlesGroupRef, limeMatRef }: Props) {
-  const { scene, gl, camera } = useThree();
-  const sceneBg = useRef(new THREE.Color('#050505'));
-  const tmp = useRef(new THREE.Color());
+  const { gl, camera } = useThree();
   const cur = useRef<CameraState>({
-    pos: [0, 0, 0], look: [0, 0, 0], fov: 35, bg: '#050505',
+    pos: [0, 0, 0], look: [0, 0, 0], fov: 38, bg: '#050505',
     mp: [0, 0, 0], mr: 0, ms: 1, pa: 0.4, li: 1.15,
   });
 
   useEffect(() => {
-    scene.background = sceneBg.current;
-    gl.setClearColor(sceneBg.current, 1);
-  }, [scene, gl]);
+    gl.setClearColor(0x050505, 1);
+  }, [gl]);
 
   useFrame(() => {
     const target = cameraStateAt(scrollRef.current ?? 0);
     const c = cur.current;
 
-    // Camera position + look + fov
+    // Camera position + look + fov, damped
     const D = 0.085;
     c.pos[0]  += (target.pos[0]  - c.pos[0])  * D;
     c.pos[1]  += (target.pos[1]  - c.pos[1])  * D;
@@ -60,7 +56,7 @@ export function CameraRig({ scrollRef, figureGroupRef, particlesGroupRef, limeMa
       c.mr    += (target.mr    - c.mr)    * 0.09;
       c.ms    += (target.ms    - c.ms)    * 0.09;
       fg.position.set(c.mp[0], c.mp[1], c.mp[2]);
-      fg.userData.baseRotY = c.mr;          // Humanoid component reads this
+      fg.userData.baseRotY = c.mr;
       fg.scale.setScalar(c.ms);
     }
 
@@ -72,20 +68,11 @@ export function CameraRig({ scrollRef, figureGroupRef, particlesGroupRef, limeMa
       pg.position.set(c.mp[0] - 1.0, c.mp[1] + 1.4, c.mp[2] - 1.2);
     }
 
-    // Lime emissive
+    // Lime emissive intensity
     if (limeMatRef.current) {
       c.li += (target.li - c.li) * 0.08;
       limeMatRef.current.emissiveIntensity = c.li;
     }
-
-    // Background color lerp
-    tmp.current.set(target.bg);
-    sceneBg.current.lerp(tmp.current, 0.06);
-    gl.setClearColor(sceneBg.current, 1);
-
-    // Theme inversion
-    const lum = sceneBg.current.r * 0.299 + sceneBg.current.g * 0.587 + sceneBg.current.b * 0.114;
-    document.documentElement.dataset.theme = lum > 0.5 ? 'light' : 'dark';
   });
 
   return null;

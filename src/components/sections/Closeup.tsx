@@ -1,15 +1,28 @@
-import { SceneMono } from '../SceneText';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
 export function CloseupSection() {
+  const root = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <group>
-      <SceneMono position={[-2.4, 1.55, -20.8]} fontSize={0.075} color="#9A9A92">
-        {copy.closeup.eyebrow}
-      </SceneMono>
-      <SceneMono position={[1.25, -1.35, -20.6]} rotation={[0, -0.04, 0]} fontSize={0.10} color="#F4F3EE" letterSpacing={0.06} maxWidth={3.0}>
-        {copy.closeup.line}
-      </SceneMono>
-    </group>
+    <section className="sec sec--interlude sec--dark" id="closeup" ref={root}>
+      <span className="eyebrow eye--top-left" data-reveal>{copy.closeup.eyebrow}</span>
+      <span className="eyebrow eye--bottom-right" data-reveal>{copy.closeup.line}</span>
+    </section>
   );
 }

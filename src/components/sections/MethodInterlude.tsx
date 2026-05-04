@@ -1,15 +1,28 @@
-import { SceneMono } from '../SceneText';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
 export function MethodInterludeSection() {
+  const root = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <group>
-      <SceneMono position={[1.9, 1.45, -43.6]} fontSize={0.075} color="#9A9A92">
-        {copy.methodInterlude.eyebrow}
-      </SceneMono>
-      <SceneMono position={[-2.2, -1.15, -43.8]} fontSize={0.10} color="#F4F3EE" letterSpacing={0.06} maxWidth={3.0}>
-        {copy.methodInterlude.line}
-      </SceneMono>
-    </group>
+    <section className="sec sec--interlude sec--dark" id="method-interlude" ref={root}>
+      <span className="eyebrow eye--top-right" data-reveal>{copy.methodInterlude.eyebrow}</span>
+      <span className="eyebrow eye--bottom-left" data-reveal>{copy.methodInterlude.line}</span>
+    </section>
   );
 }

@@ -1,28 +1,43 @@
-import { SceneText, SceneMono } from '../SceneText';
-import { MethodStep } from '../SceneCard';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
 export function MethodStepsSection() {
+  const root = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <group>
-      {/* Light room plane */}
-      <mesh position={[0, 0, -57]}>
-        <planeGeometry args={[20, 14]} />
-        <meshStandardMaterial color="#F4F3EE" roughness={0.95} />
-      </mesh>
-
-      <SceneMono position={[-2.65, 1.85, -52.5]} fontSize={0.075} color="#5C5C57">
-        {copy.method.eyebrow}
-      </SceneMono>
-      <SceneText position={[-2.65, 1.25, -52.5]} fontSize={0.46} color="#0B0B0A" letterSpacing={-0.03}>
-        {copy.method.heading}
-      </SceneText>
-
-      {/* Steps arranged in depth — camera passes diagonally */}
-      <MethodStep position={[-1.65,  0.55, -53.0]} rotation={[0, 0.03, 0]}  {...copy.method.steps[0]} />
-      <MethodStep position={[-0.85,  0.10, -55.2]} rotation={[0, 0.02, 0]}  {...copy.method.steps[1]} />
-      <MethodStep position={[-0.05, -0.35, -57.4]} rotation={[0, 0.01, 0]}  {...copy.method.steps[2]} />
-      <MethodStep position={[ 0.75, -0.80, -59.6]}                          {...copy.method.steps[3]} />
-    </group>
+    <section className="sec sec--method sec--light" id="method" ref={root}>
+      <div className="sec__inner">
+        <header className="sec__header" data-reveal>
+          <span className="eyebrow">{copy.method.eyebrow}</span>
+          <h2 className="sec__heading">{copy.method.heading}</h2>
+        </header>
+        <ol className="method-steps">
+          {copy.method.steps.map((s) => (
+            <li data-reveal key={s.num}>
+              <span className="step__num">{s.num}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
   );
 }

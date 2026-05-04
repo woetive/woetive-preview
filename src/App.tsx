@@ -2,6 +2,17 @@ import { useEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { WebGLWorld } from './components/WebGLWorld';
 import { HeroOverlay } from './components/HeroOverlay';
+import { ManifestoSection } from './components/sections/Manifesto';
+import { CloseupSection } from './components/sections/Closeup';
+import { WorkSection } from './components/sections/Work';
+import { MethodInterludeSection } from './components/sections/MethodInterlude';
+import { MethodStepsSection } from './components/sections/MethodSteps';
+import { TrustRibbonSection } from './components/sections/TrustRibbon';
+import { WhyWoetiveSection } from './components/sections/WhyWoetive';
+import { TestimonialsSection } from './components/sections/Testimonials';
+import { FoundersSection } from './components/sections/Founders';
+import { ContactSection } from './components/sections/Contact';
+import { FooterSection } from './components/sections/Footer';
 import { useScrollProgress } from './hooks/useScrollProgress';
 import { useMouseAttention } from './hooks/useMouseAttention';
 
@@ -33,6 +44,17 @@ export default function App() {
     };
   }, []);
 
+  // Scrolled-state for nav (subtle bg shift)
+  useEffect(() => {
+    const onScroll = () => {
+      const nav = document.querySelector('.nav');
+      if (!nav) return;
+      nav.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   // Boot loader fade
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 4200);
@@ -49,9 +71,27 @@ export default function App() {
 
       <Navigation />
 
+      {/* HeroOverlay = HTML glass card + scroll bar fixed in viewport */}
       <HeroOverlay scrollRef={scrollRef} />
 
-      <div className="scroll-spacer" aria-hidden="true" />
+      <main id="main">
+        {/* Hero is the 3D scene — its HTML counterpart is just a 100vh spacer
+            so the canvas behind has full viewport while the user reads it. */}
+        <section className="sec sec--hero" id="hero" aria-label="Woetive — Brands for companies that outgrew their first one." />
+
+        <ManifestoSection />
+        <CloseupSection />
+        <WorkSection />
+        <MethodInterludeSection />
+        <MethodStepsSection />
+        <TrustRibbonSection />
+        <WhyWoetiveSection />
+        <TestimonialsSection />
+        <FoundersSection />
+        <ContactSection />
+      </main>
+
+      <FooterSection />
 
       {booting && (
         <div className="boot" aria-hidden="true">

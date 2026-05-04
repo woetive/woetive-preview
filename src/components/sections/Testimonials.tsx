@@ -1,24 +1,48 @@
-import { SceneText, SceneMono } from '../SceneText';
-import { TestimonialCard } from '../SceneCard';
+import { useEffect, useRef } from 'react';
 import { copy } from '../../scene/copy';
 
 export function TestimonialsSection() {
-  return (
-    <group>
-      <mesh position={[0, 0, -93]}>
-        <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#FAF9F4" roughness={0.95} />
-      </mesh>
-      <SceneMono position={[-2.55, 1.55, -90]} fontSize={0.075} color="#5C5C57">
-        {copy.testimonials.eyebrow}
-      </SceneMono>
-      <SceneText position={[-2.55, 1.0, -90]} fontSize={0.40} color="#0B0B0A" letterSpacing={-0.03}>
-        {copy.testimonials.heading}
-      </SceneText>
+  const root = useRef<HTMLElement>(null);
 
-      <TestimonialCard position={[-1.65, -0.15, -91.0]} {...copy.testimonials.quotes[0]} />
-      <TestimonialCard position={[ 0.00, -0.15, -91.4]} {...copy.testimonials.quotes[1]} />
-      <TestimonialCard position={[ 1.65, -0.15, -91.8]} {...copy.testimonials.quotes[2]} />
-    </group>
+  useEffect(() => {
+    if (!root.current) return;
+    const items = root.current.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section className="sec sec--testimonials sec--light" id="testimonials" ref={root}>
+      <div className="sec__inner">
+        <header className="sec__header" data-reveal>
+          <span className="eyebrow">{copy.testimonials.eyebrow}</span>
+          <h2 className="sec__heading">{copy.testimonials.heading}</h2>
+        </header>
+        <div className="testimonials__grid">
+          {copy.testimonials.quotes.map((q) => (
+            <article className="testimonial-card" data-reveal key={q.initials}>
+              <p className="testimonial-card__quote">{q.quote}</p>
+              <div className="testimonial-card__divider" aria-hidden="true" />
+              <div className="testimonial-card__author">
+                <div className="testimonial-card__avatar">{q.initials}</div>
+                <div className="testimonial-card__meta">
+                  <span className="testimonial-card__name">{q.name}</span>
+                  <span className="testimonial-card__role">{q.role}</span>
+                  <span className="testimonial-card__rating" aria-label="5 out of 5 stars">★★★★★</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
