@@ -32,9 +32,11 @@ export function WhyWoetiveSection() {
               <span className="why-card__num">{c.num}</span>
               <h3 className="why-card__title">{c.title}</h3>
               <p className="why-card__copy">{c.body}</p>
-              {c.tags && (
+              {'tags' in c && (c as { tags: readonly string[] }).tags && (
                 <ul className="why-card__tags">
-                  {c.tags.map((t) => <li key={t}>{t}</li>)}
+                  {(c as { tags: readonly string[] }).tags.map((t: string) => (
+                    <li key={t}>{t}</li>
+                  ))}
                 </ul>
               )}
             </article>
