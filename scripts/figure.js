@@ -3,7 +3,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const DRACO_DECODER_PATH = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/';
-const ACCENT = new THREE.Color(0xD0EF00);
 
 export async function loadFigure(scene) {
   const loader = new GLTFLoader();
@@ -32,52 +31,24 @@ export async function loadFigure(scene) {
   model.position.y -= box2.min.y;
   model.position.z -= (box2.max.z + box2.min.z) / 2;
 
-  // Override material — matte black per brief: roughness 0.82, metalness 0.04
-  // We KEEP the original PBR map for normal/roughness detail though, by extending
-  // rather than replacing entirely.
+  // Keep the GLB's original PBR materials + textures untouched.
+  // Just enable shadow casting and reasonable env map intensity.
   model.traverse((obj) => {
     if (!obj.isMesh) return;
     obj.castShadow = true;
     obj.receiveShadow = true;
-    const orig = obj.material;
-    const replaced = new THREE.MeshStandardMaterial({
-      color: 0x080808,
-      roughness: 0.82,
-      metalness: 0.04,
-      envMapIntensity: 0.6,
-      // Inherit normal/baseMap if present so the surface keeps its anatomical detail
-      normalMap: orig?.normalMap || null,
-      map: null,    // override base color — texture was too saturated for our matte look
-    });
-    obj.material = replaced;
+    if (obj.material && 'envMapIntensity' in obj.material) {
+      obj.material.envMapIntensity = 1.0;
+    }
   });
 
-  // Wrap in parent group so we can rotate/translate the entire figure independently
+  // Wrap in parent group so we can rotate/translate the figure independently
   const group = new THREE.Group();
   group.add(model);
   group.position.y = 0;
 
-  // ---- Lime chest line — separate emissive mesh, parented to group ----
-  // Thin vertical strip running from upper chest to belly. Sits slightly forward
-  // of the body so it always reads against the matte surface.
-  const limeGeo = new THREE.PlaneGeometry(0.018, 0.62);
-  const limeMat = new THREE.MeshStandardMaterial({
-    color: 0xD0EF00,
-    emissive: 0xD0EF00,
-    emissiveIntensity: 1.6,
-    roughness: 0.35,
-    metalness: 0,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.95,
-  });
-  const limeLine = new THREE.Mesh(limeGeo, limeMat);
-  limeLine.position.set(0, 1.10, 0.13);  // chest center, just in front of body
-  group.add(limeLine);
-  group.userData.limeMaterial = limeMat;
-
   scene.add(group);
   draco.dispose();
 
-  return { figureGroup: group, figureModel: model, limeMaterial: limeMat };
+  return { figureGroup: group, figureModel: model, limeMaterial: null };
 }
