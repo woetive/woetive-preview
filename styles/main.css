@@ -534,6 +534,14 @@ button { font: inherit; border: 0; background: 0; color: inherit; cursor: pointe
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
 .overlay--manifesto .manifesto__headline span.is-visible { opacity: 1; transform: translateY(0); }
+/* Second line "We re-direct." is sans, not serif */
+.overlay--manifesto .manifesto__headline span:nth-child(2),
+.overlay--manifesto .manifesto__headline span:nth-child(2) .lime {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
 .overlay--manifesto .manifesto__body {
   margin-top: 1.5rem;
   color: var(--ink-soft);
