@@ -83,10 +83,11 @@ function stateAt(p) {
   };
 }
 
-// Method zone constants — must match the 4 method waypoint p values above.
+// Method zone — bracketed by waypoint p values; the big number is visible
+// only between these bounds. The digit 01..04 itself is decided by an
+// IntersectionObserver in main.js (matched to actual step blocks in DOM).
 const METHOD_START = 0.510;
 const METHOD_END   = 0.680;
-const METHOD_NUMBERS = ['01', '02', '03', '04'];
 
 export function initInfiniteCamera({ scene, camera, figureGroup, particles, bigNumber, limeMaterial, renderer }) {
   // Damped state — actual values lerp toward target each frame to feel cinematic
@@ -160,16 +161,14 @@ export function initInfiniteCamera({ scene, camera, figureGroup, particles, bigN
       limeMaterial.emissiveIntensity = cur.li;
     }
 
-    // Big number plane — visible only in the Method zone, swaps 01..04 per sub-step.
+    // Big number plane — visible only in the Method zone. Position + opacity
+    // driven here; the digit text itself (01..04) is set by an
+    // IntersectionObserver in main.js so it aligns with the actual step
+    // block currently in the viewport.
     if (bigNumber) {
       const p = read();
       if (p >= METHOD_START && p <= METHOD_END) {
-        const u = (p - METHOD_START) / (METHOD_END - METHOD_START);   // 0..1 inside method
-        const stepIdx = Math.min(3, Math.floor(u * 4));
-        bigNumber.setNumber(METHOD_NUMBERS[stepIdx]);
-        // Position behind the figure in world space (figure z ≈ -55, plane z = -58)
         bigNumber.setPosition(cur.mp[0], cur.mp[1] + 2.05, cur.mp[2] - 2.8);
-        // Soft fade in / fade out at zone edges
         const edgeFade = Math.min(1,
           Math.min((p - METHOD_START) / 0.025, (METHOD_END - p) / 0.025)
         );

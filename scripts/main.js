@@ -38,12 +38,38 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     }
 
     runHeroEntry();
+    bindMethodStepNumber();
   } catch (err) {
     console.error('[main] figure load failed', err);
     document.body.classList.add('figure-failed');
     document.querySelector('.boot')?.classList.add('boot--hidden');
   }
 })();
+
+// Drive the big-number plane's digit text from which .method__step block is
+// most visible in the viewport. Uses ratio tracking so the active step is
+// the one with the highest intersectionRatio at any moment.
+function bindMethodStepNumber() {
+  const blocks = document.querySelectorAll('.method__step');
+  if (!blocks.length || !bigNumber) return;
+  const ratios = new Map();
+  const labels = ['01', '02', '03', '04'];
+  let lastIdx = -1;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => ratios.set(e.target, e.intersectionRatio));
+    let best = null, bestR = 0;
+    ratios.forEach((r, el) => { if (r > bestR) { bestR = r; best = el; } });
+    if (!best || bestR < 0.05) return;
+    const idx = Math.max(0, Math.min(3, parseInt(best.dataset.step, 10) - 1));
+    if (idx !== lastIdx) {
+      lastIdx = idx;
+      bigNumber.setNumber(labels[idx]);
+    }
+  }, { threshold: [0, 0.15, 0.35, 0.55, 0.75, 0.95] });
+
+  blocks.forEach(el => io.observe(el));
+}
 
 function runHeroEntry() {
   const gsap = window.gsap;
