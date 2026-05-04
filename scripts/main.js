@@ -1,6 +1,7 @@
 import { createScene } from './scene.js';
 import { loadFigure } from './figure.js';
 import { createParticles } from './particles.js';
+import { createBigNumber } from './big-number.js';
 import { initInfiniteCamera } from './scroll.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,6 +11,7 @@ const canvas = document.getElementById('stage');
 const { renderer, scene, camera, mouseLight } = createScene(canvas);
 
 const particles = createParticles(scene);
+const bigNumber = createBigNumber(scene);
 
 let figureGroup = null;
 let limeMaterial = null;
@@ -30,7 +32,7 @@ const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
 
     // Wire global continuous camera path (scroll-driven)
     if (!reduceMotion) {
-      initInfiniteCamera({ scene, camera, figureGroup, particles, limeMaterial, renderer });
+      initInfiniteCamera({ scene, camera, figureGroup, particles, bigNumber, limeMaterial, renderer });
     } else {
       canvas.style.opacity = '1';
     }

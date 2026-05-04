@@ -22,8 +22,13 @@ const PATH = [
   // Back to dark for method interlude
   { p: 0.500, pos: [ 0.65, 1.25, -42.90], look: [ 0.45, 0.85, -45.20], fov: 29, bg: '#050505', mp: [ 0.85, -0.95, -45.20], mr: -0.35, ms: 2.65, pa: 0.10, li: 1.20 },
 
-  // Off-white method steps
-  { p: 0.620, pos: [-0.65, 1.35, -53.00], look: [ 0.35, 0.55, -57.00], fov: 36, bg: '#F4F3EE', mp: [ 1.45, -1.00, -55.50], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.85 },
+  // Method steps — 4 sub-waypoints. Camera descends from head to torso while
+  // the model slowly rotates. Big-number plane (lime) sits behind the figure
+  // and swaps 01 → 04 as the user scrolls each step.
+  { p: 0.535, pos: [ 0.10, 2.40, -52.50], look: [ 0.00, 2.30, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.00, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.575, pos: [ 0.10, 2.00, -52.50], look: [ 0.00, 1.80, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.18, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.615, pos: [ 0.10, 1.55, -52.50], look: [ 0.00, 1.25, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.32, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.655, pos: [ 0.10, 1.15, -52.50], look: [ 0.00, 0.85, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.45, ms: 2.10, pa: 0.05, li: 0.85 },
 
   // Trust ribbon (no model, fade out lime)
   { p: 0.700, pos: [ 0,    1.00, -64.50], look: [ 0,    0.25, -67.00], fov: 42, bg: '#F4F3EE', mp: [ 1.45, -1.00, -75.00], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.00 },
@@ -78,7 +83,12 @@ function stateAt(p) {
   };
 }
 
-export function initInfiniteCamera({ scene, camera, figureGroup, particles, limeMaterial, renderer }) {
+// Method zone constants — must match the 4 method waypoint p values above.
+const METHOD_START = 0.510;
+const METHOD_END   = 0.680;
+const METHOD_NUMBERS = ['01', '02', '03', '04'];
+
+export function initInfiniteCamera({ scene, camera, figureGroup, particles, bigNumber, limeMaterial, renderer }) {
   // Damped state — actual values lerp toward target each frame to feel cinematic
   const target = { pos: [0, 0, 0], look: [0, 0, 0], fov: 35, bg: '#050505', mp: [0, 0, 0], mr: 0, ms: 1, pa: 0.4, li: 1.15 };
   const cur    = { pos: [0, 0, 0], look: [0, 0, 0], fov: 35,                  mp: [0, 0, 0], mr: 0, ms: 1, pa: 0.4, li: 1.15 };
@@ -148,6 +158,25 @@ export function initInfiniteCamera({ scene, camera, figureGroup, particles, lime
     if (limeMaterial) {
       cur.li += (target.li - cur.li) * 0.08;
       limeMaterial.emissiveIntensity = cur.li;
+    }
+
+    // Big number plane — visible only in the Method zone, swaps 01..04 per sub-step.
+    if (bigNumber) {
+      const p = read();
+      if (p >= METHOD_START && p <= METHOD_END) {
+        const u = (p - METHOD_START) / (METHOD_END - METHOD_START);   // 0..1 inside method
+        const stepIdx = Math.min(3, Math.floor(u * 4));
+        bigNumber.setNumber(METHOD_NUMBERS[stepIdx]);
+        // Position behind the figure in world space (figure z ≈ -55, plane z = -58)
+        bigNumber.setPosition(cur.mp[0], cur.mp[1] + 2.05, cur.mp[2] - 2.8);
+        // Soft fade in / fade out at zone edges
+        const edgeFade = Math.min(1,
+          Math.min((p - METHOD_START) / 0.025, (METHOD_END - p) / 0.025)
+        );
+        bigNumber.setOpacity(0.78 * Math.max(0, edgeFade));
+      } else {
+        bigNumber.setOpacity(0);
+      }
     }
 
     // Background color (scene + body bg sync)
