@@ -6,46 +6,50 @@ import * as THREE from 'three';
 
 const PATH = [
   // p, camera pos, lookAt, fov, bg, model {pos, rot.y, scale}, particle opacity, lime intensity
-  // Hero — close portrait: face + chest, figure right side. ~65% closer than before.
+  // p values calibrated to actual section start/end (total page is ~1620vh
+  // because the Method section is now 460vh tall — header 60vh + 4×100vh).
+
+  // Hero — close portrait: face + chest, figure right side. (~0vh–100vh)
   { p: 0.000, pos: [ 0.85, 1.85,   0.50], look: [ 0.45, 2.00,  -2.20], fov: 32, bg: '#050505', mp: [ 1.05, -0.95,  -2.20], mr: -0.18, ms: 1.95, pa: 0.38, li: 1.15 },
-  { p: 0.075, pos: [ 0.70, 1.95,   0.10], look: [ 0.50, 2.10,  -2.20], fov: 30, bg: '#050505', mp: [ 0.85, -0.85,  -2.20], mr: -0.10, ms: 2.05, pa: 0.32, li: 1.20 },
+  { p: 0.060, pos: [ 0.70, 1.95,   0.10], look: [ 0.50, 2.10,  -2.20], fov: 30, bg: '#050505', mp: [ 0.85, -0.85,  -2.20], mr: -0.10, ms: 2.05, pa: 0.32, li: 1.20 },
 
-  { p: 0.105, pos: [ 0.60, 1.75,  -8.50], look: [ 0.85, 1.30, -12.10], fov: 32, bg: '#050505', mp: [-0.50, -0.90, -12.00], mr: 0.18, ms: 2.10, pa: 0.12, li: 1.35 },
-  { p: 0.165, pos: [ 0.60, 1.75,  -8.50], look: [ 0.85, 1.30, -12.10], fov: 32, bg: '#050505', mp: [-0.50, -0.90, -12.00], mr: 0.18, ms: 2.10, pa: 0.12, li: 1.35 },
+  // Manifesto — figure on LEFT, text on right. (100vh–200vh ≈ p 0.062–0.123)
+  { p: 0.080, pos: [ 0.60, 1.75,  -8.50], look: [ 0.85, 1.30, -12.10], fov: 32, bg: '#050505', mp: [-0.50, -0.90, -12.00], mr: 0.18, ms: 2.10, pa: 0.12, li: 1.35 },
+  { p: 0.115, pos: [ 0.60, 1.75,  -8.50], look: [ 0.85, 1.30, -12.10], fov: 32, bg: '#050505', mp: [-0.50, -0.90, -12.00], mr: 0.18, ms: 2.10, pa: 0.12, li: 1.35 },
 
-  { p: 0.250, pos: [ 0.12, 1.42, -20.65], look: [ 0.28, 0.95, -22.00], fov: 26, bg: '#050505', mp: [ 0.58, -0.80, -22.00], mr:  0.02, ms: 3.20, pa: 0.03, li: 1.55 },
+  // Close-up interlude (200vh–300vh ≈ p 0.123–0.185)
+  { p: 0.155, pos: [ 0.12, 1.42, -20.65], look: [ 0.28, 0.95, -22.00], fov: 26, bg: '#050505', mp: [ 0.58, -0.80, -22.00], mr:  0.02, ms: 3.20, pa: 0.03, li: 1.55 },
 
-  // Camera enters off-white "gallery room" — bg lerps over this segment
-  { p: 0.330, pos: [ 0.40, 1.25, -27.60], look: [ 0.25, 0.85, -31.50], fov: 36, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
-  { p: 0.420, pos: [ 0.20, 1.05, -29.00], look: [ 0.20, 0.70, -31.80], fov: 40, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
+  // Work — gallery (300vh–430vh ≈ p 0.185–0.265)
+  { p: 0.220, pos: [ 0.40, 1.25, -27.60], look: [ 0.25, 0.85, -31.50], fov: 36, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
+  { p: 0.260, pos: [ 0.20, 1.05, -29.00], look: [ 0.20, 0.70, -31.80], fov: 40, bg: '#F4F3EE', mp: [ 2.35, -1.10, -32.80], mr: -0.72, ms: 1.85, pa: 0.00, li: 0.75 },
 
-  // Back to dark for method interlude
-  { p: 0.500, pos: [ 0.65, 1.25, -42.90], look: [ 0.45, 0.85, -45.20], fov: 29, bg: '#050505', mp: [ 0.85, -0.95, -45.20], mr: -0.35, ms: 2.65, pa: 0.10, li: 1.20 },
+  // Method interlude — back to dark (430vh–530vh ≈ p 0.265–0.327)
+  { p: 0.300, pos: [ 0.65, 1.25, -42.90], look: [ 0.45, 0.85, -45.20], fov: 29, bg: '#050505', mp: [ 0.85, -0.95, -45.20], mr: -0.35, ms: 2.65, pa: 0.10, li: 1.20 },
 
-  // Method steps — 4 sub-waypoints. Camera descends from head to torso while
-  // the model slowly rotates. Big-number plane (lime) sits behind the figure
-  // and swaps 01 → 04 as the user scrolls each step.
-  { p: 0.535, pos: [ 0.10, 2.40, -52.50], look: [ 0.00, 2.30, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.00, ms: 2.10, pa: 0.05, li: 0.85 },
-  { p: 0.575, pos: [ 0.10, 2.00, -52.50], look: [ 0.00, 1.80, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.18, ms: 2.10, pa: 0.05, li: 0.85 },
-  { p: 0.615, pos: [ 0.10, 1.55, -52.50], look: [ 0.00, 1.25, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.32, ms: 2.10, pa: 0.05, li: 0.85 },
-  { p: 0.655, pos: [ 0.10, 1.15, -52.50], look: [ 0.00, 0.85, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.45, ms: 2.10, pa: 0.05, li: 0.85 },
+  // Method steps — 4 sub-waypoints aligned to step block centres
+  // (header 530–590 → p 0.327–0.364; step1 590–690 → p 0.364–0.426; etc.)
+  { p: 0.395, pos: [ 0.10, 2.40, -52.50], look: [ 0.00, 2.30, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.00, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.457, pos: [ 0.10, 2.00, -52.50], look: [ 0.00, 1.80, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.18, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.519, pos: [ 0.10, 1.55, -52.50], look: [ 0.00, 1.25, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.32, ms: 2.10, pa: 0.05, li: 0.85 },
+  { p: 0.580, pos: [ 0.10, 1.15, -52.50], look: [ 0.00, 0.85, -55.00], fov: 32, bg: '#050505', mp: [ 0.00, -1.00, -55.00], mr:  0.45, ms: 2.10, pa: 0.05, li: 0.85 },
 
-  // Trust ribbon (no model, fade out lime)
-  { p: 0.700, pos: [ 0,    1.00, -64.50], look: [ 0,    0.25, -67.00], fov: 42, bg: '#F4F3EE', mp: [ 1.45, -1.00, -75.00], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.00 },
+  // Trust ribbon (990vh–1040vh ≈ p 0.611–0.642)
+  { p: 0.625, pos: [ 0,    1.00, -64.50], look: [ 0,    0.25, -67.00], fov: 42, bg: '#F4F3EE', mp: [ 1.45, -1.00, -75.00], mr:  0.35, ms: 2.05, pa: 0.00, li: 0.00 },
 
-  // Why bento
-  { p: 0.780, pos: [ 0.15, 1.05, -73.50], look: [ 0.10, 0.05, -76.80], fov: 38, bg: '#F4F3EE', mp: [ 2.55, -1.10, -78.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.35 },
+  // Why bento (1040vh–1190vh ≈ p 0.642–0.735)
+  { p: 0.690, pos: [ 0.15, 1.05, -73.50], look: [ 0.10, 0.05, -76.80], fov: 38, bg: '#F4F3EE', mp: [ 2.55, -1.10, -78.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.35 },
 
-  // Testimonials (warm white, no model in frame)
-  { p: 0.850, pos: [ 0,    0.95, -88.80], look: [ 0,    0.05, -91.40], fov: 40, bg: '#FAF9F4', mp: [ 3.50, -1.10, -90.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.00 },
+  // Testimonials (1190vh–1340vh ≈ p 0.735–0.827)
+  { p: 0.780, pos: [ 0,    0.95, -88.80], look: [ 0,    0.05, -91.40], fov: 40, bg: '#FAF9F4', mp: [ 3.50, -1.10, -90.00], mr: -0.55, ms: 1.85, pa: 0.00, li: 0.00 },
 
-  // Founders return
-  { p: 0.920, pos: [ 0.50, 1.25, -99.40], look: [ 0.55, 0.65,-102.00], fov: 36, bg: '#F4F3EE', mp: [ 1.40, -1.00,-102.50], mr: -0.18, ms: 2.10, pa: 0.10, li: 0.85 },
+  // Founders (1340vh–1470vh ≈ p 0.827–0.907)
+  { p: 0.865, pos: [ 0.50, 1.25, -99.40], look: [ 0.55, 0.65,-102.00], fov: 36, bg: '#F4F3EE', mp: [ 1.40, -1.00,-102.50], mr: -0.18, ms: 2.10, pa: 0.10, li: 0.85 },
 
-  // Contact climax — back to dark, lime peak
-  { p: 0.970, pos: [ 0,    1.45,-111.65], look: [ 0.22, 1.05,-114.00], fov: 31, bg: '#050505', mp: [ 0.75, -0.95,-114.00], mr: -0.05, ms: 2.45, pa: 0.22, li: 1.65 },
+  // Contact (1470vh–1570vh ≈ p 0.907–0.969)
+  { p: 0.940, pos: [ 0,    1.45,-111.65], look: [ 0.22, 1.05,-114.00], fov: 31, bg: '#050505', mp: [ 0.75, -0.95,-114.00], mr: -0.05, ms: 2.45, pa: 0.22, li: 1.65 },
 
-  // Footer
+  // Footer (1570vh–end)
   { p: 1.000, pos: [ 0,    0.85,-122.50], look: [ 0,    0.35,-124.50], fov: 42, bg: '#050505', mp: [ 3.50, -1.00,-130.00], mr: -0.05, ms: 1.00, pa: 0.00, li: 0.00 },
 ];
 
@@ -86,8 +90,8 @@ function stateAt(p) {
 // Method zone — bracketed by waypoint p values; the big number is visible
 // only between these bounds. The digit 01..04 itself is decided by an
 // IntersectionObserver in main.js (matched to actual step blocks in DOM).
-const METHOD_START = 0.510;
-const METHOD_END   = 0.680;
+const METHOD_START = 0.355;
+const METHOD_END   = 0.620;
 
 export function initInfiniteCamera({ scene, camera, figureGroup, particles, bigNumber, limeMaterial, renderer }) {
   // Damped state — actual values lerp toward target each frame to feel cinematic
