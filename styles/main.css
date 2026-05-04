@@ -78,7 +78,19 @@ html[data-theme="light"] {
   --line-strong: rgba(11, 11, 10, 0.18);
 }
 
-/* Rounded viewport frame — 1px border drawn over fixed canvas */
+/* Rounded viewport frame — black mask outside + 1px border on the rounded
+   inner edge. The mask uses a huge solid box-shadow that fills everything
+   outside the rounded rectangle, so any HTML scrolling underneath visually
+   disappears as it crosses the frame boundary. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: var(--frame-inset);
+  border-radius: var(--frame-radius);
+  pointer-events: none;
+  z-index: 55;
+  box-shadow: 0 0 0 100vmax #000;
+}
 body::after {
   content: "";
   position: fixed;
