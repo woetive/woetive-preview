@@ -105,7 +105,7 @@ function runHeroEntry() {
     });
   }, { threshold: 0.25 });
   document.querySelectorAll(
-    '.work-card, .method-steps > li, .manifesto__headline span, .manifesto__body, .manifesto__meta, .founder-card, .testimonial-card, .why-card'
+    '.work-card, .manifesto__headline span, .manifesto__body, .manifesto__meta, .founder-card, .testimonial-card, .why-card, .service-card'
   ).forEach((el) => revealObs.observe(el));
 }
 
